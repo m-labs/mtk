@@ -1,0 +1,114 @@
+
+                   PLB NPI VGA and DVI controller
+
+
+The PLB NPI VGA and DVI controller is the hardware part of the Genode FPGA
+graphics project. For more information on this project, please visit its
+official website:
+
+:website: [http://fpga-graphics.org]
+
+The primary developer of this core is Matthias Alles:
+
+:email: alles@rhrk.uni-kl.de
+
+
+
+Features
+========
+
+* 16 bit color depth (565 RGB format)
+* Programmable display timing
+* Supports VGA and DVI outputs
+* Supports vertical blank interrupts
+* Uses NPI interface to fetch pixel data
+* Supports 32 and 64 bit NPI interface
+* Burst type clearing of memory regions
+
+
+Requirements
+============
+
+* EDK 9.2.02 or higher
+* PLBv46
+* Multi Port Memory Controller (MPMC) v3 and v4 with NPI interface
+* For DVI output the Chrontel CH7301C (as used in the ML505/ML506/ML507
+  boards) is required.
+* Integer NPI clock to pixel clock ratio (ratios from 1 to 8 are supported)
+
+
+Configuration
+=============
+
+The following table shows the supported generics of the core.
+
+  Generic                   | Type      | Values          | Meaning
+ ---------------------------------------------------------------------------
+  C_PI_DATA_WIDTH           | <integer> | 32, 64          | Data width of NPI interface
+ ---------------------------------------------------------------------------
+  C_PI_BE_WIDTH             | <integer> | 4, 8            | No. of bytes in NPI interface
+ ---------------------------------------------------------------------------
+  C_NPI_PIXEL_CLK_RATIO     | <integer> | 1 - 8           | Ratio of NPI clock to pixel clock
+ ---------------------------------------------------------------------------
+  C_PIXEL_CLK_GREATER_65MHZ | <boolean> | true, false     | Set to true pixel clock is greater than 65 MHz
+ ---------------------------------------------------------------------------
+  C_USE_VGA_OUT             | <boolean> | true, false     | Set to true if using VGA output
+
+[table generic_table] Overview of generics
+
+
+The following table gives the address map of the core as offset to the 
+base address as defined by C_BASEADDR.
+
+
+ Address | Access | Meaning
+ ----------------------------------------------------------------------
+  0x00   | r/w    | Framebuffer address, has to be aligned to 128 byte boundary
+ ----------------------------------------------------------------------
+  0x04   | r/w    | Background color (when using VGA display)
+         |        | ----------------rrrrrggggggbbbbb
+ ----------------------------------------------------------------------
+  0x08   | r/w    | Start address for fast memory clear
+ ----------------------------------------------------------------------
+  0x0C   | r/w    | Number of pixels to clear, write initiates clearing
+ ----------------------------------------------------------------------
+  0x10   | r/w    | Control register
+         |        | ----------------------------3210
+         |        | Bit 0: display pixel twice (low x resolution)
+         |        | Bit 1: display line  twice (low y resolution)
+         |        | Bit 2: run the display timing
+         |        | Bit 3: enable vertical blank interrupt
+ ----------------------------------------------------------------------
+  0x14   | r/w    | Screen resolution
+         |        | 10 downto  0: Screen width in pixel
+         |        | 25 downto 16: Screen height in pixel
+         |        | ATTENTION! In case bit 0 or bit 1 in the control are set
+         |        | the physical resolution is required here, i.e., 
+         |        | the resolution without displaying pixel/line twice
+ ----------------------------------------------------------------------
+  0x18   | r/w    | 21 downto 0: Frame buffer size in bytes
+ ----------------------------------------------------------------------
+  0x1C   | r/w    | Horizontal sync
+         |        | 10 downto  0: start
+         |        | 26 downto 16: end
+ ---------------------------------------------------------------------
+  0x20   | r/w    | Vertical sync
+         |        |  9 downto  0: start
+         |        | 25 downto 16: end
+ ----------------------------------------------------------------------
+  0x24   | r/w    | Maximum timing values
+         |        | 10 downto  0: x max
+         |        | 25 downto 16: y max
+ ----------------------------------------------------------------------
+  0x28   | r/w    | Lines to mark the start/end of the background color
+         |        |  9 downto  0: start value
+         |        | 25 downto 16: end value
+ ----------------------------------------------------------------------
+
+[table register_map_table] Register map
+
+
+Changelog
+=========
+
+* V1.02a: Initial Release.

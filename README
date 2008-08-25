@@ -1,0 +1,251 @@
+
+
+                   =================================
+                   Genode FPGA graphics (FX) project
+                   =================================
+
+
+Genode FX is a composition of hardware and software components that enable
+the creation of fully fledged graphical user interfaces as system-on-chip
+solutions using commodity FPGAs.
+
+The approach relies on a GUI software stack executed on a soft core CPU
+implementation (e.g., Microblaze) or on a hard wired CPU (e.g., PPC core
+as featured by Virtex4 FPGAs). For interfacing input devices and the
+display to the system, the CPU core is complemented by custom peripheral
+components.
+
+At the current stage, Genode FX consists of the following components:
+
+- Display controller for VGA and DVI output
+- PS/2 controller for mouse and keyboard input
+- DOpE graphics software stack
+
+We develop both the peripheral device components and the GUI software
+stack in a coordinated fashion. As reference platform, we facilitate
+the use of the Xilinx Spartan S3A Starter Kit with the Microblaze soft
+core.
+
+In addition to supporting the S3A Starter Kit, we have implemented Genode
+FX for other platforms including Virtex4-based FPGA platforms, the ML507,
+and the Euterpe FPGA board.
+
+
+Requirements
+============
+
+Genode FX was designed for Xilinx FPGAs. EDK 9.2 is required, but it is
+known to work with EDK 10.1 as well. It requires an instance of the Multi
+Port Memory Controller (MPMC 3 or higher) in the design. Any memory that is
+supported by the MPMC can be used for Genode FX. The memory requirements
+are quite low and mainly depend on the resolution of the frame buffer.
+On Euterpe, a 2MB SRAM chip is used as frame buffer and CPU memory via a
+custom memory controller. For reasonable performance a Microblaze with
+50 MHz and a little bit of instruction and data cache are sufficient.
+
+
+Licence
+=======
+
+Both the hardware models and software components of Genode FX are available
+under two flavours of licences, an open-source license and commercial
+licensing.
+
+:Open-source license:
+
+  The primary license used for the distribution of Genode FX is the GNU
+  General Public License Version 2 (GNU GPL). The GNU GPL grants everybody
+  the rights to
+
+  * Use Genode FX without paying any license fee
+  * Freely distribute the software and hardware
+  * Modify the source code and distribute modified versions of the software
+    and the hardware models
+
+  In turn, the GNU GPL requires any modifications and derived work to be
+  published under the same license. See the full text of the GNU General
+  Public License Version 2 in the LICENCE file provided with the Genode FX
+  distribution.
+
+:Commercial licenses:
+
+  For applications that require more permissive licensing conditions than
+  granted by the GNU GPL, Genode Labs offers commercial licensing options
+  and support. If you consider the Genode FX for the use in your product,
+  please contact Genode Labs.
+
+  :website: [http://www.genode-labs.com]
+  :email:   licensing@genode-labs.com
+
+
+How to start exploring Genode FX?
+=================================
+
+In the archive of the Genode FX, you find the following subdirectories:
+
+:'IP_cores/pcores/plb_npi_vga_controller_v1_02_a':
+
+  This directory contains the hardware design of the display controller.
+  It supports VGA and DVI outputs with a 16 bit color depth. For DVI output
+  the Chrontel CH7301C (as used in the ML505/ML506/ML507 boards) is required.
+  The resolution is configurable by using different pixel clocks.
+
+:'IP_cores/pcores/plb_ps2_controller_v1_00_a':
+
+  This directory contains the PS/2 controller for mouse and keyboard.
+
+:'dope-embedded/':
+
+  This directory contains the DOpE GUI software stack. For further
+  instructions about building a test application, please read the
+  'README' file provided in the top-level of the 'dope-embedded'
+  directory. If you are interested in creating custom GUI applications,
+  the "DOpE User's Guide" is a good start. You can find the document
+  in 'dope-embedded/doc/'.
+
+:'EDK_projects':
+
+  Ready to use EDK projects for the supported FPGA platforms.
+  The currently supported platform is 's3a_starter'.
+
+
+Building the project with Xilinx' Embedded Development Kit (EDK)
+----------------------------------------------------------------
+
+To create the bitstream file for your FPGA platform, go to the corresponding
+'EDK_projects/<platform>' directory and issue
+! make -f system.make bits
+To configure the FPGA via JTAG, just use Xilinx' Impact tool and select the
+'implementation/system.bit' file.
+
+Before building the test application, the DOpE GUI library must be
+compiled. Because this library requires the Microblaze-specific system
+libraries, we must build these libraries first. From within the
+'EDK_projects/<platform>' directory issue
+! make -f system.make libs
+Now, we can build the DOpE GUI library. Change to the 'dope-embedded'
+directory and call
+! make <platform>
+The DOpE GUI library is accompanied by a small test program that is build
+by default. After building, the executable is located at
+'dope-embedded/test/<platform>/dopetest'.
+For a quick test, connect a VGA screen and a PS/2 mouse to your S3A Starter
+Kit board and upload the binary to your S3A Starter Kit via
+! make -C dope-embedded/test/<platform> test
+
+After having compiled the DOpE library, you may choose to continue working
+in the Xilinx Platform Studio (XPS). By default, the project includes the
+test program. After compiling the project via XPS, the executable is
+available in 'dope_test/executable.elf'. Please note that this only builds
+the test application but not the DOpE GUI library. If you modified the DOpE
+GUI you have to recompile the library first (see 'README' file in the
+top-level of the 'dope-embedded' directory). To manualy upload the software
+via the 'xmd' tool, you can use the following commands:
+# Connect to the Microblaze debug module
+  ! connect mb mdm
+# Download the elf binary, for example 'dope_test/executable.elf'
+  ! dow <elf-binary-file>
+# Continue the execution of the Microblaze CPU
+  ! con
+
+After a few seconds, you should see the GUI on the VGA screen.
+
+
+Development-compile-test cycle during application development
+-------------------------------------------------------------
+
+For creating a custom application, please take a look at the example at the
+'dope-embedded/test/' directory. If you prefer to develop software via
+'make' and an editor of your choice rather than using the XPS provided with
+EDK, the Makefile in the 's3a_starter/' subdirectory will become handy.
+To compile your application directly from with the 'dope-embedded/test'
+directory, just use 'make'. To automatically build and upload the
+application's elf binary, just issue the command 'make test'.
+
+
+Community
+=========
+
+Before its official release in August 2008, the Genode FX project was
+conducted by Matthias Alles (focused on hardware) and Norman Feske
+(focused on software). Because we were delighted to see other people's
+interest in our work, we decided to open up the project and turn it
+into an open-source community project. The project's website is:
+
+:website:
+
+  [http://fpga-graphics.org]
+
+The best way for getting involved with the project is joining our
+discussion-mailing list:
+
+:mailing list:
+
+  [https://lists.sourceforge.net/lists/listinfo/genode-fx-main]
+
+
+Outlook
+=======
+
+:DOpE GUI software stack:
+
+  The functionality of the DOpE GUI software stack already suffices for
+  creating windowed applications using a number of built-in widget types
+  such as scale widgets, grid, buttons, text entry fields etc. Still,
+  a higher-level widget types are missing. Driven by demand of application
+  developers, we are interested in complementing the widget set of DOpE.
+  Furthermore, we consider to make DOpE's widget engine fully themeable
+  to enable application designers to create a custom look-and-feel.
+
+:Performance optimizations:
+
+  In the current version of Genode FX, the hardware-software interface for
+  graphics output is a plain frame buffer. We believe that the performance of
+  the current version already suffices for many applications. However, we have
+  various ideas of how to optimize the performance. First, we see a number of
+  ways to further improve the GUI software stack by both algorithmic changes
+  and micro optimizations.  Furthermore, we want to pursue the development of
+  small hardware facilities to speed up the hot spots of the software, for
+  example by handling bulk pixel operations in hardware.
+
+:Support of further platforms and applications:
+
+  We are intrigued to see Genode FX implemented in further platforms and being
+  used for real-world applications. If you are interested in using Genode FX on
+  a custom platform, please do not hesitate to contact Genode Labs for advice
+  and commercial support.
+
+
+Contact
+=======
+
+The best way for getting in touch with the Genode FX developers is the
+official mailing list (see above). Furthermore, the following contact
+information provides some pointers for getting in contact:
+
+:Hardware designs:
+
+  The hardware components of the current version Genode FX are the work of
+  Matthias Alles. With his work on the Euterpe FPGA board, he initiated
+  the Genode FPGA graphics project.
+
+  :website: [http://www-user.rhrk.uni-kl.de/~alles/fpga]
+
+:Commercial support:
+
+  For facilitating the practical application of Genode FX, Genode Labs
+  offers commercial services including the adaption of Genode FX to
+  different FPGA boards, the extension and customization of the DOpE GUI
+  software stack, and the development of application software based on
+  Genode FX.
+
+  :website: [http://www.genode-labs.com]
+
+:DOpE GUI software stack:
+
+  The DOpE GUI software stack was originally developed for the Dresden
+  Real-time Operating System. DOpE has been ported to a number of platforms
+  including Linux, Freescale Coldfire evaluation hardware, and the Atari
+  Falcon 030. The primary developer of DOpE is Norman Feske:
+
+  :email: norman.feske@genode-labs.com

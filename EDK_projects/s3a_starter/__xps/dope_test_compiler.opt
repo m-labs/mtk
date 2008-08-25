@@ -1,0 +1,22 @@
+microblaze_0
+DOPE_TEST_SOURCES = dope-embedded/test/test.c dope-embedded/test/s3a_starter/platform.c 
+DOPE_TEST_HEADERS = dope-embedded/include/dopedef.h dope-embedded/include/dopelib.h dope-embedded/include/keycodes.h dope-embedded/include/vscreen.h dope-embedded/test/genode-labs-banner.h dope-embedded/test/microblaze_logo.h dope-embedded/test/platform.h dope-embedded/test/spartan3a.h dope-embedded/test/xilinx_logo.h 
+DOPE_TEST_CC = mb-gcc
+DOPE_TEST_CC_SIZE = mb-size
+DOPE_TEST_CC_OPT = -O2
+DOPE_TEST_CFLAGS = 
+DOPE_TEST_CC_SEARCH = # -B
+DOPE_TEST_LIBPATH = -L./microblaze_0/lib/   -Ldope-embedded/lib/s3a_starter/ 
+DOPE_TEST_INCLUDES = -I./microblaze_0/include/  -Idope-embedded/include/ -Idope-embedded/test/ # -I
+DOPE_TEST_LFLAGS =   -ldope 
+DOPE_TEST_LINKER_SCRIPT = dope-embedded/test/s3a_starter/dope.ld
+DOPE_TEST_CC_DEBUG_FLAG =  -g 
+DOPE_TEST_CC_PROFILE_FLAG = # -pg
+DOPE_TEST_CC_GLOBPTR_FLAG= # -mxl-gp-opt
+DOPE_TEST_MODE = executable
+DOPE_TEST_LIBG_OPT = -$(DOPE_TEST_MODE) microblaze_0
+DOPE_TEST_CC_INFERRED_FLAGS= -mno-xl-soft-mul -mxl-barrel-shift -mxl-pattern-compare -mno-xl-soft-div -mcpu=v7.00.a 
+DOPE_TEST_CC_START_ADDR_FLAG=  #  # -Wl,-defsym -Wl,_TEXT_START_ADDR=
+DOPE_TEST_CC_STACK_SIZE_FLAG=  #  # -Wl,-defsym -Wl,_STACK_SIZE=
+DOPE_TEST_CC_HEAP_SIZE_FLAG=  #  # -Wl,-defsym -Wl,_HEAP_SIZE=
+                  $(DOPE_TEST_CC_INFERRED_FLAGS)  \

@@ -1,0 +1,12 @@
+-g CclkPin:PULLUP
+-g TdoPin:PULLNONE
+-g DonePin:PULLUP
+-g StartUpClk:JTAGCLK
+-g ProgPin:PULLUP
+-g TckPin:PULLUP
+-g TdiPin:PULLUP
+-g TmsPin:PULLUP
+-g LCK_cycle:NoWait
+-g Security:NONE
+#-m
+-g Persist:No
