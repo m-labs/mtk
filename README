@@ -34,9 +34,10 @@ and the Euterpe FPGA board.
 Requirements
 ============
 
-Genode FX was designed for Xilinx FPGAs. EDK 9.2 is required, but it is
-known to work with EDK 10.1 as well. It requires an instance of the Multi
-Port Memory Controller (MPMC 3 or higher) in the design. Any memory that is
+Genode FX was designed for Xilinx FPGAs. EDK 9.2 is required for the S3A
+Starter Kit, while at least EDK 10.1.02 is required when using the PowerPC
+in Virtex 5 devices. An instance of the Multi Port Memory Controller
+(MPMC 3 or higher) is required in the design. Any memory that is
 supported by the MPMC can be used for Genode FX. The memory requirements
 are quite low and mainly depend on the resolution of the frame buffer.
 On Euterpe, a 2MB SRAM chip is used as frame buffer and CPU memory via a
