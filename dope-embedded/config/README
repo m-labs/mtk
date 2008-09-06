@@ -15,6 +15,10 @@ Spec files
 
   Build options for supporting the Xilinx Microblaze soft core.
 
+:'spec-ppc440':
+
+  Build options for supporting the PowerPC 440 as found in Virtex 5 devices.
+
 :'spec-common':
 
   Common configuration shared by all platforms. This file must be
@@ -28,6 +32,10 @@ Platform-description files
 
   Build configuration for the Spartan3A Starter kit using the Microblaze
   soft core.
+
+:'ml507.mk':
+
+  Build configuration for the ML507 using the PowerPC 440.
 
 :'sdl.mk':
 

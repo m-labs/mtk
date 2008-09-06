@@ -1,0 +1,1 @@
+ -p virtex5 -lang vhdl -lp /net/user/r1/unix/alles/projekte/genode/genode_start/genode-fx/trunk/   -pe ppc440_0  $(PPC440_0_BOOTLOOP)  -s mti

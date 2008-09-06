@@ -106,7 +106,7 @@ In the archive of the Genode FX, you find the following subdirectories:
 :'EDK_projects':
 
   Ready to use EDK projects for the supported FPGA platforms.
-  The currently supported platform is 's3a_starter'.
+  The currently supported platforms are 's3a_starter' and 'ml507'.
 
 
 Building the project with Xilinx' Embedded Development Kit (EDK)

@@ -1,0 +1,20 @@
+ppc440_0
+DOPE_TEST_SOURCES = ../../dope-embedded/test/test.c ../../dope-embedded/test/ml507/platform.c 
+DOPE_TEST_HEADERS = ../../dope-embedded/include/dopedef.h ../../dope-embedded/include/dopelib.h ../../dope-embedded/include/keycodes.h ../../dope-embedded/include/vscreen.h ../../dope-embedded/test/platform.h 
+DOPE_TEST_CC = powerpc-eabi-gcc
+DOPE_TEST_CC_SIZE = powerpc-eabi-size
+DOPE_TEST_CC_OPT = -O2
+DOPE_TEST_CFLAGS = 
+DOPE_TEST_CC_SEARCH = # -B
+DOPE_TEST_LIBPATH = -L./ppc440_0/lib/   -L../../dope-embedded/lib/ml507/ 
+DOPE_TEST_INCLUDES = -I./ppc440_0/include/  -I../../dope-embedded/include/ -I../../dope-embedded/test/ # -I
+DOPE_TEST_LFLAGS =   -ldope 
+DOPE_TEST_LINKER_SCRIPT = ../../dope-embedded/test/ml507/dope.ld
+DOPE_TEST_CC_DEBUG_FLAG =  -g 
+DOPE_TEST_CC_PROFILE_FLAG = # -pg
+DOPE_TEST_CC_GLOBPTR_FLAG= # -msdata=eabi
+DOPE_TEST_CC_INFERRED_FLAGS= -mcpu=440 
+DOPE_TEST_CC_START_ADDR_FLAG=  #  # -Wl,-defsym -Wl,_START_ADDR=
+DOPE_TEST_CC_STACK_SIZE_FLAG=  #  # -Wl,-defsym -Wl,_STACK_SIZE=
+DOPE_TEST_CC_HEAP_SIZE_FLAG=  #  # -Wl,-defsym -Wl,_HEAP_SIZE=
+                  $(DOPE_TEST_CC_INFERRED_FLAGS)  \

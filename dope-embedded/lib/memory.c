@@ -20,7 +20,7 @@
 #include <string.h>
 
 //static char heap[1000*1600];
-static char heap[4000*1000];
+static char heap[5000*1000];
 
 struct memblock;
 struct memblock {
@@ -29,7 +29,7 @@ struct memblock {
 };
 
 static void  *membase = &heap;         /* begin of memarea               */
-static long   memsize = 3000*1000;      /* size of whole memarea          */
+static long   memsize = 4000*1000;      /* size of whole memarea          */
 static struct memblock *firstmemblock = (struct memblock *)&heap;
 
 void  dope_free(void *adr);

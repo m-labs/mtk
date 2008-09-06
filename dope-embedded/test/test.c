@@ -26,6 +26,8 @@
 #include "microblaze_logo.h"
 #include "xilinx_logo.h"
 #include "genode-labs-banner.h"
+#include "virtex5.h"
+#include "powerpc_logo.h"
 
 /* platform interface */
 #include "platform.h"
@@ -273,8 +275,13 @@ int main(int argc, char **argv)
 	printf("Setup windows...\n");
 	draw_colors();
 	led_app_id = draw_led_control();
+#ifdef __PPC__
+	display_image("Virtex 5", pixel_data_virtex5, 280, 200, 250, 127);
+	display_image("PowerPC 440", pixel_data_ppc, 25, 500, 126, 76);
+#else
 	display_image("Spartan-3A", pixel_data_spartan3a, 280, 200, 300, 223);
 	display_image("Microblaze", pixel_data_microblaze, 25, 500, 269, 51);
+#endif
 	display_image("Xilinx", pixel_data_xilinx, 570, 300, 145, 43);
 	display_image("Genode Labs", pixel_data_genode, 420, 50, 232, 84);
 

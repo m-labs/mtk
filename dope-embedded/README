@@ -69,6 +69,7 @@ At the current stage, the following platforms are supported:
 
 :s3a_starter: Xilinx Spartan3A Starter Kit using the Microblaze soft core.
 
+:ml507: Xilinx ML507 using the PowerPC 440 available in Virtex 5 devices.
 
 Further resources
 =================
