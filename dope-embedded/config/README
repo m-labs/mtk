@@ -30,8 +30,9 @@ Platform-description files
 
 :'s3a_starter.mk':
 
-  Build configuration for the Spartan3A Starter kit using the Microblaze
+  Build configuration for the Spartan3A(N) Starter Kit using the Microblaze
   soft core.
+
 
 :'ml507.mk':
 

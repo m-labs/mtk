@@ -67,7 +67,8 @@ At the current stage, the following platforms are supported:
   DOpE for this platform, make sure that you have the libSDL development
   package installed on your Linux system.
 
-:s3a_starter: Xilinx Spartan3A Starter Kit using the Microblaze soft core.
+:s3a_starter: Xilinx Spartan3A and Spartan3AN Starter Kits using the
+  Microblaze soft core.
 
 :ml507: Xilinx ML507 using the PowerPC 440 available in Virtex 5 devices.
 

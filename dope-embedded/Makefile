@@ -1,6 +1,6 @@
 help:
 	@echo "--- available targets ---"
-	@echo "s3a_starter - build DOpE and test program for Spartan3A starter kit"
+	@echo "s3a_starter - build DOpE and test program for Spartan3A(N) starter kit"
 	@echo "ml507       - build DOpE and test program for ML507"
 	@echo "sdl         - build DOpE and test program for libSDL"
 	@echo "clean       - clean generated files"
