@@ -1,0 +1,22 @@
+microblaze_0
+BOOTLOADER_0_SOURCES = /cygdrive/d/Lovro/RangeFinderAlgoritmi/genode-fx-2008-09/EDK_projects/s3e_starter/bootloader_0/bootloader.c /cygdrive/d/Lovro/RangeFinderAlgoritmi/genode-fx-2008-09/EDK_projects/s3e_starter/bootloader_0/srec.c 
+BOOTLOADER_0_HEADERS = /cygdrive/d//Lovro/RangeFinderAlgoritmi/genode-fx-2008-09/EDK_projects/s3e_starter/bootloader_0/blconfig.h /cygdrive/d//Lovro/RangeFinderAlgoritmi/genode-fx-2008-09/EDK_projects/s3e_starter/bootloader_0/errors.h /cygdrive/d//Lovro/RangeFinderAlgoritmi/genode-fx-2008-09/EDK_projects/s3e_starter/bootloader_0/portab.h /cygdrive/d//Lovro/RangeFinderAlgoritmi/genode-fx-2008-09/EDK_projects/s3e_starter/bootloader_0/srec.h 
+BOOTLOADER_0_CC = mb-gcc
+BOOTLOADER_0_CC_SIZE = mb-size
+BOOTLOADER_0_CC_OPT = -O2
+BOOTLOADER_0_CFLAGS = 
+BOOTLOADER_0_CC_SEARCH = # -B
+BOOTLOADER_0_LIBPATH = -L./microblaze_0/lib/ # -L
+BOOTLOADER_0_INCLUDES = -I./microblaze_0/include/  -Ibootloader_0/ # -I
+BOOTLOADER_0_LFLAGS = # -l
+BOOTLOADER_0_LINKER_SCRIPT = 
+BOOTLOADER_0_CC_DEBUG_FLAG =  -g 
+BOOTLOADER_0_CC_PROFILE_FLAG = # -pg
+BOOTLOADER_0_CC_GLOBPTR_FLAG= # -mxl-gp-opt
+BOOTLOADER_0_MODE = executable
+BOOTLOADER_0_LIBG_OPT = -$(BOOTLOADER_0_MODE) microblaze_0
+BOOTLOADER_0_CC_INFERRED_FLAGS= -mno-xl-soft-mul -mxl-barrel-shift -mxl-pattern-compare -mno-xl-soft-div -mcpu=v7.10.c 
+BOOTLOADER_0_CC_START_ADDR_FLAG=  # -Wl,-defsym -Wl,_TEXT_START_ADDR=
+BOOTLOADER_0_CC_STACK_SIZE_FLAG=  # -Wl,-defsym -Wl,_STACK_SIZE=
+BOOTLOADER_0_CC_HEAP_SIZE_FLAG=  # -Wl,-defsym -Wl,_HEAP_SIZE=
+                  $(BOOTLOADER_0_CC_INFERRED_FLAGS)  \

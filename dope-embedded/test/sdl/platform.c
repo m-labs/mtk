@@ -9,4 +9,6 @@
 
 void set_leds(unsigned char leds_state) { }
 
+void display_platform_images(void) { }
+
 int init_platform(void) { return 0; }

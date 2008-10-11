@@ -39,7 +39,12 @@ In the top-level directory, you find the following sub directories:
 :'test/':
 
   This directory contains a simple example application that runs on the
-  Spartan3A Starter Kit and on Linux via libSDL.
+  Spartan3A(N) Starter Kits, the ML507, and on Linux via libSDL.
+
+:'test_xilkernel/':
+
+  This directory contains a simple example application that uses the 
+  Xilkernel and runs on the Spartan3A(N) Starter Kits.
 
 
 Building the DOpE library and test application
@@ -56,7 +61,6 @@ Analogously, to build the test application for your platform, use the
 when building the test program, the build process automatically revisits the
 DOpE library. Thus, if you make changes to the library code you do not need
 to rebuild the library explicitly.
-
 
 Supported platforms
 ===================

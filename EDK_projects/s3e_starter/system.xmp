@@ -1,0 +1,68 @@
+#Please do not modify this file by hand
+XmpVersion: 10.1.03
+VerMgmt: 10.1.03
+IntStyle: default
+ModuleSearchPath: ../../
+MHS File: system.mhs
+MSS File: system.mss
+NPL File: projnav/system.ise
+Architecture: spartan3e
+Device: xc3s500e
+Package: fg320
+SpeedGrade: -4
+UserCmd1: 
+UserCmd1Type: 0
+UserCmd2: 
+UserCmd2Type: 0
+TopInst: system_i
+GenSimTB: 0
+InsertNoPads: 0
+WarnForEAArch: 1
+HdlLang: VHDL
+Simulator: mti
+SimModel: BEHAVIORAL
+MixLangSim: 1
+UcfFile: data/system.ucf
+FpgaImpMode: 1
+EnableParTimingError: 0
+EnableResetOptimization: 0
+ShowLicenseDialog: 1
+ICacheAddr: DDR2_SDRAM,
+ICacheAddr: DDR2_SDRAM,C_MPMC_BASEADDR
+DCacheAddr: DDR2_SDRAM,
+DCacheAddr: DDR2_SDRAM,C_MPMC_BASEADDR
+Processor: microblaze_0
+BootLoop: 0
+XmdStub: 1
+SwProj: dope_test
+Processor: microblaze_0
+Executable: dope_test/executable.elf
+Source: ../../dope-embedded/test/s3e_starter/platform.c
+Source: ../../dope-embedded/test/disp_img.c
+Source: ../../dope-embedded/test/test.c
+Header: ../../dope-embedded/test/xilinx_logo.h
+Header: ../../dope-embedded/test/genode-labs-banner.h
+Header: ../../dope-embedded/test/microblaze_logo.h
+Header: ../../dope-embedded/test/platform.h
+Header: ../../dope-embedded/test/s3e_starter/kolt_logo.h
+Header: ../../dope-embedded/test/s3e_starter/spartan3e.h
+Header: ../../dope-embedded/include/vscreen.h
+Header: ../../dope-embedded/include/dopedef.h
+Header: ../../dope-embedded/include/dopelib.h
+Header: ../../dope-embedded/include/keycodes.h
+DefaultInit: EXECUTABLE
+InitBram: 0
+Active: 1
+CompilerOptLevel: 2
+GlobPtrOpt: 0
+DebugSym: 1
+ProfileFlag: 0
+SearchLibs: ../../dope-embedded/lib/s3e_starter/
+LFlags: dope
+ProgStart: 
+StackSize: 
+HeapSize: 
+LinkerScript: ../../dope-embedded/test/s3e_starter/dope.ld
+ProgCCFlags: 
+CompileInXps: 1
+NonXpsApp: 0

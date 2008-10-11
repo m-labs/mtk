@@ -1,1 +1,1 @@
- -p spartan3a -lang vhdl   -pe microblaze_0  $(MICROBLAZE_0_XMDSTUB)  -s mti
+ -p spartan3a -lang vhdl -lp /media/blubb/genode/genode-fx/trunk/   -pe microblaze_0  $(MICROBLAZE_0_XMDSTUB)  -s mti

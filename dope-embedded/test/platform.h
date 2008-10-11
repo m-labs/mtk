@@ -13,6 +13,11 @@
 extern void set_leds(unsigned char leds_state);
 
 /**
+ * Display the images that correspond to the current platform
+ */
+extern void display_platform_images(void);
+
+/**
  * Platform-specific initialization
  *
  * \return 0 on succes

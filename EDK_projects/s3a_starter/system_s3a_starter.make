@@ -12,7 +12,7 @@
 # The software specification of the system is in file :
 # system.mss
 
-include system_incl_s3a.make
+include system_s3a_starter_incl.make
 
 #################################################################
 # PHONY TARGETS

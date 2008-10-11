@@ -22,16 +22,14 @@
 #include "vscreen.h"
 
 /* logos */
-#include "spartan3a.h"
-#include "microblaze_logo.h"
 #include "xilinx_logo.h"
 #include "genode-labs-banner.h"
-#include "virtex5.h"
-#include "powerpc_logo.h"
 
 /* platform interface */
 #include "platform.h"
 
+/* local includes */
+#include "disp_img.h"
 
 /**
  * LED control mode
@@ -218,51 +216,6 @@ static int draw_led_control()
 	return app_id;
 }
 
-
-/***
- * Create window displaying a static image
- *
- * \param title   string to be used as window title
- * \param pixels  pixel buffer using four bytes per pixel
- * \param x,y     initial window position
- * \param w,h     image size
- * \return        DOpE application ID
- *
- * This function creates a separate DOpE application for each image.
- */
-static int display_image(const char *title, const char *pixels,
-                         int x, int y, int w, int h)
-{
-	int i, app_id = dope_init_app(title);
-	short *pixbuf;
-
-	/* create vscreen widget holding a pixel buffer */
-	dope_cmd (app_id, "vs = new VScreen()");
-	dope_cmdf(app_id, "vs.setmode(%d, %d, RGB16)", w, h);
-	pixbuf = (short *)vscr_get_fb(app_id, "vs");
-	if (!pixbuf) {
-		printf("Error: could not map vs\n");
-		return -1;
-	}
-
-	/* convert 32bit source pixels to 16bit RGBA pixels as by for the vscr widget */
-	for (i = 0; i < w*h; i++) {
-		unsigned char pixel[3];
-		HEADER_PIXEL(pixels, pixel);
-		pixbuf[i] = ((pixel[0] >> 3) << 11) | ((pixel[1] >> 2) << 5) | (pixel[2] >> 3);
-	}
-	dope_cmd(app_id, "vs.refresh()");
-
-	/* open window displaying the vscreen widget */
-	dope_cmd (app_id, "gr = new Grid()");
-	dope_cmd (app_id, "gr.place(vs, -column 1 -row 1)");
-	dope_cmdf(app_id, "w = new Window(-content vs -workx %d -worky %d -workw %d -workh %d)",
-	          x, y, w, h);
-	dope_cmd (app_id, "w.open()");
-	return app_id;
-}
-
-
 int main(int argc, char **argv)
 {
 	init_platform();
@@ -275,13 +228,8 @@ int main(int argc, char **argv)
 	printf("Setup windows...\n");
 	draw_colors();
 	led_app_id = draw_led_control();
-#ifdef __PPC__
-	display_image("Virtex 5", pixel_data_virtex5, 280, 200, 250, 127);
-	display_image("PowerPC 440", pixel_data_ppc, 25, 500, 126, 76);
-#else
-	display_image("Spartan-3A", pixel_data_spartan3a, 280, 200, 300, 223);
-	display_image("Microblaze", pixel_data_microblaze, 25, 500, 269, 51);
-#endif
+
+	display_platform_images();
 	display_image("Xilinx", pixel_data_xilinx, 570, 300, 145, 43);
 	display_image("Genode Labs", pixel_data_genode, 420, 50, 232, 84);
 

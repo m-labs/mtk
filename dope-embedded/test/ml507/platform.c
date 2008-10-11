@@ -17,6 +17,8 @@
 
 /* local includes */
 #include "platform.h"
+#include "virtex5.h"
+#include "powerpc_logo.h"
 
 void set_leds(unsigned char leds_state)
 {
@@ -30,6 +32,12 @@ void set_leds(unsigned char leds_state)
 
 	return;
 
+}
+
+void display_platform_images(void){
+
+	display_image("Virtex 5", pixel_data_virtex5, 280, 200, 250, 127);
+	display_image("PowerPC 440", pixel_data_ppc, 25, 500, 126, 76);
 }
 
 int init_platform(void)

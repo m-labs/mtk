@@ -1,2 +1,2 @@
- -p spartan3a -lang vhdl
+ -p spartan3a -lang vhdl -lp /media/blubb/genode/genode-fx/trunk/
 

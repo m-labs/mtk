@@ -1,0 +1,22 @@
+microblaze_0
+DOPE_TEST_SOURCES = ../../dope-embedded/test/s3e_starter/platform.c ../../dope-embedded/test/disp_img.c ../../dope-embedded/test/test.c 
+DOPE_TEST_HEADERS = ../../dope-embedded/test/xilinx_logo.h ../../dope-embedded/test/genode-labs-banner.h ../../dope-embedded/test/microblaze_logo.h ../../dope-embedded/test/platform.h ../../dope-embedded/test/s3e_starter/kolt_logo.h ../../dope-embedded/test/s3e_starter/spartan3e.h ../../dope-embedded/include/vscreen.h ../../dope-embedded/include/dopedef.h ../../dope-embedded/include/dopelib.h ../../dope-embedded/include/keycodes.h 
+DOPE_TEST_CC = mb-gcc
+DOPE_TEST_CC_SIZE = mb-size
+DOPE_TEST_CC_OPT = -O2
+DOPE_TEST_CFLAGS = 
+DOPE_TEST_CC_SEARCH = # -B
+DOPE_TEST_LIBPATH = -L./microblaze_0/lib/   -L../../dope-embedded/lib/s3e_starter/ 
+DOPE_TEST_INCLUDES = -I./microblaze_0/include/  -I../../dope-embedded/test/ -I../../dope-embedded/test/s3e_starter/ -I../../dope-embedded/include/ # -I
+DOPE_TEST_LFLAGS =   -ldope 
+DOPE_TEST_LINKER_SCRIPT = ../../dope-embedded/test/s3e_starter/dope.ld
+DOPE_TEST_CC_DEBUG_FLAG =  -g 
+DOPE_TEST_CC_PROFILE_FLAG = # -pg
+DOPE_TEST_CC_GLOBPTR_FLAG= # -mxl-gp-opt
+DOPE_TEST_MODE = executable
+DOPE_TEST_LIBG_OPT = -$(DOPE_TEST_MODE) microblaze_0
+DOPE_TEST_CC_INFERRED_FLAGS= -mxl-soft-mul -mxl-barrel-shift -mxl-pattern-compare -mno-xl-soft-div -mcpu=v7.10.d 
+DOPE_TEST_CC_START_ADDR_FLAG=  #  # -Wl,-defsym -Wl,_TEXT_START_ADDR=
+DOPE_TEST_CC_STACK_SIZE_FLAG=  #  # -Wl,-defsym -Wl,_STACK_SIZE=
+DOPE_TEST_CC_HEAP_SIZE_FLAG=  #  # -Wl,-defsym -Wl,_HEAP_SIZE=
+                  $(DOPE_TEST_CC_INFERRED_FLAGS)  \
