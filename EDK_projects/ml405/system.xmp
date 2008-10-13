@@ -79,6 +79,7 @@ SwProj: dope_test
 Processor: ppc405_0
 Executable: dope_test/executable.elf
 Source: ../../dope-embedded/test/test.c
+Source: ../../dope-embedded/test/disp_img.c
 Source: ../../dope-embedded/test/ml405/platform.c
 Header: ../../dope-embedded/include/dopedef.h
 Header: ../../dope-embedded/include/dopelib.h
