@@ -1,0 +1,1 @@
+ -p virtex4 -lang vhdl -lp /home/xilinx/src/genode-fx.hg/genode-fx/ -lp /home/xilinx/gsrc/fgpa/genode-fx/    -pe ppc405_0 TestApp_Memory/executable.elf -s mti

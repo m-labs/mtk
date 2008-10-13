@@ -25,6 +25,7 @@
 
 #ifdef __PPC__
 #include "xexception_l.h"
+#include "xtime_l.h"
 #endif /* __PPC__ */
 
 
@@ -247,7 +248,6 @@ int init_input(struct dope_services *d)
 {
 	XStatus Status;
 	Xuint32 baseaddr = (Xuint32) XPAR_PLB_PS2_CONTROLLER_0_BASEADDR;
-	int *ptr;
 
 	/* initialize PS/2 interrupts */
 	PLB_PS2_CONTROLLER_mWriteReg(baseaddr, PLB_PS2_CONTROLLER_INTR_DIER_OFFSET, 0);

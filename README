@@ -27,8 +27,8 @@ the use of the Xilinx Spartan S3A Starter Kit with the Microblaze soft
 core.
 
 In addition to supporting the S3A Starter Kit, we have implemented Genode
-FX for other platforms including Virtex4-based FPGA platforms, the ML507,
-and the Euterpe FPGA board.
+FX for other platforms including Virtex4-based FPGA platforms, the ML405,
+the ML507, and the Euterpe FPGA board.
 
 
 Requirements
@@ -45,11 +45,11 @@ custom memory controller. For reasonable performance a Microblaze with
 50 MHz and a little bit of instruction and data cache are sufficient.
 
 
-Licence
+License
 =======
 
 Both the hardware models and software components of Genode FX are available
-under two flavours of licences, an open-source license and commercial
+under two flavours of licenses, an open-source license and commercial
 licensing.
 
 :Open-source license:
@@ -65,7 +65,7 @@ licensing.
 
   In turn, the GNU GPL requires any modifications and derived work to be
   published under the same license. See the full text of the GNU General
-  Public License Version 2 in the LICENCE file provided with the Genode FX
+  Public License Version 2 in the LICENSE file provided with the Genode FX
   distribution.
 
 :Commercial licenses:
@@ -108,7 +108,7 @@ In the archive of the Genode FX, you find the following subdirectories:
 
   Ready to use EDK projects for the supported FPGA platforms.
   The currently supported platforms are 's3a_starter' (for Xilinx Spartan3A
-  and Xilinx Spartan3AN Starter Kit boards) and 'ml507'.
+  and Xilinx Spartan3AN Starter Kit boards), 'ml405', and 'ml507'.
 
 
 Building the project with Xilinx' Embedded Development Kit (EDK)

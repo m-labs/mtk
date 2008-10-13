@@ -1,0 +1,464 @@
+
+           ==============================================
+           How to port Genode FX to a new target platform
+           ==============================================
+
+
+This document is a step-by-step description of the process of porting
+Genode FX to the Xilinx ML405 board. This tutorial is based on EDK version
+9.2.
+
+Creating a working EDK project
+##############################
+
+* Create new subdirectory 'EDK_projects/ml405'
+* Start the Xilinx Platform Studio ('xps')
+* Choose the Base System Builder wizard to create a new project
+  * Specify the use of 'EDK_projects/ml405/system.xmp' as the project
+    file for the new project
+  * Enable the check box 'Set Project Peripheral Repositories' and
+    specify the base of the Genode FX directory tree (the directory
+    that contains the 'IP_cores' subdirectory).
+    By doing this, the custom Genode FX hardware components will
+    be incorporated into the XPS IP catalog.
+* The Base System builder will present the following dialogs to
+  parametrize your new system. It is generally useful to disable
+  all peripherals that are not needed to reduce the synthesis time
+  as far as possible.
+
+  :Welcome to the Base System Builder:
+    Choose "I would like to create a new design".
+
+  :Select Board:
+    Select your target board. For the tutorial, we choose
+    "Xilinx" as board vendor and "Virtex4 ML405 Evaluation
+    Platform" as board name.
+
+  :Select Processor:
+    As the ML405 features a hardware PowerPC 405 processor core,
+    we choose to use the PowerPC rather than the MicroBlaze soft
+    core.
+
+  :Configure PowerPC Processor:
+    Now it is time to set up the basis properties of the CPU.
+    We choose 200 MHz as processor clock frequency and leave the
+    reference clock and bus clock at 100 MHz. In the on-chip
+;; disable OCM
+    memory configuration box, we choose to use 4K BRAM for data
+    and 4K BRAM for instruction memory. This memory will be
+    used mainly for the boot code. The real work will be done
+    the DDR RAM, which we will configure later. Furthermore,
+    we enable the processor cache. We can leave the FPU switched
+    off as Genode FX does not heavily use floating-point arithmetics.
+
+  :Configure IO Interfaces (1 of 4):
+    Leave the configuration for "RS232_Uart", "LEDs_4bit",
+    and "LEDs_Positions" unmodified. We will use the RS232
+    interface for debugging and the LEDs will become handy
+    for playing the Genode FX demo.
+
+  :Configure IO Interfaces (2 of 4):
+    Disable "Push_Buttons_Position" and "IIC_EEPROM".
+    Make sure that the "DDR_SDRAM" using the Multi-port memory
+    controller (MPMC) is enabled.
+
+  :Configure IO Interfaces (3 of 4):
+    As we do not need network connectivity for Genode FX, disable
+    the multi-gigabit transceiver ("MGT_wrapper") and "Ethernet_MAC".
+
+  :Configure IO Interfaces (4 of 4):
+    Disable the use of "SRAM".
+
+  :Add Internal Peripherals:
+    We will use a 64K block of BRAM for two purposes, for the boot
+    section of our program and for the exception vectors. The PowerPC
+    starts execution at the program counter of 0xfffffffc (-1). The
+    first instruction will be discarded such that the real execution
+    begins at address 0x0. However, to be able to generate a linker
+    script with the '.boot' section placed at end of address space,
+    we need to back this address space with some memory. Second,
+    we place the exception vectors to the BRAM rather than the DDR RAM.
+    When placing the exception vectors in DDR RAM, we experienced
+    hang ups on the first interrupt to occur.  As the vectors have to
+    be aligned to 64K, we need to start the BRAM area at 0xffff0000.
+    Obviously, we do not actually need 64K of storage. Hence his BRAM
+    configuration may be subject to later improvement.
+
+  :Cache Setup:
+    Enable the instruction cache ("ICache") and data cache
+    ("DCache") check boxes for the line corrsponding to the
+    DDR_SDRAM. We can leave the cache for the BRAM disabled
+    because the BRAM is fast anyway.
+
+  :Software Setup:
+    Leave the configuration for "STDIN", "STDOUT", the "Boot
+    Memory" and the default sample applications unmodified.
+
+  :Configure Memory Test Application:
+    Leave the configuration unmodified.
+
+  :Configure Peripheral Test Application:
+    Leave the configuration unmodified.
+
+After completing the dialogs of the Base System Builder, you
+are presented summary of the system to be created. Click on
+the "Generate" button to create the project. It will take some
+seconds until the project will appear in the Xilinx Platform
+Studio. When asked for the "Next Step", choose "Start using
+Platform Studio".
+
+As a result of building the base system, a file called 'system.mhs'
+is created, which contains the description of your complete system.
+
+Test the generated project via the sample applications
+######################################################
+
+If you are experienced in using XPS and have already successfully
+created and started EDK projects with your target board, you might
+skip this section. However, if you are not yet acquainted with
+your target board, it is worthwhile to first test the generated
+project before starting to alter it.
+
+In order to test the system, we have to generate the FPGA bitstream.
+In the "Hardware" menu of the XPS, activate "Generate Bitstream".
+Because this step includes the synthesis of the whole project, it will
+take a long time (up to an hour, depending on your host computer).
+As result, the file 'implementation/system.bit' get created, which
+can be used as input the Impact tool to configure the FPGA.
+
+Next, we build the sample application activating "Build All
+User Applications" in the "Software" menu. This results in
+the executable files 'TestApp_Memory/executable.elf' and
+'TestApp_Peripheral/executable.elf'.
+
+To configure the FPGA via JTAG, we can use the Impact tool manually by
+starting 'impact'. Create a new project and perform a "Boundary-Scan",
+which should result in four devices to be detected. For us, only the FPGA
+('xc4vfx20') is of importance.  Therefore, when assigning new configuration
+files, bypass the assignment for all other devices and assign the
+'implementation/system.bit' file to the 'xc4vfx20' device. Next,
+right-click on the 'xc4vfx20' icon, select "Program" from the
+context menu, and confirm the "Programming Properties" dialog.
+To test the sample applications, quit Impact to release the
+JTAG interface and change to the directory 'TestApp_Memory'.
+
+This program is supposed to print some test on the stdout, which
+we configured to be printed via the RS232 interface. Hence, we
+connect the serial port of the ML405 board via a null-modem cable
+to our host PC and start a terminal program with the baud rate
+set to 9600, 8 bits, no parity, one stop bit. You may check the
+connection with the ML507 firmware, which presents its main menu
+over the serial line.
+
+To upload and start the test program, we use the Xilinx Debug
+Monitor ('xmd') with the following commands:
+
+# Connect to the debug module of the PowerPC processor
+  ! connect ppc hw
+# Load the executable ELF file
+  ! dow executable.elf
+# Run the program
+  ! run
+
+After having started the program, we should observe some output
+! -- Entering main() --
+! -- Exiting main() --
+in the terminal window. You may also with to give the TestApp_Peripheral' a
+try.
+
+Now that we know that the PowerPC is working, it is time to complement
+our system with the custom Genode FX hardware components.
+
+
+Including Genode FX's VGA controller and PS/2 controller
+############################################################
+
+In the IP catalog of XPS, you can find the custom Genode FX hardware
+components in the category "Project Peripheral Repository 0".
+
+Adding the VGA controller
+=========================
+
+Right click on the 'PLB_NPI_VGA_CONTROLLER' item of the IP catalog
+and select "Add IP" from the context menu. The new component should
+appear in the system assembly view. The VGA controller uses the
+processor-local bus (PLB) for accessing the control registers and
+the NPI interface of the multi-port memory controller (MPMC) for fetching
+data from the frame buffer. Hence, we have connect those interfaces.
+To attach the VGA controller to the PLB, unfold the
+"plb_npi_vga_controller_0" item and select "PLB" in the "SPLB"
+configuration. Next, unfold right-click the "DDR SDRAM" component and
+select "Configure IP..." from its context menu. In the configuration
+dialog of the MPMC, set "PORT2" to be an "NPI" interface and set the
+NPI width in the "Port Configuration" tab to 32 bit. We have to make
+sure that the MPMC serves the VGA controller at the highest priority.
+This can be achieved by adjusting the arbitration settings in the
+"Advanced" tab. Set the arbitration algorith to 'Custom' and the
+number of time slots to 2. In each time slot, we set the PORT2 at
+the maximum priority but we toggle the priorities of PORT0 and PORT1.
+This strategy is expressed by setting "Time Slot 0" to '210' and the
+"Time Slot 1" to '201' (the left-most digit corresponds to the highest
+priority).
+
+When now unfolding the "DDR SDRAM" component, we will notice the new
+"MPMC_PIM2" field correponding to the PORT2 of the MPMC. In its drop-down
+menu, you can select the VGA controller
+('plb_npi_vga_controller_0_XIL_NPI'). For configuring the VGA controller,
+please revisit its documentation:
+! IP_cores/pcores/plb_npi_vga_controller_v1_02_a/doc/plb_npi_vga_controller.pdf
+
+It is useful to configure the VGA controller with similar parameters
+as used in the other Genode FX demo projects. By examining the
+file 'EDK_projects/ml507/system.mhs', you can determine the proper
+arguments:
+
+:'C_BASEADDR':      0x87000000
+:'C_HIGHADDR':      0x8700ffff
+:'C_PI_DATA_WIDTH':         32
+:'C_PI_BE_WIDTH':            4
+
+Make sure that you set the parameter for 'C_NPI_PIXEL_CLK_RATIO'
+correctly. The reference clock this parameter is the NPI clock,
+which corresponds to the 'MPMC_Clk0' of the MPMC. In our case, this
+reference clock is 100 Mhz. Hence, to use a pixel clock of 50 Mhz,
+we have to adjust this parameter to '2'.
+
+To connect the VGA controller with VGA connector of the ML405, we
+first have to declare the FPGA pin mapping in the system's UCF file.
+As the ML405 features a VGA connector with four bit per color channel,
+we have to add the mappings for the red, green, blue, hsync, and vsync
+lines. Open the UCF file by double clicking on the corresponding entry in
+the 'Project Files' list (in the "Project" tab). To determine the
+used FPGA pins, it is useful to take a look at the board's board
+description file ('xbd'). For the ML405, this file is located at
+'<EDK-DIR>/board/Xilinx/boards/Xilinx_ML405/data/Xilinx_ML405_v2_2_0.xbd'.
+Within this file, you find the 'PORT' entries for the TFT display
+in the form of
+
+! PORT TFT_VSYNC  = tft_lcd_vsync,  UCF_NET_STRING=("LOC=D4")
+
+The important information is assignment of 'LOC'. With this knowledge, it
+is easy to create the entries for our UCF file:
+
+! Net plb_npi_vga_controller_0_tft_lcd_hsync_pin LOC=C3;
+! Net plb_npi_vga_controller_0_tft_lcd_vsync_pin LOC=D4;
+! # Net plb_npi_vga_controller_0_tft_lcd_r_pin<1>  LOC=F3;
+! Net plb_npi_vga_controller_0_tft_lcd_r_pin<2>  LOC=H7;
+! Net plb_npi_vga_controller_0_tft_lcd_r_pin<3>  LOC=E3;
+! Net plb_npi_vga_controller_0_tft_lcd_r_pin<4>  LOC=G5;
+! Net plb_npi_vga_controller_0_tft_lcd_r_pin<5>  LOC=D3;
+! # Net plb_npi_vga_controller_0_tft_lcd_g_pin<1>  LOC=J3;
+! Net plb_npi_vga_controller_0_tft_lcd_g_pin<2>  LOC=K7;
+! Net plb_npi_vga_controller_0_tft_lcd_g_pin<3>  LOC=K3;
+! Net plb_npi_vga_controller_0_tft_lcd_g_pin<4>  LOC=G10;
+! Net plb_npi_vga_controller_0_tft_lcd_g_pin<5>  LOC=K6;
+! # Net plb_npi_vga_controller_0_tft_lcd_b_pin<1>  LOC=F4;
+! Net plb_npi_vga_controller_0_tft_lcd_b_pin<2>  LOC=J4;
+! Net plb_npi_vga_controller_0_tft_lcd_b_pin<3>  LOC=G9;
+! Net plb_npi_vga_controller_0_tft_lcd_b_pin<4>  LOC=J5;
+! Net plb_npi_vga_controller_0_tft_lcd_b_pin<5>  LOC=H3;
+
+We use the prefix 'plb_npi_vga_controller_0_' because we are going to
+connect these lines to our VGA controller that is identified this way.
+
+In the "Ports" tab of the System Assembly View, we can connect the ports
+the VGA controller. For the entries 'tft_lcd_r', 'tft_lcd_g', 'tft_lcd_b',
+'tft_lcd_vsync', and 'tft_lcd_hsync', select "Make External" from their
+corresponding drop-down menu. This will create external connections
+matching the previously created entries of our UCF file. Furthermore, we
+have to make the following assignments:
+:'NPI_rst': to 'sys_bus_reset'
+:'NPI_clk': to 'sys_clk_s' (matching the 'MPMC_Clk0' port)
+:'clk_pixel': to 'sys_clk_s'
+
+The ML405 utilizes a _ADV7125JST330_ digital-to-analog converter to drive
+the video signal. This chip needs a pixel clock in addition to the digital
+inputs for red, green, and blue to operate. According to the ML405's board
+description file, this clock connected the FPGA pin 'AC7'. To feed this pin
+with a clock signal, we create a new external port by by pressing the "Add
+External Port" button at the top-right of the "Ports" tab, call it
+'vga_clk_pin', and assign it to the 'dcm_clk_s' signal. This signal is 100
+MHz, which should suffice as input for DAC. Do not forget to add an entry
+for the 'vga_clk_pin' to the UCF file and set its I/O standard to 'LVCMOS33'.
+
+
+Adding the PS/2 controller
+==========================
+
+Integrating the P2/2 controller is done analogously to the VGA controller.
+First add the 'PLB_PS2_CONTROLLER' from the IP catalog and set the new
+instance's 'SPLB' connection to 'PLB'.  For finding good values for
+'C_BASEADDR' and 'C_HIGHADDR', use the file 'EDK_projects/ml507/system.mhs'
+as reference and set 'C_BASEADDR' to 0x86000000, 'C_HIGHADDR' to
+0x8600FFFF, and 'C_CLK_IN' to 100. In the Ports tab, we declare
+'mouse_clk', 'mouse_data', 'key_clk', and 'key_data' as external. Using
+the ML405's board description file, we can create the following UCF entries
+for these external connections:
+! Net plb_ps2_controller_0_mouse_clk_pin  LOC=E15;
+! Net plb_ps2_controller_0_mouse_data_pin LOC=D14;
+! Net plb_ps2_controller_0_key_clk_pin    LOC=E11;
+! Net plb_ps2_controller_0_key_data_pin   LOC=K10;
+
+For connecting the interrupt line of the PS/2 controller with the interrupt
+controller that triggers IRQs at the CPU, we have to create a "New
+connection" at the 'IP2INTC_Irpt' port of the PS/2 controller. The new
+connection will be called 'plb_ps2_controller_0_IP2INTC_Irpt'. Depending on
+your system-builder settings, XPS may or may not have already instantiated
+an interrupt controller. If it is not present in you design, choose it from
+the IP catalog's "Clock, Reset and Interrupt" category, create a new
+connection for the "Irq" port, connect it to the ppc405's
+'EICC405EXTINPUTIRQ' port, and configure the interrupt controller to
+use a 'C_BASEADDR' of 0x81800000 and 'C_HIGHADDR' of 0x8180ffff.
+
+We can assign the interrupt connection between the PS/2 controller and the
+interrupt controller 'xps_intc_0' by clicking on the configuration button
+of the interrupt controller's 'Intr' port. The PS/2 interrupt line is
+presented as potential source and we can connect it by selecting its entry
+and pressing the '+' button.
+
+
+Generating the complete system
+##############################
+
+Click on the "Generate Bitsteam" item of the Hardware menu.  If you have
+followed the steps of section
+[Test the generated project via the sample applications], you
+will notice that the bitstream generation takes less time now because the
+synthesis needs to be done only for the system components that we modified.
+
+Adapting the GUI software stack
+###############################
+
+General build-system support
+============================
+
+First, we have to add support for the new target platform to the build
+system by supplementing the following files in the 'dope-embedded/config'
+directory:
+
+:'spec-ppc405.mk': This file contains build options specific to the
+  PowerPC 405 core. For creating this file, you can use the
+  'spec-ppc440.mk' as template. The modifications should be straight
+  forward. Most noteworthy is the correct setting of the 'mcpu' compiler
+  flag and the valid setting of 'EDK_CPU_DIR'.
+
+:'ml405.mk': This file aggregates all specifics for the actual target
+  platform, in particular the 'spec-ppc405.mk' file.  You can use the
+  'ml507.mk' file as template.
+
+Please do not forget to update the README file in the 'config' directory.
+
+It is useful to add a new rule to the top-level Makefile in the
+'dope-embedded/' directory. Just follow the pattern of this file.
+
+
+Adapting the device-driver backend of the DOpE library
+======================================================
+
+The platform-specific parts of the GUI software stack are located within a
+'dope-embedded/lib/<platform>/' directory.  For your new target platform,
+create a new directory with its name matching your platform, in our case
+'ml405'. You need to create platform-specific implementations of 'timer.c',
+'input.c', and 'scrdrv.c'. For the most part, you can copy and adapt the
+implementations found in the other platform directories. For example, the
+timer driver of the 's3a_starter' platform is just a dummy, which should be
+good enough for now. So you can just copy the file from there. The input
+driver should also not vary a lot between the different platforms. If your
+implementation turns out to be completely identical to an existing
+implementation, you may choose not to copy the file but rather use the
+'vpath' mechanism of the library's 'Makefile' to incorporate a file from
+another platform's directory. For the 'ml405' the 'lib/ml405/Makefile'
+looks like this:
+
+! BASE_DIR = ../..
+! SRC_C    = timer.c input.c scrdrv.c
+!
+! include $(BASE_DIR)/config/ml405.mk
+! include ../libdope-generic.mk
+!
+! vpath timer.c  ../s3a_starter
+! vpath input.c  ../s3a_starter
+! vpath scrdrv.c .
+
+According to this 'Makefile' we reuse the implementation of 'timer.c' and
+'input.c' from the 's3a_starter' platform but provide a custom version of
+the screen driver.
+
+After having created the platform backend, building the library, by issuing
+'make' from within the 'dope-embedded/lib/<platform>/' directory.
+
+
+Creating a linker script
+========================
+
+The easiest way for creating a valid linker script is to add a new software
+application project in the "Applications" tab of XPS. Following the lines
+of the other EDK example projects, we call the new application 'dope_test'.
+We can then use the "Generate Linker Script" function of the project's
+context menu to create a linker script. Please make sure that you place
+the '.vectors' section in the BRAM and set the heap and stack size to
+0x1000.
+
+
+Compiling the demo application
+==============================
+
+To compile the demo application for a new target, create a new platform
+directory within the 'dope-embedded/test/' directory and follow the pattern
+of the other platform directories. Depending on your target platform,
+controlling the LEDs and the cache configuration may be different.
+Therefore, those platform-specific parts are contained in the 'platform.c'
+file local to the platform directory. As 'dope.ld' linker script, we
+can use the copy of the generated 'dope_test_linker_script.ld' located
+in the EDK project directory.
+
+
+Compiling the demo application from within the XPS
+==================================================
+
+You may opt to use the XPS for the development of Software Applications,
+for example for tinkering with the Genode FX demo application.
+Because this application will link to the 'dope' library, we have to set
+up the "Compiler Options" -> "Paths and Options" accordingly. In
+particular, we have to add 'dope-embedded/lib/<platform>/' as library
+path, and 'dope-embedded/include/' and 'dope-embedded/test/' as include
+paths. We also have to specify 'dope' as library to link against the
+executable.
+
+Furthermore, we add the existing files 'dope-embedded/test/test.c' and
+'dope-embedded/test/<platform>/platform.c' to the "Sources" of the
+application project.
+
+
+Removing absolute directories from your EDK project
+###################################################
+
+The files generated by XPS contain absolute directories that will
+make the project work on your computer make make it fail on many
+others. Therefore it is a good idea to remove all absolute directories
+from the following files:
+
+:'system_incl.make': For some reason, XPS hardwires the location
+  of you EDK installation at the beginning of this file. You can
+  just replace the path with '$(XILINX_EDK)' because this variable
+  is defined by the 'settings.sh' script, which every EDK developer
+  uses anyway.
+
+:'system.xmp': Look out for 'ModuleSearchPath:' and set it to
+  '../../'. Furthermore, revisit the 'Source', 'SearchLibs', and
+  'SearchIncl' declarations and adapt them to use locations relative
+  to the project directory. Just revisit the EDK project for another
+  platform for reference.
+
+
+Submit your contribution
+########################
+
+If you successfully ported Genode FX to a new platform, please feel
+welcome to share your contribution with the community! To learn about
+how to contribute your additions back to the Genode FX project, please
+follow the procedure as described in the "How to contribute" document
+
+! http://sourceforge.net/docman/display_doc.php?docid=130602&group_id=237260
+
+

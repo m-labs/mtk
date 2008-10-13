@@ -15,9 +15,13 @@ Spec files
 
   Build options for supporting the Xilinx Microblaze soft core.
 
+:'spec-ppc405':
+
+  Build options for supporting the PowerPC 405 as found in Virtex-4 devices.
+
 :'spec-ppc440':
 
-  Build options for supporting the PowerPC 440 as found in Virtex 5 devices.
+  Build options for supporting the PowerPC 440 as found in Virtex-5 devices.
 
 :'spec-common':
 
@@ -33,10 +37,13 @@ Platform-description files
   Build configuration for the Spartan3A(N) Starter Kit using the Microblaze
   soft core.
 
+:'ml405.mk':
+
+  Build configuration for the ML405 evaluation platform using the PowerPC 405.
 
 :'ml507.mk':
 
-  Build configuration for the ML507 using the PowerPC 440.
+  Build configuration for the ML507 evaluation platform using the PowerPC 440.
 
 :'sdl.mk':
 
