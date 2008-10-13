@@ -42,13 +42,8 @@ Creating a working EDK project
   :Configure PowerPC Processor:
     Now it is time to set up the basis properties of the CPU.
     We choose 200 MHz as processor clock frequency and leave the
-    reference clock and bus clock at 100 MHz. In the on-chip
-;; disable OCM
-    memory configuration box, we choose to use 4K BRAM for data
-    and 4K BRAM for instruction memory. This memory will be
-    used mainly for the boot code. The real work will be done
-    the DDR RAM, which we will configure later. Furthermore,
-    we enable the processor cache. We can leave the FPU switched
+    reference clock and bus clock at 100 MHz. Furthermore, we
+    enable the processor cache. We can leave the FPU switched
     off as Genode FX does not heavily use floating-point arithmetics.
 
   :Configure IO Interfaces (1 of 4):
@@ -171,7 +166,7 @@ our system with the custom Genode FX hardware components.
 
 
 Including Genode FX's VGA controller and PS/2 controller
-############################################################
+########################################################
 
 In the IP catalog of XPS, you can find the custom Genode FX hardware
 components in the category "Project Peripheral Repository 0".
