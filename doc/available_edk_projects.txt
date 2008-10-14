@@ -1,0 +1,95 @@
+
+                                  ================================
+                                  Available Genode FX EDK Projects
+                                  ================================
+
+
+This document list the available EDK projects that are ready-to-use for 
+Genode FX.
+
+
+ml405/system.xmp
+================
+
+EDK Version    | 9.2.02
+------------------------------------------------------------------------------
+Processor used | PPC405
+------------------------------------------------------------------------------
+Details        | Uses the ML405 board.
+------------------------------------------------------------------------------
+Link           | http://www.xilinx.com/products/devkits/HW-V4-ML405-UNI-G.htm
+
+
+ml507/system.xmp
+================
+
+EDK Version    | 10.1.02
+------------------------------------------------------------------------------
+Processor used | PPC440
+------------------------------------------------------------------------------
+Details        | Uses the ML507 board.
+------------------------------------------------------------------------------
+Link           | http://www.xilinx.com/products/devkits/HW-V5-ML507-UNI-G.htm
+
+
+s3a_starter/system_s3a_starter.xmp
+==================================
+
+EDK Version    | 9.2.02
+------------------------------------------------------------------------------
+Processor used | MicroBlaze
+------------------------------------------------------------------------------
+Details        | Uses the Spartan 3A Starter Kit board
+------------------------------------------------------------------------------
+Link           | http://www.xilinx.com/products/devkits/HW-SPAR3A-SK-UNI-G.htm
+
+
+s3a_starter/system_s3a_starter_xilkernel.xmp
+============================================
+
+EDK Version    | 9.2.02
+------------------------------------------------------------------------------
+Processor used | MicroBlaze
+------------------------------------------------------------------------------
+Details        | Uses the Spartan 3A Starter Kit board with xilkernel v4.00
+------------------------------------------------------------------------------
+Link           | http://www.xilinx.com/products/devkits/HW-SPAR3A-SK-UNI-G.htm
+
+
+s3a_starter/system_s3an_starter.xmp
+===================================
+
+EDK Version    | 9.2.02
+------------------------------------------------------------------------------
+Processor used | MicroBlaze
+------------------------------------------------------------------------------
+Details        | Uses the Spartan 3AN Starter Kit board
+------------------------------------------------------------------------------
+Link           | http://www.xilinx.com/products/devkits/HW-SPAR3AN-SK-UNI-G.htm
+
+
+s3a_starter/system_s3an_starter_xilkernel.xmp
+=============================================
+
+EDK Version    | 9.2.02
+------------------------------------------------------------------------------
+Processor used | MicroBlaze
+------------------------------------------------------------------------------
+Details        | Uses the Spartan 3AN Starter Kit board with xilkernel v4.00
+------------------------------------------------------------------------------
+Link           | http://www.xilinx.com/products/devkits/HW-SPAR3AN-SK-UNI-G.htm
+
+
+s3e_starter/system.xmp
+======================
+
+EDK Version    | 10.1.03
+------------------------------------------------------------------------------
+Processor used | MicroBlaze
+------------------------------------------------------------------------------
+Details        | Uses the Spartan 3E Starter Kit. Works with the 3 bit VGA
+               | ports, but looks rather poor. An external 12 bit VGA port is
+               | recommended and also used within the EDK project.
+------------------------------------------------------------------------------
+Link           | http://www.xilinx.com/products/devkits/HW-SPAR3E-SK-US-G.htm
+

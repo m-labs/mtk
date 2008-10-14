@@ -45,29 +45,29 @@
     <EXPANDED/>
 
 </GUISETTING>
-  <GUISETTING HSCROLL="0" ID="ADDRESSES_TREE" VSCROLL="0">                                                                            
+  <GUISETTING HSCROLL="0" ID="ADDRESSES_TREE" VSCROLL="0">                                                                                
 
-    <COLHDR INDEX="0" NAME="Name" VISIBLE="TRUE" WIDTH="157"/>                                                                            
+    <COLHDR INDEX="0" NAME="Name" VISIBLE="TRUE" WIDTH="157"/>                                                                                
 
-    <COLHDR INDEX="3" NAME="Base Address" VISIBLE="TRUE" WIDTH="121"/>                                                                            
+    <COLHDR INDEX="3" NAME="Base Address" VISIBLE="TRUE" WIDTH="121"/>                                                                                
 
-    <COLHDR INDEX="4" NAME="High Address" VISIBLE="TRUE" WIDTH="119"/>                                                                            
+    <COLHDR INDEX="4" NAME="High Address" VISIBLE="TRUE" WIDTH="119"/>                                                                                
 
-    <COLHDR INDEX="5" NAME="Size" VISIBLE="TRUE" WIDTH="76"/>                                                                            
+    <COLHDR INDEX="5" NAME="Size" VISIBLE="TRUE" WIDTH="76"/>                                                                                
 
-    <COLHDR INDEX="7" NAME="Bus Interface(s)" VISIBLE="TRUE" WIDTH="130"/>                                                                            
+    <COLHDR INDEX="7" NAME="Bus Interface(s)" VISIBLE="TRUE" WIDTH="130"/>                                                                                
 
-    <COLHDR INDEX="8" NAME="Bus Connection" VISIBLE="TRUE" WIDTH="131"/>                                                                            
+    <COLHDR INDEX="8" NAME="Bus Connection" VISIBLE="TRUE" WIDTH="131"/>                                                                                
 
-    <COLHDR INDEX="6" NAME="Lock" VISIBLE="TRUE" WIDTH="80"/>                                                                            
+    <COLHDR INDEX="6" NAME="Lock" VISIBLE="TRUE" WIDTH="80"/>                                                                                
 
-    <COLHDR INDEX="10" NAME="ICache" VISIBLE="TRUE" WIDTH="90"/>                                                                            
+    <COLHDR INDEX="10" NAME="ICache" VISIBLE="TRUE" WIDTH="90"/>                                                                                
 
-    <COLHDR INDEX="9" NAME="DCache" VISIBLE="TRUE" WIDTH="95"/>                                                                            
+    <COLHDR INDEX="9" NAME="DCache" VISIBLE="TRUE" WIDTH="95"/>                                                                                
 
-    <COLHDR INDEX="1" NAME="IP Type" VISIBLE="TRUE" WIDTH="109"/>                                                                            
+    <COLHDR INDEX="1" NAME="IP Type" VISIBLE="TRUE" WIDTH="109"/>                                                                                
 
-    <COLHDR INDEX="2" NAME="IP Version" VISIBLE="TRUE" WIDTH="104"/>                                                                            
+    <COLHDR INDEX="2" NAME="IP Version" VISIBLE="TRUE" WIDTH="104"/>                                                                                
 
     <EXPANDED/>
 
