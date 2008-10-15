@@ -4,7 +4,7 @@
                                   ================================
 
 
-This document list the available EDK projects that are ready-to-use for 
+This document lists the available EDK projects that are ready-to-use for 
 Genode FX.
 
 
