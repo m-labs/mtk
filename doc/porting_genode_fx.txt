@@ -3,6 +3,8 @@
            How to port Genode FX to a new target platform
            ==============================================
 
+Abstract
+########
 
 This document is a step-by-step description of the process of porting
 Genode FX to the Xilinx ML405 board. This tutorial is based on EDK version
@@ -440,7 +442,8 @@ from the following files:
   is defined by the 'settings.sh' script, which every EDK developer
   uses anyway.
 
-:'system.xmp': Look out for 'ModuleSearchPath:' and set it to
+:'system.xmp':
+  Look out for 'ModuleSearchPath:' and set it to
   '../../'. Furthermore, revisit the 'Source', 'SearchLibs', and
   'SearchIncl' declarations and adapt them to use locations relative
   to the project directory. Just revisit the EDK project for another
@@ -455,6 +458,8 @@ welcome to share your contribution with the community! To learn about
 how to contribute your additions back to the Genode FX project, please
 follow the procedure as described in the "How to contribute" document
 
-! http://sourceforge.net/docman/display_doc.php?docid=130602&group_id=237260
+:Online version of the "How to contribute" document:
+
+  [http://sourceforge.net/docman/display_doc.php?docid=130602&group_id=237260]
 
 
