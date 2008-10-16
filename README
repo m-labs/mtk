@@ -251,3 +251,19 @@ information provides some pointers for getting in contact:
   Falcon 030. The primary developer of DOpE is Norman Feske:
 
   :email: norman.feske@genode-labs.com
+
+
+Contributors
+============
+
+In addition to Genode Labs, the following individuals contributed to the
+project.
+
+:Tamas Szabo:
+
+  Adaption to the Spartan-3AN platform
+
+:Ales Gorkic:
+
+  Adaption to the Spartan-3E platform
+
