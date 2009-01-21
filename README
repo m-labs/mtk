@@ -117,6 +117,10 @@ Building the project with Xilinx' Embedded Development Kit (EDK)
 To create the bitstream file for your FPGA platform, go to the corresponding
 'EDK_projects/<platform>' directory and issue
 ! make -f system.make bits
+Note that the 'system.make' file for the s3a_starter platform is named
+after the platform variants 's3an_starter' and 's3a_starter' respectively.
+Hence, when using the Spartan3A Starter Kit, replace 'system.make' with
+'system_s3a_starter.make'.
 To configure the FPGA via JTAG, just use Xilinx' Impact tool and select the
 'implementation/system.bit' file.
 
