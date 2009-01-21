@@ -361,6 +361,10 @@ static void handle(void)
 
 			press_cnt--;
 
+			if ((curr_state == USERSTATE_DRAG) && curr_motion_callback) {
+				curr_motion_callback(curr_selected, curr_mx - omx, curr_my - omy);
+			}
+
 			if (event.code == DOPE_BTN_LEFT)  curr_mb = curr_mb & 0x00fe;
 			if (event.code == DOPE_BTN_RIGHT) curr_mb = curr_mb & 0x00fd;
 			keytab[event.code] = 0;
