@@ -16,9 +16,11 @@
 #include "gfx_handler.h"
 #include "gfx.h"
 
+typedef u8 pixel_t
+
 struct gfx_ds_data {
-	s32 w,h;            /* width and height of the image */
-	u8 *pixels;        /* 8bit indices of the pixels */
+	int      w, h;    /* width and height of the image */
+	pixel_t *pixels;  /* 8bit indices of the pixels */
 };
 
 int init_gfximg8i(struct dope_services *d);
@@ -27,17 +29,17 @@ int init_gfximg8i(struct dope_services *d);
  ** Gfx handler functions **
  ***************************/
 
-static s32 img_get_width(struct gfx_ds_data *img)
+static int img_get_width(struct gfx_ds_data *img)
 {
 	return img->w;
 }
 
-static s32 img_get_height(struct gfx_ds_data *img)
+static int img_get_height(struct gfx_ds_data *img)
 {
 	return img->h;
 }
 
-static s32 img_get_type(struct gfx_ds_data *img)
+static enum img_type img_get_type(struct gfx_ds_data *img)
 {
 	return GFX_IMG_TYPE_INDEX8;
 }
@@ -57,18 +59,19 @@ static void *img_map(struct gfx_ds_data *img)
  ***********************/
 
 
-static struct gfx_ds_data *create(s32 width, s32 height)
+static struct gfx_ds_data *create(int width, int height)
 {
-	struct gfx_ds_data *new;
-	new = malloc(sizeof(struct gfx_ds_data) + width*height);
+	struct gfx_ds_data *new = malloc(sizeof(struct gfx_ds_data) + width*height);
 	if (!new) return NULL;
+
 	new->w = width;
 	new->h = height;
-	new->pixels = (u8 *)((adr)new + sizeof(struct gfx_ds_data));
+
+	new->pixels = (pixel_t *)((adr)new + sizeof(struct gfx_ds_data));
 	return new;
 }
 
-static s32 register_gfx_handler(struct gfx_ds_handler *handler)
+static int register_gfx_handler(struct gfx_ds_handler *handler)
 {
 	handler->get_width  = img_get_width;
 	handler->get_height = img_get_height;

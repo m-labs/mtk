@@ -50,6 +50,7 @@ struct window_methods {
 	void    (*open)          (WINDOW *);
 	void    (*close)         (WINDOW *);
 	void    (*top)           (WINDOW *);
+	void    (*handle_close)  (WINDOW *, WIDGET *);
 	void    (*handle_move)   (WINDOW *, WIDGET *);
 	void    (*handle_resize) (WINDOW *, WIDGET *);
 	void    (*set_x)         (WINDOW *, int x);

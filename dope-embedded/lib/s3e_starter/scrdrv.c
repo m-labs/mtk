@@ -187,13 +187,17 @@ static long set_screen(long width, long height, long depth)
 	*((volatile u32 *)(baseaddr + 0x18)) = scr_height * scr_width * 2;
 
 	/* set hsync start and hsync end */
-	*((volatile u32 *)(baseaddr + 0x1C)) = ((800+56+120) << 16) + 800+56;
+	//*((volatile u32 *)(baseaddr + 0x1C)) = ((800+56+120) << 16) + 800+56;	//original, for 800x600 72Hz
+	*((volatile u32 *)(baseaddr + 0x1C)) = ((800+40+128) << 16) + 800+40;   //800x600 60Hz
 
 	/* set vsync start and vsync end */
-	*((volatile u32 *)(baseaddr + 0x20)) = (641 << 16) + 636;
+	//*((volatile u32 *)(baseaddr + 0x20)) = (641 << 16) + 636;	//original, for 800x600 72Hz
+	//*((volatile u32 *)(baseaddr + 0x20)) = (621 << 16) + 618;
+	*((volatile u32 *)(baseaddr + 0x20)) = (605 << 16) + 602;	//800x600 60Hz
 
 	/* set x and y max */
-	*((volatile u32 *)(baseaddr + 0x24)) = ((600+66-1) << 16) + 800+239;
+	//*((volatile u32 *)(baseaddr + 0x24)) = ((600+66-1) << 16) + 800+239;
+	*((volatile u32 *)(baseaddr + 0x24)) = ((600+28-1) << 16) + 800+255;
 
 	/* set bgnd low and bgnd high */
 	*((volatile u32 *)(baseaddr + 0x28)) = (660 << 16) + 630;

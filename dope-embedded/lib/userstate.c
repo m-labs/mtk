@@ -146,6 +146,8 @@ static void set_active_window(WINDOW *w, int force)
  */
 static void leave_current(void)
 {
+	WIDGET *last_selected;
+
 	switch (curr_state) {
 	case USERSTATE_DRAG:
 		if (curr_release_callback) {
@@ -153,14 +155,31 @@ static void leave_current(void)
 		}
 		break;
 	case USERSTATE_TOUCH:
-		if (curr_release_callback) {
-			curr_release_callback(curr_selected, curr_mx - omx, curr_my - omy);
-		}
-		curr_selected->gen->set_state(curr_selected, 0);
-		if (curr_mfocus != curr_selected) {
-			curr_selected->gen->set_mfocus(curr_selected,0);
-		}
-		curr_selected->gen->update(curr_selected);
+
+		if (!curr_selected)
+			return;
+
+		/* forget about selected widget */
+		last_selected = curr_selected;
+		curr_selected->gen->dec_ref(curr_selected);
+		curr_selected = 0;
+
+		/*
+		 * We have to reset 'curr_selected' before calling the
+		 * release callback to prevent infinte recursions that
+		 * would happen if the callback indirectly enters
+		 * user-state code.
+		 */
+		if (curr_release_callback)
+			curr_release_callback(last_selected, curr_mx - omx, curr_my - omy);
+
+		/* revert widget state */
+		last_selected->gen->set_state(last_selected, 0);
+		if (curr_mfocus != last_selected)
+			last_selected->gen->set_mfocus(last_selected,0);
+
+		last_selected->gen->update(last_selected);
+
 		break;
 	case USERSTATE_GRAB:
 		set_pos(omx, omy);
@@ -447,7 +466,10 @@ static void handle(void)
 		break;
 		
 	case USERSTATE_TOUCH:
-		
+
+		if (!curr_selected)
+			break;
+
 		if (curr_tick_callback)
 			curr_tick_callback(curr_selected, curr_mx - omx, curr_my - omy);
 
@@ -456,11 +478,15 @@ static void handle(void)
 		new_mfocus = curr_scr->gen->find((WIDGET *)curr_scr, curr_mx, curr_my);
 		if (new_mfocus != curr_mfocus) {
 			if (new_mfocus == curr_selected) {
-				curr_selected->gen->set_state(curr_selected,1);
-				curr_selected->gen->update(curr_selected);
+				if (curr_selected) {
+					curr_selected->gen->set_state(curr_selected,1);
+					curr_selected->gen->update(curr_selected);
+				}
 			} else {
-				curr_selected->gen->set_state(curr_selected,0);
-				curr_selected->gen->update(curr_selected);
+				if (curr_selected) {
+					curr_selected->gen->set_state(curr_selected,0);
+					curr_selected->gen->update(curr_selected);
+				}
 			}
 			if (curr_mfocus) curr_mfocus->gen->dec_ref(curr_mfocus);
 			curr_mfocus = new_mfocus;

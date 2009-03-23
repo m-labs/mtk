@@ -38,6 +38,10 @@ struct background_data {
 int init_background(struct dope_services *d);
 
 
+unsigned long config_bg_win_color = 0x8a8a85ff;
+unsigned long config_bg_desk_color = 0x575c70ff;
+
+
 /****************************
  ** General widget methods **
  ****************************/
@@ -56,11 +60,11 @@ static int bg_draw(BACKGROUND *b, struct gfx_ds *ds, long x, long y, WIDGET *ori
 
 	if (!origin) switch (b->bd->style) {
 		case BG_STYLE_WIN:
-			gfx->draw_box(ds, x, y, b->wd->w, b->wd->h, 0x708090ff);
+			gfx->draw_box(ds, x, y, b->wd->w, b->wd->h, config_bg_win_color);
 			ret |= 1;
 			break;
 		case BG_STYLE_DESK:
-			gfx->draw_box(ds, x, y, b->wd->w, b->wd->h, 0x506070ff);
+			gfx->draw_box(ds, x, y, b->wd->w, b->wd->h, config_bg_desk_color);
 			ret |= 1;
 			break;
 	}

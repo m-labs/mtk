@@ -65,6 +65,7 @@ SCREEN *first_scr;
 SCREEN *curr_scr;
 
 extern int config_menubar;
+extern int config_dropshadows;
 
 
 /********************************
@@ -80,10 +81,18 @@ static int draw_rec(GFX_CONTAINER *ds, WIDGET *cw, WIDGET *origin,
 	if (!cw) return 0;
 
 	/* calc intersection between dirty area and current window */
-	sx1 = MAX(cx1, (d = cw->gen->get_x(cw)));
-	sx2 = MIN(cx2,  d + cw->gen->get_w(cw) - 1);
-	sy1 = MAX(cy1, (d = cw->gen->get_y(cw)));
-	sy2 = MIN(cy2,  d + cw->gen->get_h(cw) - 1);
+	sx1 = MAX(cx1, (d = cw->gen->get_x(cw) + (config_dropshadows ? 0 : win->shadow_left)));
+	sx2 = MIN(cx2,  d + cw->gen->get_w(cw) - (config_dropshadows ? 0 : win->shadow_left + win->shadow_right) - 1);
+	sy1 = MAX(cy1, (d = cw->gen->get_y(cw) + (config_dropshadows ? 0 : win->shadow_top)));
+	sy2 = MIN(cy2,  d + cw->gen->get_h(cw) - (config_dropshadows ? 0 : win->shadow_top + win->shadow_bottom) - 1);
+
+//	if (!config_dropshadows)
+//	{
+//		sx1 += win->shadow_left;
+//		sy1 += win->shadow_top;
+//		sx2 -= win->shadow_right;
+//		sy2 -= win->shadow_bottom;
+//	}
 
 	/* if there is an intersection - subdivide area */
 	if ((sx1 <= sx2) && (sy1 <= sy2)) {
@@ -729,6 +738,15 @@ static long scr_get_h(SCREEN *s)
 }
 
 
+/**
+ * Redraw the whole screen
+ */
+static void scr_refresh(SCREEN *s)
+{
+	s->gen->force_redraw(s);
+}
+
+
 static struct widget_methods gen_methods;
 static struct screen_methods scr_methods = {
 	scr_set_gfx,
@@ -813,6 +831,7 @@ static void build_script_lang(void)
 	widtype = script->reg_widget_type("Screen", (void *(*)(void))create);
 	script->reg_widget_attrib(widtype, "long w", scr_get_w, NULL, NULL);
 	script->reg_widget_attrib(widtype, "long h", scr_get_h, NULL, NULL);
+	script->reg_widget_method(widtype, "void refresh()", scr_refresh);
 	widman->build_script_lang(widtype, &gen_methods);
 }
 

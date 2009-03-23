@@ -37,7 +37,7 @@ WIDGET {
 	struct widget_data      *wd;    /* pointer to general attributes */
 };
 
-#define REDRAW_QUEUE_SIZE 5000
+#define REDRAW_QUEUE_SIZE 200
 
 struct action {
 	WIDGET *wid;             /* associated widget */
@@ -88,6 +88,13 @@ static inline void remove_last_action(void)
 	WIDGET *w;
 	if ((w = action_queue[last].wid))
 		w->gen->dec_ref(w);
+
+	action_queue[last].x1 = 0;
+	action_queue[last].y1 = 0;
+	action_queue[last].x2 = 0;
+	action_queue[last].y2 = 0;
+	action_queue[last].wid = NULL;
+
 	last = (last + 1) % REDRAW_QUEUE_SIZE;
 }
 

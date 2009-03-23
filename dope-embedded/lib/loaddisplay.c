@@ -49,21 +49,24 @@ struct loaddisplay_data {
 static GFX_CONTAINER *bg_img;
 static GFX_CONTAINER *bar_img;
 
-#define BLACK_SOLID GFX_RGBA(0, 0, 0, 255)
-#define BLACK_MIXED GFX_RGBA(0, 0, 0, 127)
-#define WHITE_SOLID GFX_RGBA(255, 255, 255, 255)
-#define WHITE_MIXED GFX_RGBA(255, 255, 255, 127)
+static const color_t BLACK_SOLID = GFX_RGBA(0, 0, 0, 255);
+static const color_t BLACK_MIXED = GFX_RGBA(0, 0, 0, 127);
+static const color_t WHITE_SOLID = GFX_RGBA(255, 255, 255, 255);
+static const color_t WHITE_MIXED = GFX_RGBA(255, 255, 255, 127);
 
 #define LOADDISPLAY_SIZE 16
 #define LOADDISPLAY_UPDATE_ORIENT 0x01
 #define LOADDISPLAY_UPDATE_VALUES 0x02
 
-static u32 default_colors[] = {
-	GFX_RGBA(255, 0, 0, 127), GFX_RGBA(0, 0, 255, 127),
-	GFX_RGBA(0, 200, 0, 127), GFX_RGBA(200, 200, 0, 127)
+enum { NUM_DEFAULT_COLORS = 4 };
+static color_t default_colors[NUM_DEFAULT_COLORS] = {
+	GFX_RGBA(255, 0,   0, 127),
+	GFX_RGBA(  0, 0, 255, 127),
+	GFX_RGBA(  0, 200, 0, 127),
+	GFX_RGBA(200, 200, 0, 127)
 };
 
-#define NUM_COLORS (sizeof(default_colors)/4)
+enum { NUM_COLORS = sizeof(default_colors)/sizeof(color_t) };
 
 int init_loaddisplay(struct dope_services *d);
 
@@ -72,7 +75,7 @@ int init_loaddisplay(struct dope_services *d);
  ** Functions for internal use **
  ********************************/
 
-static inline void draw_raised_frame(GFX_CONTAINER *d, s32 x, s32 y, s32 w, s32 h)
+static inline void draw_raised_frame(GFX_CONTAINER *d, int x, int y, int w, int h)
 {
 	gfx->draw_hline(d, x, y, w, WHITE_MIXED);
 	gfx->draw_vline(d, x, y, h, WHITE_MIXED);
@@ -81,7 +84,7 @@ static inline void draw_raised_frame(GFX_CONTAINER *d, s32 x, s32 y, s32 w, s32 
 }
 
 
-static inline void draw_pressed_frame(GFX_CONTAINER *d, s32 x, s32 y, s32 w, s32 h)
+static inline void draw_pressed_frame(GFX_CONTAINER *d, int x, int y, int w, int h)
 {
 	gfx->draw_hline(d, x, y, w, BLACK_SOLID);
 	gfx->draw_vline(d, x, y, h, BLACK_SOLID);
@@ -93,7 +96,7 @@ static inline void draw_pressed_frame(GFX_CONTAINER *d, s32 x, s32 y, s32 w, s32
 /**
  * Draw loadbar with specified color
  */
-static inline void draw_bar(GFX_CONTAINER *ds, s32 x, s32 y, s32 w, s32 h, u32 color)
+static inline void draw_bar(GFX_CONTAINER *ds, int x, int y, int w, int h, color_t color)
 {
 	gfx->draw_img(ds, x, y, w, h, bar_img, 255);
 	gfx->draw_box(ds, x + 1, y + 1, w - 2, h - 2, color);
@@ -225,15 +228,16 @@ static u8 inline hex2u8(const char *s)
  * Static mapping from colornames to 32bit rgb values
  */
 
-#define COLMAP_SIZE 3
+enum { COLMAP_SIZE = 3 };
 struct {
 	char *name;
 	u32   value;
 } colmap[COLMAP_SIZE] = {
-	{"red",   GFX_RGB(255, 0, 0)},
-	{"green", GFX_RGB(0, 255, 0)},
-	{"blue",  GFX_RGB(0, 0, 255)},
+	{ "red",   GFX_RGB(255, 0, 0) },
+	{ "green", GFX_RGB(0, 255, 0) },
+	{ "blue",  GFX_RGB(0, 0, 255) }
 };
+
 
 
 /**
@@ -243,7 +247,7 @@ struct {
  * functionality is needed also by other DOpE components,
  * we could put it into a separate DOpE component.
  */
-static u32 get_color_by_name(const char *colname)
+static color_t get_color_by_name(const char *colname)
 {
 	int i;
 	if (!colname) return 0;
@@ -415,7 +419,7 @@ static void ld_barconfig(LOADDISPLAY *ld, char *ident, char *value, char *color)
 		u32 c = get_color_by_name(color);
 
 		/* set alpha to 50% */
-		lb->color = GFX_RGBA(GFX_R(c), GFX_G(c), GFX_B(c), 127);
+		lb->color = GFX_RGBA(gfx_red(c), gfx_green(c), gfx_blue(c), 127);
 	}
 
 	refresh(ld);

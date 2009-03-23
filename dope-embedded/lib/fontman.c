@@ -20,6 +20,7 @@
 #include "fontconv.h"
 
 static struct fontconv_services *conv_fnt;
+static struct fontconv_services *conv_tff;
 
 /**
  * Symbols of font data
@@ -27,6 +28,8 @@ static struct fontconv_services *conv_fnt;
 extern unsigned char default_fnt[];
 extern unsigned char mono_fnt[];
 extern unsigned char title_fnt[];
+
+extern unsigned char vera16_tff[];
 
 int init_fontman(struct dope_services *d);
 
@@ -137,9 +140,12 @@ static void add_font(struct fontconv_services *conv,void *fontdata,u32 font_id,s
 int init_fontman(struct dope_services *d)
 {
 	conv_fnt=d->get_module("ConvertFNT 1.0");
+	conv_tff=d->get_module("ConvertTFF 1.0");
 
 	/* init the three built-in fonts */
-	if (conv_fnt->probe(&default_fnt)) add_font(conv_fnt,&default_fnt[0],0,&fonts[0]);
+	if (conv_tff->probe(&vera16_tff)) add_font(conv_tff,&vera16_tff[0],0,&fonts[0]);
+//	if (conv_fnt->probe(&default_fnt)) add_font(conv_fnt,&default_fnt[0],0,&fonts[0]);
+
 	if (conv_fnt->probe(&mono_fnt))    add_font(conv_fnt,&mono_fnt[0],   1,&fonts[1]);
 	if (conv_fnt->probe(&title_fnt))   add_font(conv_fnt,&title_fnt[0],  2,&fonts[2]);
 

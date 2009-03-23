@@ -17,65 +17,88 @@
 
 #include "thread.h"
 
-#define GFX_IMG_TYPE_RGB16    1
-#define GFX_IMG_TYPE_RGBA32   2
-#define GFX_IMG_TYPE_INDEX8   3
-#define GFX_IMG_TYPE_YUV420   4
-#define GFX_IMG_TYPE_NATIVE   5
+enum img_type {
+	GFX_IMG_TYPE_RGB16  = 1,
+	GFX_IMG_TYPE_RGBA32 = 2,
+	GFX_IMG_TYPE_INDEX8 = 3,
+	GFX_IMG_TYPE_NATIVE = 5,
+};
 
-#define GFX_RGBA(r,g,b,a) (((r)<<24) | ((g)<<16) | ((b)<<8)|(a))
-#define GFX_RGB(r,g,b)    (((r)<<24) | ((g)<<16) | ((b)<<8)|255)
-#define GFX_RGB16(r,g,b)  ((((r)&0xf8)<<8) | (((g)&0xfc)<<3) | (((b)&0xf8)>>3))
-#define GFX_R(rgba) (((rgba)>>24) & 255)
-#define GFX_G(rgba) (((rgba)>>16) & 255)
-#define GFX_B(rgba) (((rgba)>>8)  & 255)
-#define GFX_A(rgba) ((rgba)&255)
 
+/**
+ * Color type
+ */
+typedef u32 color_t;
+
+/**
+ * Accessor functions for the color type
+ *
+ * The 'GFX_RGBA' and 'GFX_RGB' functions are implemented as macros
+ * to make them usable as array initializers.
+ */
+#define GFX_RGBA(r, g, b, a) (((r)<<24) | ((g)<<16) | ((b)<<8) | (a))
+#define GFX_RGB(r, g, b)     (((r)<<24) | ((g)<<16) | ((b)<<8) | 255)
+
+static inline u16 rgba_to_rgb565(unsigned long rgba) {
+	return (((rgba & 0xf8000000)>>16)
+	       |((rgba & 0x00fc0000)>>13)
+	       |((rgba & 0x0000f800)>>11)); }
+
+static inline color_t gfx_red  (color_t rgba) { return (rgba>>24) & 255; }
+static inline color_t gfx_green(color_t rgba) { return (rgba>>16) & 255; }
+static inline color_t gfx_blue (color_t rgba) { return (rgba>>8)  & 255; }
+static inline color_t gfx_alpha(color_t rgba) { return (rgba)     & 255; }
+
+
+/**
+ * Gfx containter interface
+ */
 struct gfx_ds;
-
 #define GFX_CONTAINER struct gfx_ds
 
 struct gfx_services {
+
 	GFX_CONTAINER *(*alloc_scr) (char *scrmode);
-	GFX_CONTAINER *(*alloc_img) (s16 w, s16 h, s32 img_type);
+	GFX_CONTAINER *(*alloc_img) (int w, int h, enum img_type img_type);
 
-	s32   (*load_fnt)   (char *fntname);
+	int (*load_fnt) (char *fntname);
 
-	s32   (*get_width)  (GFX_CONTAINER *);
-	s32   (*get_height) (GFX_CONTAINER *);
-	s32   (*get_type)   (GFX_CONTAINER *);
+	int           (*get_width)  (GFX_CONTAINER *);
+	int           (*get_height) (GFX_CONTAINER *);
+	enum img_type (*get_type)   (GFX_CONTAINER *);
 
 	void  (*inc_ref)    (GFX_CONTAINER *);
 	void  (*dec_ref)    (GFX_CONTAINER *);
 	void *(*map)        (GFX_CONTAINER *);
 	void  (*unmap)      (GFX_CONTAINER *);
-	void  (*update)     (GFX_CONTAINER *, s32 x, s32 y, s32 w, s32 h);
-	s32   (*share)      (GFX_CONTAINER *, THREAD *dst_thread);
-	s32   (*get_ident)  (GFX_CONTAINER *, char *dst);
-	s32   (*get_upcnt)  (GFX_CONTAINER *);
+	void  (*update)     (GFX_CONTAINER *, int x, int y, int w, int h);
+	int   (*share)      (GFX_CONTAINER *, THREAD *dst_thread);
+	int   (*get_ident)  (GFX_CONTAINER *, char *dst);
+	int   (*get_upcnt)  (GFX_CONTAINER *);
 
-	s32   (*draw_hline) (GFX_CONTAINER *, s16 x, s16 y, s16 w, u32 rgba);
-	s32   (*draw_vline) (GFX_CONTAINER *, s16 x, s16 y, s16 h, u32 rgba);
-	s32   (*draw_box)   (GFX_CONTAINER *, s16 x, s16 y, s16 w, s16 h, u32 rgba);
-	s32   (*draw_slice) (GFX_CONTAINER *, s16 x,  s16 y,  s16 w,  s16 h,
-	                                      s16 ix, s16 iy, s16 iw, s16 ih,
-	                     GFX_CONTAINER *img, u8 alpha);
-	s32   (*draw_img)   (GFX_CONTAINER *, s16 x,  s16 y,  s16 w,  s16 h,
-	                     GFX_CONTAINER *img, u8 alpha);
-	s32   (*draw_string)(GFX_CONTAINER *, s16 x, s16 y, u32 fg_rgba, u32 bg_rgba,
-	                                      s32 fnt_id, char *str);
+	void (*draw_hline) (GFX_CONTAINER *, int x, int y, int w, color_t rgba);
+	void (*draw_vline) (GFX_CONTAINER *, int x, int y, int h, color_t rgba);
+	void (*draw_box)   (GFX_CONTAINER *, int x, int y, int w, int h, color_t rgba);
+	void (*draw_slice) (GFX_CONTAINER *, int x,  int y,  int w,  int h,
+	                                    int ix, int iy, int iw, int ih,
+	                    GFX_CONTAINER *img, u8 alpha);
+	void (*draw_img)   (GFX_CONTAINER *, int x, int y, int w, int h,
+	                    GFX_CONTAINER *img, u8 alpha);
+	void (*draw_string)(GFX_CONTAINER *, int x, int y,
+	                                    color_t fg_rgba,
+	                                    color_t bg_rgba,
+	                                    int fnt_id, char *str);
 
-	void  (*push_clipping)  (GFX_CONTAINER *, s32 x, s32 y, s32 w, s32 h);
-	void  (*pop_clipping)   (GFX_CONTAINER *);
-	void  (*reset_clipping) (GFX_CONTAINER *);
+	void (*push_clipping)  (GFX_CONTAINER *, int x, int y, int w, int h);
+	void (*pop_clipping)   (GFX_CONTAINER *);
+	void (*reset_clipping) (GFX_CONTAINER *);
+	int  (*get_clip_x)     (GFX_CONTAINER *);
+	int  (*get_clip_y)     (GFX_CONTAINER *);
+	int  (*get_clip_w)     (GFX_CONTAINER *);
+	int  (*get_clip_h)     (GFX_CONTAINER *);
 
-	s32   (*get_clip_x) (GFX_CONTAINER *);
-	s32   (*get_clip_y) (GFX_CONTAINER *);
-	s32   (*get_clip_w) (GFX_CONTAINER *);
-	s32   (*get_clip_h) (GFX_CONTAINER *);
-
-	void  (*set_mouse_cursor) (GFX_CONTAINER *, GFX_CONTAINER *cursor);
-	void  (*set_mouse_pos)    (GFX_CONTAINER *, s32 x, s32 y);
+	void (*set_mouse_cursor) (GFX_CONTAINER *, GFX_CONTAINER *cursor);
+	void (*set_mouse_pos)    (GFX_CONTAINER *, int x, int y);
 };
 
 

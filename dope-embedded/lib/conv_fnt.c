@@ -1,5 +1,5 @@
 /*
- * \brief   FNT font import module
+ * \brief   DOpE Button widget module
  * \date    2002-11-13
  * \author  Norman Feske <norman.feske@genode-labs.com>
  *
@@ -177,7 +177,7 @@ static s16 font_probe(struct fntfile_hdr *fnt)
  * Generates width table for the specified font
  *
  * The width table will be generated at the given destination
- * address. It has one 32bit-entry per ASCII value so its size
+ * adress. It has one 32bit-entry per ASCII value so its size
  * is 256*4 bytes.
  */
 static void font_gen_width_table(struct fntfile_hdr *fnt, s32 *dst_wtab)
@@ -215,7 +215,7 @@ static void font_gen_width_table(struct fntfile_hdr *fnt, s32 *dst_wtab)
  * Generates offset table for the specified font
  *
  * The offset table will be generated at the given destination
- * address. Its size is 256*4 bytes.
+ * adress. Its size is 256*4 bytes.
  */
 static void font_gen_offset_table(struct fntfile_hdr *fnt, s32 *dst_otab)
 {

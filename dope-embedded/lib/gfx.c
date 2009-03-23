@@ -25,12 +25,10 @@
 static struct gfx_handler_services *gfxscr_rgb16;
 static struct gfx_handler_services *gfximg_rgb16;
 static struct gfx_handler_services *gfximg_rgba32;
-static struct gfx_handler_services *gfximg_yuv420;
 
 static struct gfx_ds_handler gfxscr_rgb16_handler;
 static struct gfx_ds_handler gfximg_rgb16_handler;
 static struct gfx_ds_handler gfximg_rgba32_handler;
-static struct gfx_ds_handler gfximg_yuv420_handler;
 
 int init_gfx(struct dope_services *d);
 
@@ -97,7 +95,7 @@ static struct gfx_ds *alloc_scr(char *scrmode)
 /**
  * Allocate gfx dataspace for images
  */
-static struct gfx_ds *alloc_img(s16 w, s16 h, s32 img_type)
+static struct gfx_ds *alloc_img(int w, int h, enum img_type img_type)
 {
 	struct gfx_ds *new;
 
@@ -117,12 +115,6 @@ static struct gfx_ds *alloc_img(s16 w, s16 h, s32 img_type)
 		new->data = gfximg_rgb16->create(w, h, &new->handler);
 		break;
 
-	case GFX_IMG_TYPE_YUV420:
-		printf("Gfx(alloc_img): yuv\n");
-		new->handler = &gfximg_yuv420_handler;
-		new->data = gfximg_yuv420->create(w, h, &new->handler);
-		break;
-
 	default:
 		return NULL;
 	}
@@ -134,7 +126,7 @@ static struct gfx_ds *alloc_img(s16 w, s16 h, s32 img_type)
 }
 
 
-static s32 load_fnt(char *fntname)
+static int load_fnt(char *fntname)
 {
 	return 0;
 }
@@ -143,17 +135,17 @@ static s32 load_fnt(char *fntname)
 /**
  * Forward generic function calls to specific gfx dataspace type handler
  */
-static s32 get_width(struct gfx_ds *ds)
+static int get_width(struct gfx_ds *ds)
 {
 	return ds->handler->get_width(ds->data);
 }
 
-static s32 get_height(struct gfx_ds *ds)
+static int get_height(struct gfx_ds *ds)
 {
 	return ds->handler->get_height(ds->data);
 }
 
-static s32 get_type(struct gfx_ds *ds)
+static enum img_type get_type(struct gfx_ds *ds)
 {
 	return ds->handler->get_type(ds->data);
 }
@@ -181,59 +173,59 @@ static void unmap(struct gfx_ds *ds)
 	ds->handler->unmap(ds->data);
 }
 
-static void update(struct gfx_ds *ds, s32 x, s32 y, s32 w, s32 h)
+static void update(struct gfx_ds *ds, int x, int y, int w, int h)
 {
 	ds->handler->update(ds->data, x, y, w, h);
 	ds->update_cnt++;
 }
 
-static s32 get_upcnt(struct gfx_ds *ds)
+static int get_upcnt(struct gfx_ds *ds)
 {
 	return ds->update_cnt;
 }
 
-static s32 share(struct gfx_ds *ds, THREAD *dst_thread)
+static int share(struct gfx_ds *ds, THREAD *dst_thread)
 {
 	return ds->handler->share(ds->data, dst_thread);
 }
 
-static s32 get_ident(struct gfx_ds *ds, char *dst_ident)
+static int get_ident(struct gfx_ds *ds, char *dst_ident)
 {
 	return ds->handler->get_ident(ds->data, dst_ident);
 }
 
-static s32 draw_hline(struct gfx_ds *ds, s16 x, s16 y, s16 w, u32 rgba)
+static void draw_hline(struct gfx_ds *ds, int x, int y, int w, color_t rgba)
 {
-	return ds->handler->draw_hline(ds->data, x, y, w, rgba);
+	ds->handler->draw_hline(ds->data, x, y, w, rgba);
 }
 
-static s32 draw_vline(struct gfx_ds *ds, s16 x, s16 y, s16 h, u32 rgba)
+static void draw_vline(struct gfx_ds *ds, int x, int y, int h, color_t rgba)
 {
-	return ds->handler->draw_vline(ds->data, x, y, h, rgba);
+	ds->handler->draw_vline(ds->data, x, y, h, rgba);
 }
 
-static s32 draw_fill(struct gfx_ds *ds, s16 x, s16 y, s16 w, s16 h, u32 rgba)
+static void draw_fill(struct gfx_ds *ds, int x, int y, int w, int h, color_t rgba)
 {
-	return ds->handler->draw_fill(ds->data, x, y, w, h, rgba);
+	ds->handler->draw_fill(ds->data, x, y, w, h, rgba);
 }
 
-static s32 draw_slice(struct gfx_ds *ds, s16 x,  s16 y,  s16 w,  s16 h,
-                                         s16 sx, s16 sy, s16 sw, s16 sh,
-                    struct gfx_ds *img, u8 alpha) {
-	return ds->handler->draw_slice(ds->data, x, y, w, h, sx, sy, sw, sh, img, alpha);
+static void draw_slice(struct gfx_ds *ds, int x,  int y,  int w,  int h,
+                       int sx, int sy, int sw, int sh,
+                       struct gfx_ds *img, u8 alpha) {
+	ds->handler->draw_slice(ds->data, x, y, w, h, sx, sy, sw, sh, img, alpha);
 }
 
-static s32 draw_img(struct gfx_ds *ds, s16 x, s16 y, s16 w, s16 h,
-                    struct gfx_ds *img, u8 alpha) {
-	return ds->handler->draw_img(ds->data, x, y, w, h, img, alpha);
+static void draw_img(struct gfx_ds *ds, int x, int y, int w, int h,
+                     struct gfx_ds *img, u8 alpha) {
+	ds->handler->draw_img(ds->data, x, y, w, h, img, alpha);
 }
 
-static s32 draw_string(struct gfx_ds *ds, s16 x, s16 y, u32 fg_rgba, u32 bg_rgba,
-                       s32 font_id, char *str) {
-	return ds->handler->draw_string(ds->data, x, y , fg_rgba, bg_rgba, font_id, str);
+static void draw_string(struct gfx_ds *ds, int x, int y, color_t fg_rgba, color_t bg_rgba,
+                        int font_id, char *str) {
+	ds->handler->draw_string(ds->data, x, y , fg_rgba, bg_rgba, font_id, str);
 }
 
-static void push_clipping(struct gfx_ds *ds, s32 x, s32 y, s32 w, s32 h)
+static void push_clipping(struct gfx_ds *ds, int x, int y, int w, int h)
 {
 	ds->handler->push_clipping(ds->data, x, y, w, h);
 }
@@ -248,22 +240,22 @@ static void reset_clipping(struct gfx_ds *ds)
 	ds->handler->reset_clipping(ds->data);
 }
 
-static s32 get_clip_x(struct gfx_ds *ds)
+static int get_clip_x(struct gfx_ds *ds)
 {
 	return ds->handler->get_clip_x(ds->data);
 }
 
-static s32 get_clip_y(struct gfx_ds *ds)
+static int get_clip_y(struct gfx_ds *ds)
 {
 	return ds->handler->get_clip_y(ds->data);
 }
 
-static s32 get_clip_w(struct gfx_ds *ds)
+static int get_clip_w(struct gfx_ds *ds)
 {
 	return ds->handler->get_clip_w(ds->data);
 }
 
-static s32 get_clip_h(struct gfx_ds *ds)
+static int get_clip_h(struct gfx_ds *ds)
 {
 	return ds->handler->get_clip_h(ds->data);
 }
@@ -273,7 +265,7 @@ static void set_mouse_cursor(struct gfx_ds *ds, struct gfx_ds *cursor)
 	ds->handler->set_mouse_cursor(ds->data, cursor);
 }
 
-static void set_mouse_pos(struct gfx_ds *ds, s32 x, s32 y)
+static void set_mouse_pos(struct gfx_ds *ds, int x, int y)
 {
 	ds->handler->set_mouse_pos(ds->data, x, y);
 }
@@ -309,7 +301,6 @@ int init_gfx(struct dope_services *d)
 	gfxscr_rgb16  = d->get_module("GfxScreen16 1.0");
 	gfximg_rgb16  = d->get_module("GfxImage16 1.0");
 	gfximg_rgba32 = d->get_module("GfxImage32 1.0");
-	gfximg_yuv420 = d->get_module("GfxImageYUV420 1.0");
 
 	set_handler_defaults(&gfxscr_rgb16_handler);
 	gfxscr_rgb16->register_gfx_handler(&gfxscr_rgb16_handler);
@@ -319,9 +310,6 @@ int init_gfx(struct dope_services *d)
 
 	set_handler_defaults(&gfximg_rgb16_handler);
 	gfximg_rgb16->register_gfx_handler(&gfximg_rgb16_handler);
-
-	set_handler_defaults(&gfximg_yuv420_handler);
-	gfximg_yuv420->register_gfx_handler(&gfximg_yuv420_handler);
 
 	d->register_module("Gfx 1.0", &services);
 	return 1;

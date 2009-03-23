@@ -188,6 +188,49 @@ static void scr_reset_shade(void)
 }
 */
 
+#ifdef FILTER_PIXELS
+
+/**
+ * Filter pixels to emulate low color depth
+ */
+static void filter_area(long x1, long y1, long x2, long y2)
+{
+	long dx;
+	long dy;
+	long v;
+	long i, j;
+	u16 *src, *dst;
+	u16 *s, *d;
+
+	/* apply clipping to specified area */
+	if (x1 < (v = clip->get_x1())) x1 = v;
+	if (y1 < (v = clip->get_y1())) y1 = v;
+	if (x2 > (v = clip->get_x2())) x2 = v;
+	if (y2 > (v = clip->get_y2())) y2 = v;
+
+	dx = x2 - x1;
+	dy = y2 - y1;
+
+	if (dx >= 0 && dy >= 0) {
+
+		/* determine offset of left top corner of the area to update */
+		src = (u16 *)scr_adr + y1*scr_width + x1;
+		dst = (u16 *)scr_adr + y1*scr_width + x1;
+
+		for (j = dy + 1; j--; ) {
+
+			/* copy and filter line */
+			d = (u16 *)dst; s = (u16 *)src;
+			for (i = (dx); i--; ) *(d++) = *(s++) & (0xf000 | 0x07c0 | 0x1e);
+
+			src += scr_width;
+			dst += scr_width;
+		}
+	}
+}
+
+#endif /* FILTER_PIXELS */
+
 
 /**
  * Make changes on the screen visible (buffered output)
@@ -196,6 +239,10 @@ static void update_area(long x1, long y1, long x2, long y2)
 {
 	long dx, dy, d;
 	int  cursor_visible = 0;
+
+#ifdef FILTER_PIXELS
+	filter_area(x1, y1, x2, y2);
+#endif
 
 	if ((curr_mx < x2) && (curr_mx + 16 > x1)
 	 && (curr_my < y2) && (curr_my + 16 > y1)) {

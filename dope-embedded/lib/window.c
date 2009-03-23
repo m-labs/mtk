@@ -67,8 +67,12 @@ static int shadow_w = 17, shadow_h = 17;
 static int shadow_top, shadow_bottom;
 static int shadow_left, shadow_right;
 
+extern int config_dropshadows;
 extern int config_transparency;  /* support transparent windows */
 extern int config_oldresize;     /* old way of resizing windows */
+
+extern unsigned long config_bg_win_color;
+
 extern SCREEN *curr_scr;
 
 int init_window(struct dope_services *d);
@@ -210,6 +214,30 @@ static void win_move_motion_callback(WIDGET *cw, int dx, int dy)
 		s32  id = curr_window->gen->get_app_id((WIDGET *)curr_window);
 		if (m) msg->send_action_event(id, "move", m);
 	}
+}
+
+
+static void win_close_leave_callback(WIDGET *cw, int dx, int dy) {
+	WINDOW *w;
+	char   *m;
+	s32     id;
+
+	/* cw is the close button */
+	if (!cw || !cw->gen->get_state(cw)) return;
+
+	/* determine the window that hosts the close button */
+	w = (WINDOW *)cw->gen->get_window((WIDGET *)cw);
+	if (!w) return;
+
+	/* send close event to client */
+	m  = w->gen->get_bind_msg((WIDGET *)w, "close");
+	id = w->gen->get_app_id((WIDGET *)w);
+	if (m) msg->send_action_event(id, "close", m);
+
+	/* restore state of close button */
+	cw->gen->set_state(cw, 0);
+	cw->gen->set_mfocus(cw, 0);
+	cw->gen->update(cw);
 }
 
 
@@ -396,7 +424,7 @@ static int win_draw_bg(WINDOW *cw, struct gfx_ds *ds, long x, long y, long w, lo
 	if ((w <= 0) || (h <= 0)) return 0;
 
 	if (config_transparency) {
-		u32 bgcol = (cw->wind->bgcol & 0xffffff00) | (opaque ? 0xff : 0x7f);
+		u32 bgcol = (config_bg_win_color & 0xffffff00) | (opaque ? 0xff : 0x7f);
 		gfx->push_clipping(ds, x, y, w, h);
 
 		if (!opaque)
@@ -412,7 +440,7 @@ static int win_draw_bg(WINDOW *cw, struct gfx_ds *ds, long x, long y, long w, lo
 		gfx->pop_clipping(ds);
 	} else {
 		if (!origin) {
-			gfx->draw_box(ds, x, y, w, h, 0x708090ff);
+			gfx->draw_box(ds, x, y, w, h, config_bg_win_color);
 			ret |= 1;
 		}
 	}
@@ -481,27 +509,29 @@ static int win_draw(WINDOW *w, struct gfx_ds *ds, long x, long y, WIDGET *origin
 		                              origin, 0);
 	}
 
-	if ((cx1 < w->wd->x + x + shadow_left) || (cx2 > w->wd->x + x + w->wd->w - 1 - shadow_right)
-	 || (cy1 < w->wd->y + y + shadow_top)  || (cy2 > w->wd->y + y + w->wd->h - 1 - shadow_bottom)) {
-		int sret = 0; 
+	if (config_dropshadows) {
+		if ((cx1 < w->wd->x + x + shadow_left) || (cx2 > w->wd->x + x + w->wd->w - 1 - shadow_right)
+		 || (cy1 < w->wd->y + y + shadow_top)  || (cy2 > w->wd->y + y + w->wd->h - 1 - shadow_bottom)) {
+			int sret = 0; 
 
-		/*
-		 * For drawing the background of the shadow,
-		 * we turn off the transparency depth limiting
-		 * by decreasing the current depth value
-		 * temporary.
-		 */
+			/*
+			 * For drawing the background of the shadow,
+			 * we turn off the transparency depth limiting
+			 * by decreasing the current depth value
+			 * temporary.
+			 */
 
-		/* draw shadow background */
-		transparency_depth--;
-		sret |= w->gen->drawbehind(w, w, 0, 0, w->wd->w, shadow_top, origin);
-		sret |= w->gen->drawbehind(w, w, 0, shadow_top, shadow_left, w->wd->h - shadow_top - shadow_bottom, origin);
-		sret |= w->gen->drawbehind(w, w, w->wd->w - shadow_right, shadow_top, shadow_left, w->wd->h - shadow_top - shadow_bottom, origin);
-		sret |= w->gen->drawbehind(w, w, 0, w->wd->h - shadow_bottom, w->wd->w, shadow_bottom, origin);
-		transparency_depth++;
+			/* draw shadow background */
+			transparency_depth--;
+			sret |= w->gen->drawbehind(w, w, 0, 0, w->wd->w, shadow_top, origin);
+			sret |= w->gen->drawbehind(w, w, 0, shadow_top, shadow_left, w->wd->h - shadow_top - shadow_bottom, origin);
+			sret |= w->gen->drawbehind(w, w, w->wd->w - shadow_right, shadow_top, shadow_left, w->wd->h - shadow_top - shadow_bottom, origin);
+			sret |= w->gen->drawbehind(w, w, 0, w->wd->h - shadow_bottom, w->wd->w, shadow_bottom, origin);
+			transparency_depth++;
 
-		if (sret) draw_shadow(ds, w->wd->x + x, w->wd->y + y, w->wd->w, w->wd->h);
-		ret |= sret;
+			if (sret) draw_shadow(ds, w->wd->x + x, w->wd->y + y, w->wd->w, w->wd->h);
+			ret |= sret;
+		}
 	}
 
 	if (cw) {
@@ -963,6 +993,20 @@ static void win_handle_resize(WINDOW *w, WIDGET *cw)
 }
 
 
+static void win_handle_close(WINDOW *w, WIDGET *cw) {
+
+	if (!cw) return;
+
+	/* handle close only when binding is set */
+	if (!w->gen->get_bind_msg((WIDGET *)w, "close")) return;
+
+	cw->gen->set_state(cw, 1);
+	cw->gen->update(cw);
+
+	userstate->touch(cw, NULL, win_close_leave_callback);
+}
+
+
 static void win_handle_move(WINDOW *w, WIDGET *cw)
 {
 	if (!cw) return;
@@ -1075,6 +1119,7 @@ static struct window_methods win_methods = {
 	win_open,
 	win_close,
 	win_top,
+	win_handle_close,
 	win_handle_move,
 	win_handle_resize,
 	win_set_x,
@@ -1102,7 +1147,7 @@ static WINDOW *create(void)
 
 	/* set window specific attributes */
 	new->wind->flags    =  WIN_FLAGS_BACKGROUND;
-	new->wind->elements =  WIN_CLOSER  | WIN_FULLER | WIN_TITLE | WIN_BORDERS;
+	new->wind->elements =  WIN_CLOSER  | WIN_TITLE | WIN_BORDERS;
 	new->wind->ux = new->wind->uy = new->wind->uw = new->wind->uh = NOARG;
 	new->wind->bgcol = 0x708090ff;
 
@@ -1194,10 +1239,17 @@ int init_window(struct dope_services *d)
 	shadow = gfx->alloc_img(shadow_w, shadow_h, GFX_IMG_TYPE_RGBA32);
 	gen_shadow(gfx->map(shadow), shadow_w, shadow_h, shadow_w >> 1, shadow_h >> 1);
 
-	shadow_left   = services.shadow_left;
-	shadow_right  = services.shadow_right;
-	shadow_top    = services.shadow_top;
-	shadow_bottom = services.shadow_bottom;
+//	if (config_dropshadows) {
+		shadow_left   = services.shadow_left;
+		shadow_right  = services.shadow_right;
+		shadow_top    = services.shadow_top;
+		shadow_bottom = services.shadow_bottom;
+//	} else {
+//		shadow_left   = 0;
+//		shadow_right  = 0;
+//		shadow_top    = 0;
+//		shadow_bottom = 0;
+//	}
 
 	d->register_module("Window 1.0", &services);
 	return 1;

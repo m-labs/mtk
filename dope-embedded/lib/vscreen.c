@@ -493,7 +493,6 @@ static s32 vscr_set_mode(VSCREEN *vs, s32 width, s32 height, char *mode)
 	/* create new frame buffer image */
 	if (dope_streq("RGB16",  mode, 6)) type = GFX_IMG_TYPE_RGB16;
 	if (dope_streq("RGBA32", mode, 7)) type = GFX_IMG_TYPE_RGBA32;
-	if (dope_streq("YUV420", mode, 7)) type = GFX_IMG_TYPE_YUV420;
 
 	if (!type) {
 		ERROR(printf("VScreen(set_mode): mode %s not supported!\n", mode);)
@@ -618,9 +617,6 @@ static void vscr_share(VSCREEN *vs, VSCREEN *from)
 		break;
 	case GFX_IMG_TYPE_RGBA32:
 		vs->vd->bpp = 32;
-		break;
-	case GFX_IMG_TYPE_YUV420:
-		vs->vd->bpp = 12;
 		break;
 	}
 	vs->vd->pixels = gfx->map(vs->vd->image);

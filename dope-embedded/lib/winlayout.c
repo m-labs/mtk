@@ -72,6 +72,12 @@ static void resize_callback(BUTTON *b)
 	w->win->handle_resize(w,(WIDGET *)b);
 }
 
+static void close_callback(BUTTON *b) {
+	WINDOW *w;
+	if (!b) return;
+	w = (WINDOW *)b->gen->get_window((WIDGET *)b);
+	w->win->handle_close(w, (WIDGET *)b);
+}
 
 static void move_callback(BUTTON *b)
 {
@@ -121,7 +127,7 @@ static WIDGET *create_win_elements(s32 elements, int x, int y, int width, int he
 	}
 
 	if (elements & WIN_CLOSER) {
-		first=new_button(first,dx,dy,tsize,tsize,"",NULL,WE_CLOSER);
+		first=new_button(first,dx,dy,tsize,tsize,"",close_callback,WE_CLOSER);
 		dx+=tsize;dw-=tsize;
 	}
 

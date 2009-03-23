@@ -56,10 +56,10 @@ extern int config_clackcommit;
 
 int init_button(struct dope_services *d);
 
-#define BLACK_SOLID GFX_RGBA(0, 0, 0, 255)
-#define BLACK_MIXED GFX_RGBA(0, 0, 0, 127)
-#define WHITE_SOLID GFX_RGBA(255, 255, 255, 255)
-#define WHITE_MIXED GFX_RGBA(255, 255, 255, 127)
+static const color_t BLACK_SOLID = GFX_RGBA(0, 0, 0, 255);
+static const color_t BLACK_MIXED = GFX_RGBA(0, 0, 0, 127);
+static const color_t WHITE_SOLID = GFX_RGBA(255, 255, 255, 255);
+static const color_t WHITE_MIXED = GFX_RGBA(255, 255, 255, 127);
 
 
 /********************************

@@ -65,12 +65,12 @@ extern int init_container        (struct dope_services *);
 extern int init_window           (struct dope_services *);
 extern int init_userstate        (struct dope_services *);
 extern int init_conv_fnt         (struct dope_services *);
+extern int init_conv_tff         (struct dope_services *);
 extern int init_fontman          (struct dope_services *);
 extern int init_gfx              (struct dope_services *);
 extern int init_gfxscr16         (struct dope_services *);
 extern int init_gfximg16         (struct dope_services *);
 extern int init_gfximg32         (struct dope_services *);
-extern int init_gfximgyuv420     (struct dope_services *);
 extern int init_cache            (struct dope_services *);
 extern int init_scale            (struct dope_services *);
 extern int init_scrollbar        (struct dope_services *);
@@ -117,6 +117,7 @@ int config_don_scheduler = 0;   /* use donation scheduler                 */
 int config_clackcommit   = 0;   /* deliver commit events on mouse release */
 int config_winborder     = 5;   /* size of window resize border           */
 int config_menubar       = 1;   /* menubar visibility                     */
+int config_dropshadows   = 0;   /* draw dropshadows behind windows        */
 
 extern int dope_main(int argc, char **argv);
 int dope_main(int argc,char **argv)
@@ -180,6 +181,9 @@ int dope_main(int argc,char **argv)
 	INFO(printf("%sConvertFNT\n",dbg));
 	init_conv_fnt(&dope);
 
+	INFO(printf("%sConvertTFF\n",dbg));
+	init_conv_tff(&dope);
+
 	INFO(printf("%sFontManager\n",dbg));
 	init_fontman(&dope);
 
@@ -191,9 +195,6 @@ int dope_main(int argc,char **argv)
 
 	INFO(printf("%sGfxImage32\n",dbg));
 	init_gfximg32(&dope);
-
-	INFO(printf("%sGfxImageYUV420\n",dbg));
-	init_gfximgyuv420(&dope);
 
 	INFO(printf("%sGfx\n",dbg));
 	init_gfx(&dope);

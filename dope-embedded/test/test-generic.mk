@@ -14,15 +14,23 @@
 TARGET       = dopetest
 TEST_DIR     = $(BASE_DIR)/test
 DOPE_LIB_DIR = $(BASE_DIR)/lib/$(PLATFORM)
-SRC_C       += test.c disp_img.c
+SRC_C       += test.c disp_img.c settings.c grid.c dopecmd.c colors.c \
+               slides.c slideshow.c led.c
 LIBS        += -ldope
 CFLAGS      += -I. -I$(TEST_DIR) -I$(BASE_DIR)/include
 CFLAGS      += -Wall -O2 -MMD -g -Wtrigraphs
 LDFLAGS     += -L$(DOPE_LIB_DIR)
 OBJECTS      = $(SRC_C:.c=.o)
 
-vpath test.c $(TEST_DIR)
-vpath disp_img.c $(TEST_DIR)
+vpath test.c      $(TEST_DIR)
+vpath disp_img.c  $(TEST_DIR)
+vpath settings.c  $(TEST_DIR)
+vpath grid.c      $(TEST_DIR)
+vpath dopecmd.c   $(TEST_DIR)
+vpath colors.c    $(TEST_DIR)
+vpath slides.c    $(TEST_DIR)
+vpath slideshow.c $(TEST_DIR)
+vpath led.c       $(TEST_DIR)
 
 #
 # Default rule

@@ -499,17 +499,17 @@ int init_vtextscreen(struct dope_services *d)
 		for (i = 0; i < 8; i++) {
 
 			/* get color components of color by its index */
-			r = GFX_R(term_coltab[i]);
-			g = GFX_G(term_coltab[i]);
-			b = GFX_B(term_coltab[i]);
+			r = gfx_red  (term_coltab[i]);
+			g = gfx_green(term_coltab[i]);
+			b = gfx_blue (term_coltab[i]);
 
 			/* apply brightness increment */
 			r = r ? (r + brightness*50) : 0;
 			g = g ? (g + brightness*50) : 0;
 			b = b ? (b + brightness*50) : 0;
 
-			fg_coltab[brightness][i]   = GFX_RGB(r, g, b);
-			bg_coltab[brightness][i]   = GFX_RGBA(r, g, b, 255);
+			fg_coltab[brightness + 0][i] = GFX_RGB (r, g, b);
+			bg_coltab[brightness + 0][i] = GFX_RGBA(r, g, b, 255);
 			bg_coltab[brightness + 3][i] = GFX_RGBA(r, g, b, 127);
 		}
 	}

@@ -6,6 +6,7 @@ help:
 	@echo "s3e_starter     - ... Spartan3E starter kit (standalone)"
 	@echo "ml405           - ... ML405 (standalone)"
 	@echo "ml507           - ... ML507 (standalone)"
+	@echo "te0304          - ... Trenz Electronic 0304 demonstrator"
 	@echo "s3a_starter_xil - ... Spartan3A and Spartan 3AN starter kit (using Xilkernel)"
 	@echo "sdl             - ... libSDL"
 	@echo ""
@@ -31,6 +32,10 @@ ml405:
 ml507:
 	make -C lib/ml507
 	make -C test/ml507
+
+te0304:
+	make -C lib/te0304
+	make -C test/te0304
 
 sdl:
 	make -C lib/sdl

@@ -17,12 +17,14 @@
 #include "gfx_handler.h"
 #include "gfx.h"
 
+typedef u16 pixel_t;
+
 static struct sharedmem_services *shmem;
 
 struct gfx_ds_data {
-	s32 w,h;            /* width and height of the image */
+	int        w,h;     /* width and height of the image */
 	SHAREDMEM *smb;     /* shared memory block */
-	u16 *pixels;        /* 16bit color values of the pixels */
+	pixel_t   *pixels;  /* 16bit color values of the pixels */
 };
 
 int init_gfximg16(struct dope_services *d);
@@ -31,17 +33,17 @@ int init_gfximg16(struct dope_services *d);
  ** Gfx handler functions **
  ***************************/
 
-static s32 img_get_width(struct gfx_ds_data *img)
+static int img_get_width(struct gfx_ds_data *img)
 {
 	return img->w;
 }
 
-static s32 img_get_height(struct gfx_ds_data *img)
+static int img_get_height(struct gfx_ds_data *img)
 {
 	return img->h;
 }
 
-static s32 img_get_type(struct gfx_ds_data *img)
+static enum img_type img_get_type(struct gfx_ds_data *img)
 {
 	return GFX_IMG_TYPE_RGB16;
 }
@@ -57,12 +59,12 @@ static void *img_map(struct gfx_ds_data *img)
 	return img->pixels;
 }
 
-static s32 img_share(struct gfx_ds_data *img, THREAD *dst_thread)
+static int img_share(struct gfx_ds_data *img, THREAD *dst_thread)
 {
 	return shmem->share(img->smb, dst_thread);
 }
 
-static s32 img_get_ident(struct gfx_ds_data *img, char *dst_ident)
+static int img_get_ident(struct gfx_ds_data *img, char *dst_ident)
 {
 	shmem->get_ident(img->smb, dst_ident);
 	return 0;
@@ -73,20 +75,23 @@ static s32 img_get_ident(struct gfx_ds_data *img, char *dst_ident)
  ***********************/
 
 
-static struct gfx_ds_data *create(s32 width, s32 height, struct gfx_ds_handler **handler)
+static struct gfx_ds_data *create(int width, int height, struct gfx_ds_handler **handler)
 {
-	struct gfx_ds_data *new;
-	new = zalloc(sizeof(struct gfx_ds_data));
+	struct gfx_ds_data *new = zalloc(sizeof(struct gfx_ds_data));
 	if (!new) return NULL;
-	new->w = width;
-	new->h = height;
-	new->smb = shmem->alloc(width*height*2);
-	new->pixels = (u16 *)(shmem->get_address(new->smb));
-	if (new->pixels) memset(new->pixels, 0, width*height*2);
+
+	new->w      = width;
+	new->h      = height;
+	new->smb    = shmem->alloc(width*height*sizeof(pixel_t));
+	new->pixels = (pixel_t *)(shmem->get_address(new->smb));
+
+	if (new->pixels)
+		memset(new->pixels, 0, width*height*sizeof(pixel_t));
+
 	return new;
 }
 
-static s32 register_gfx_handler(struct gfx_ds_handler *handler)
+static int register_gfx_handler(struct gfx_ds_handler *handler)
 {
 	handler->get_width  = img_get_width;
 	handler->get_height = img_get_height;

@@ -4194,3 +4194,4 @@ static char *pixel_data_spartan3e =
 	"_NC1_NC1_NC1_NC1_NC1_NC1_NC1_NC1_NC1_NC1_NC1_NC1_NC1_NC1_NC1_NC1"
 	"_NC1_NC1_NC1_NC1_NC1_NC1_NC1_NC1_NC1_NC1_NC1_NC1^^G1^NC0^>?/^.;."
 	"^.;.]^7-]N3,]>/+";
+

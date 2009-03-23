@@ -21,200 +21,89 @@
 #include "dopelib.h"
 #include "vscreen.h"
 
-/* logos */
-#include "xilinx_logo.h"
-#include "genode-labs-banner.h"
+/* logo */
+#include "gfx/genode-labs-banner.h"
 
 /* platform interface */
 #include "platform.h"
 
 /* local includes */
 #include "disp_img.h"
+#include "dopecmd.h"
+#include "settings.h"
+#include "grid.h"
+#include "colors.h"
+#include "slideshow.h"
 
-/**
- * LED control mode
- */
-static enum {
-	LEDS_SOURCE_NONE,        /* LEDs are off */
-	LEDS_SOURCE_BUTTONS,     /* LEDs controlled by GUI buttons */
-	LEDS_SOURCE_SCALE,       /* LEDs controlled bz GUI scale widget */
-} source_select;
+static int app_id_genode_img,
+           app_id_colors;
 
-static int led_app_id;       /* DOpE application ID for the LED control window */
-static int led_state;        /* current LED state */
-static int led_state_scale;  /* state of LED scale widget */
+enum {
+	MENU_ITEM_GENODE_LABS_LOGO,
+	MENU_ITEM_SETTINGS,
+	MENU_ITEM_GRID_DEMO,
+	MENU_ITEM_TERMINAL,
+	MENU_ITEM_COLORS,
+	MENU_ITEM_SLIDESHOW,
+};
 
+static int menu_app_id;
 
-/**
- * Called when the source is selected
- */
-static void button_select_callback(dope_event *e, void *arg)
+static void menu_callback(dope_event *e, void *arg)
 {
-	if ((int)arg == 0) {/* select single bits */
-		if (source_select != LEDS_SOURCE_BUTTONS) {
-			dope_cmdf(led_app_id,"b_select.set(-state 1)");
-			dope_cmdf(led_app_id,"b_slide.set(-state 0)");
-			source_select = LEDS_SOURCE_BUTTONS;
-			set_leds(led_state);
-		}
-		else {
-			/* switch off the LEDS */
-			source_select = LEDS_SOURCE_NONE;
-			dope_cmdf(led_app_id,"b_select.set(-state 0)");
-			set_leds(0);
-		}
-	}
-	else { /* use slider instead */
-		if (source_select != LEDS_SOURCE_SCALE) {
-			dope_cmdf(led_app_id,"b_select.set(-state 0)");
-			dope_cmdf(led_app_id,"b_slide.set(-state 1)");
-			source_select = LEDS_SOURCE_SCALE;
-			set_leds(led_state_scale);
-		}
-		else {
-			/* switch off the LEDS */
-			source_select = LEDS_SOURCE_NONE;
-			dope_cmdf(led_app_id,"b_slide.set(-state 0)");
-			set_leds(0);
-		}
+	switch ((int)arg) {
+	case MENU_ITEM_GENODE_LABS_LOGO:
+		open_image_window(app_id_genode_img);
+		break;
+	case MENU_ITEM_SETTINGS:
+		open_settings_window();
+		break;
+	case MENU_ITEM_GRID_DEMO:
+		open_grid_window();
+		break;
+	case MENU_ITEM_TERMINAL:
+		open_dopecmd_window();
+		break;
+	case MENU_ITEM_COLORS:
+		open_colors_window(app_id_colors);
+		break;
+	case MENU_ITEM_SLIDESHOW:
+		open_slideshow_window();
+		break;
 	}
 }
 
-
-/**
- * Called when an LED button was pressed
- */
-static void led_button_callback(dope_event *e, void *arg)
+static void init_menu_window(void)
 {
-	int arg_int = (int) arg;
-	int arg_pow2 = 1 << (arg_int-1);
+	menu_app_id = dope_init_app("Menu");
 
-	/* toggle the led state of the selected LED */
-	led_state = led_state ^ arg_pow2;
-
-	/* if the buttons are the current source write to LEDs */
-	if (source_select == LEDS_SOURCE_BUTTONS)
-		set_leds(led_state);
-
-	/* tell the GUI to switch the state of the button */
-	dope_cmdf(led_app_id,"b%d.set(-state %d)", arg_int,
-	          ((led_state & arg_pow2) >> (arg_int-1)) & 1 );
-}
-
-
-/**
- * Called when the slider was moved
- */
-static void led_scale_callback(dope_event *e, void *arg)
-{
-	char buf[10];
-
-	/* request the value from the GUI and update the value drawn */
-	dope_req(led_app_id, buf, sizeof(buf), "led_scale.value");
-	led_state_scale = atoi(buf);
-	dope_cmdf(led_app_id, "led_value.set(-text \"%d\")", led_state_scale);
-
-	/* if the slider is the current source write to LEDs */
-	if(source_select == LEDS_SOURCE_SCALE)
-		set_leds(led_state_scale);
-}
-
-
-/**
- * Display 4096 Colors
- *
- * \return  DOpE application ID
- */
-static int draw_colors()
-{
-	int i, app_id;
-	int blue = 0, green = 0, red = 0;
-	short *pixbuf;
-
-	app_id = dope_init_app("4096 Colors");
-
-	dope_cmd_seq(app_id,
-		"vs = new VScreen()",
-		"vs.setmode(64, 64, RGB16)",
-		"gr = new Grid()",
-		"gr.place(vs, -column 1 -row 1)",
-		"fpga = new Window(-content vs -workx 570 -worky 450 -workw 128 -workh 128)",
-		"fpga.open()",
-		NULL);
-
-	pixbuf = (short *)vscr_get_fb(app_id, "vs");
-
-	for (i = 0; i < 64*64; i++) {
-		pixbuf[i] = red << 11 | green << 5 | blue;
-		if (blue == 30) {
-			blue = 0;
-			green += 4;
-		} else
-			blue += 2;
-
-		if (green == 64) {
-			green = 0;
-			red += 2;
-		}
-	}
-
-	return app_id;
-}
-
-
-/**
- * LED handling
- *
- * \return DOpE application ID
- */
-static int draw_led_control()
-{
-	int i, app_id = dope_init_app("LED Control");
-
-	dope_cmd_seq(app_id,
-		"b_slide    = new Button(-text \"Slider\")",
-		"b_select   = new Button(-text \"Buttons\")",
-		"led_scale  = new Scale(-from 0 -to 256 -value 0.0)",
-		"led_value  = new Label(-text \"0\")",
-		"mode       = new Label(-text \"Select Source:\")",
-		"text       = new Label(-text \"Current status: \")",
-		"status_off = new Variable(-value \"Off...\")",
-		"status_on  = new Variable(-value \"On...\")",
-		NULL);
-
-	dope_bind(app_id, "led_scale", "change", led_scale_callback, NULL);
-	dope_bind(app_id, "b_select", "press", button_select_callback, (void *)0);
-	dope_bind(app_id, "b_slide" , "press", button_select_callback, (void *)1);
-
-	/* create g_led grid */
-	dope_cmd(app_id, "g_led = new Grid()");
-	for (i = 1; i <= 8; i++) {
-		char label[8];
-		snprintf(label, sizeof(label), "L%d", i);
-		dope_cmdf(app_id, "b%d = new Button(-text \"%s\")", i, label);
-		dope_cmdf(app_id, "g_led.place(b%d, -column %d -row 1)", i, i);
-		dope_bindf(app_id, "b%d", "press", led_button_callback, (void *)i, i);
-	}
-
-	/* create main grid */
-	dope_cmd_seq(app_id,
+	dope_cmd_seq(menu_app_id,
 		"g = new Grid()",
-		"g.place(mode,      -column 1 -row 2)",
-		"g.place(b_slide,   -column 1 -row 3)",
-		"g.place(led_scale, -column 2 -row 3)",
-		"g.place(b_select,  -column 1 -row 4)",
-		"g.place(g_led,     -column 2 -row 4)",
-		"g.place(led_value, -column 3 -row 3)",
-		"g.columnconfig(1, -size 64)",
-		"g.columnconfig(3, -size 64)",
-		NULL);
+		"b_genode_labs_logo = new Button(-text \"Genode Labs logo\")",
+		"b_settings         = new Button(-text \"Settings\")",
+		"b_grid_demo        = new Button(-text \"Grid demo\")",
+		"b_terminal         = new Button(-text \"Terminal\")",
+		"b_colors           = new Button(-text \"Colors\")",
+		"b_slideshow        = new Button(-text \"Slideshow\")",
+		"g.place(b_genode_labs_logo, -column 1 -row 1)",
+		"g.place(b_settings,         -column 1 -row 2)",
+		"g.place(b_grid_demo,        -column 1 -row 3)",
+		"g.place(b_terminal,         -column 1 -row 4)",
+		"g.place(b_colors,           -column 1 -row 5)",
+		"g.place(b_slideshow,        -column 1 -row 6)",
+		"w = new Window(-x 24 -y 32 -content g)",
+		"w.open()",
+		0
+	);
 
-	/* create window displaying the main grid */
-	dope_cmd(app_id, "a = new Window(-content g -workx 25 -worky 60)");
-	dope_cmd(app_id, "a.open()");
-
-	return app_id;
+	dope_bind(menu_app_id, "b_genode_labs_logo", "commit", menu_callback, (void *)MENU_ITEM_GENODE_LABS_LOGO);
+	dope_bind(menu_app_id, "b_settings",         "commit", menu_callback, (void *)MENU_ITEM_SETTINGS);
+	dope_bind(menu_app_id, "b_grid_demo",        "commit", menu_callback, (void *)MENU_ITEM_GRID_DEMO);
+	dope_bind(menu_app_id, "b_terminal",         "commit", menu_callback, (void *)MENU_ITEM_TERMINAL);
+	dope_bind(menu_app_id, "b_colors",           "commit", menu_callback, (void *)MENU_ITEM_COLORS);
+	dope_bind(menu_app_id, "b_slideshow",        "commit", menu_callback, (void *)MENU_ITEM_SLIDESHOW);
 }
+
 
 int main(int argc, char **argv)
 {
@@ -226,16 +115,27 @@ int main(int argc, char **argv)
 
 	/* setup windows */
 	printf("Setup windows...\n");
-	draw_colors();
-	led_app_id = draw_led_control();
 
-	display_platform_images();
-	display_image("Xilinx", pixel_data_xilinx, 570, 300, 145, 43);
-	display_image("Genode Labs", pixel_data_genode, 420, 50, 232, 84);
+	app_id_genode_img = create_image_window("Genode Labs", pixel_data_genode,
+	                                        420,  50, 232,  84);
+
+	init_grid_window();
+	init_dopecmd();
+	init_settings();
+	app_id_colors = init_colors_window();
+	init_slideshow_window();
+	init_menu_window();
+
+	/* default window configuration */
+	open_image_window(app_id_genode_img);
+	open_slideshow_window();
+
+	/* platform-specific GUI initialization */
+	init_platform_gui(menu_app_id);
 
 	/* run the GUI */
 	printf("Running GUI...\n");
-	dope_eventloop(led_app_id);
+	dope_eventloop(0);
 
 	return 0;
 }

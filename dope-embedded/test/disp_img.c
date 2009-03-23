@@ -18,18 +18,28 @@
 #include <stdlib.h>
 
 /* dope */
-#include "dopelib.h"
-#include "vscreen.h"
+#include <dopelib.h>
+#include <vscreen.h>
 
-#define HEADER_PIXEL(data,pixel) {\
-  pixel[0] = (((data[0] - 33) << 2) | ((data[1] - 33) >> 4)); \
-  pixel[1] = ((((data[1] - 33) & 0xF) << 4) | ((data[2] - 33) >> 2)); \
-  pixel[2] = ((((data[2] - 33) & 0x3) << 6) | ((data[3] - 33))); \
-  data += 4; \
+/* local */
+#include "util.h"
+
+
+void open_image_window(int app_id)
+{
+	dope_cmd(app_id, "w.open()");
+	dope_cmd(app_id, "w.top()");
 }
 
-int display_image(const char *title, const char *pixels,
-                         int x, int y, int w, int h)
+
+void close_window_callback(dope_event *e, void *arg)
+{
+	dope_cmd((int)arg, "w.close()");
+}
+
+
+int create_image_window(const char *title, const char *pixels,
+                        int x, int y, int w, int h)
 {
 	int i, app_id = dope_init_app(title);
 	short *pixbuf;
@@ -56,6 +66,7 @@ int display_image(const char *title, const char *pixels,
 	dope_cmd (app_id, "gr.place(vs, -column 1 -row 1)");
 	dope_cmdf(app_id, "w = new Window(-content vs -workx %d -worky %d -workw %d -workh %d)",
 	          x, y, w, h);
-	dope_cmd (app_id, "w.open()");
+
+	dope_bind(app_id, "w", "close", close_window_callback, (void *)app_id);
 	return app_id;
 }

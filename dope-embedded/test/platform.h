@@ -8,20 +8,21 @@
 #define _PLATFORM_H_
 
 /**
- * Set the state of 8 leds
- */
-extern void set_leds(unsigned char leds_state);
-
-/**
- * Display the images that correspond to the current platform
- */
-extern void display_platform_images(void);
-
-/**
  * Platform-specific initialization
  *
- * \return 0 on succes
+ * This function is called before any other code is executed.
+ * It is the right place to initialize caches and peripherals.
  */
-extern int init_platform(void);
+extern void init_platform(void);
+
+/**
+ * Platform-specific customization of the main menu
+ *
+ * \param menu_app_id  DOpE application ID of main menu
+ *
+ * By using 'menu_app_id' the platform is able to supplement
+ * and modify the main menu by custom items.
+ */
+extern void init_platform_gui(int menu_app_id);
 
 #endif /* _PLATFORM_H_ */

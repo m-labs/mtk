@@ -35,9 +35,9 @@ static inline GFX_CONTAINER *gen_range_img(struct gfx_services *gfx,
 	for (j = 0; j < RANGE_SIZE; j++) {
 		for (i = 0; i < RANGE_SIZE; i++) {
 			int b = 3*i + 3*j;
-			*(dst++) = GFX_RGB16(((r_scale*b)>>8) + r_offset,
-			                     ((g_scale*b)>>8) + g_offset,
-			                     ((b_scale*b)>>8) + b_offset);
+			*(dst++) = rgba_to_rgb565(GFX_RGB(((r_scale*b)>>8) + r_offset,
+			                                  ((g_scale*b)>>8) + g_offset,
+			                                  ((b_scale*b)>>8) + b_offset));
 		}
 	}
 
