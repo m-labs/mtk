@@ -45,7 +45,7 @@ int init_simple_scheduler(struct dope_services *d);
 
 extern int dope_client_main(int argc, char **argv);
 
-int config_redraw_granularity = 150*1000;
+int config_redraw_granularity = 300*1000;
 
 struct dope_services *dope_services;
 

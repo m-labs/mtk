@@ -400,6 +400,10 @@ static int scr_drawbehind(SCREEN *scr, WIDGET *win,
 	int ret = 0;
 	WIDGET *next;
 
+	GFX_CONTAINER *ds = scr->sd->scr_ds;
+	if (gfx->get_clip_w(ds) <= 0 || gfx->get_clip_h(ds) <= 0)
+		return ret;
+
 	if (!win || (win->gen->get_parent(win) != scr)) return 0;
 	next = win->gen->get_next(win);
 

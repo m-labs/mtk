@@ -427,8 +427,10 @@ static int win_draw_bg(WINDOW *cw, struct gfx_ds *ds, long x, long y, long w, lo
 		u32 bgcol = (config_bg_win_color & 0xffffff00) | (opaque ? 0xff : 0x7f);
 		gfx->push_clipping(ds, x, y, w, h);
 
-		if (!opaque)
-			ret |= cw->gen->drawbehind(cw, cw, 0, 0, cw->wd->w, cw->wd->h, origin);
+		if (!opaque) {
+			int abs_x = cw->gen->get_abs_x(cw), abs_y = cw->gen->get_abs_y(cw);
+			ret |= cw->gen->drawbehind(cw, cw, x - abs_x, y - abs_y, w, h, origin);
+		}
 
 		/*
 		 * If the drawbehind function performed any graphics operations,

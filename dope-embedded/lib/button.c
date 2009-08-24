@@ -60,6 +60,7 @@ static const color_t BLACK_SOLID = GFX_RGBA(0, 0, 0, 255);
 static const color_t BLACK_MIXED = GFX_RGBA(0, 0, 0, 127);
 static const color_t WHITE_SOLID = GFX_RGBA(255, 255, 255, 255);
 static const color_t WHITE_MIXED = GFX_RGBA(255, 255, 255, 127);
+static const color_t DARK_GREY   = GFX_RGBA(80, 80, 80, 255);
 
 
 /********************************
@@ -196,8 +197,11 @@ static int but_draw(BUTTON *b, struct gfx_ds *ds, long x, long y, WIDGET *origin
 			case 1:
 				gfx->draw_string(ds, tx, ty, BLACK_SOLID, 0, b->bd->font_id, b->bd->text);
 				break;
+			case 2:
+				gfx->draw_string(ds, tx, ty, DARK_GREY, 0, b->bd->font_id, b->bd->text);
+				break;
 			default:
-				gfx->draw_string(ds, tx, ty, WHITE_SOLID, 0, b->bd->font_id, b->bd->text);
+				gfx->draw_string(ds, tx, ty, DARK_GREY, 0, b->bd->font_id, b->bd->text);
 				break;
 		}
 	}
@@ -533,9 +537,9 @@ int init_button(struct dope_services *d)
 	userstate = d->get_module("UserState 1.0");
 	msg       = d->get_module("Messenger 1.0");
 
-	normal_img = gen_range_img(gfx, 128, 128, 128,  90,  90, 110);
-	focus_img  = gen_range_img(gfx, 128, 128, 128, 100, 100, 140);
-	actwin_img = gen_range_img(gfx, 128, 128,  85, 110, 100, 90);
+	normal_img = gen_range_img(gfx, 128, 128, 128,   90 + 50,  90  + 50, 110 + 50);
+	focus_img  = gen_range_img(gfx, 128, 128, 128,   90 + 40,  90  + 40, 110 + 40);
+	actwin_img = gen_range_img(gfx, 128, 128, 128,  110 + 50,  110 + 50,  90 + 50);
 
 	/* define general widget functions */
 	widman->default_widget_methods(&gen_methods);

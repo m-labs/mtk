@@ -38,7 +38,7 @@ struct background_data {
 int init_background(struct dope_services *d);
 
 
-unsigned long config_bg_win_color = 0x8a8a85ff;
+unsigned long config_bg_win_color = 0x8a8a85ff + 0x32322800;
 unsigned long config_bg_desk_color = 0x575c70ff;
 
 
