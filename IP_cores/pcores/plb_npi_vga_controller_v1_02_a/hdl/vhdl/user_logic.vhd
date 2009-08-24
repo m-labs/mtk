@@ -33,6 +33,10 @@ entity user_logic is
 	C_NPI_PIXEL_CLK_RATIO : integer := 4;
 	C_USE_VGA_OUT : boolean := true;
 	C_PIXEL_CLK_GREATER_65MHZ : boolean := false;
+	C_RED_WIDTH   : integer := 4;   -- red channel data width
+	C_GREEN_WIDTH : integer := 4;   -- green channel data width
+	C_BLUE_WIDTH  : integer := 4;   -- blue channel data width
+
 	-- ADD USER GENERICS ABOVE THIS LINE ---------------
 
 	-- DO NOT EDIT BELOW THIS LINE ---------------------
@@ -52,9 +56,9 @@ entity user_logic is
  	clk_pixel     : in  std_logic;
 	tft_lcd_hsync : out std_logic;
 	tft_lcd_vsync : out std_logic;
-	tft_lcd_r : out std_logic_vector(5 downto 2);
-	tft_lcd_g : out std_logic_vector(5 downto 2);
-	tft_lcd_b : out std_logic_vector(5 downto 2);
+	tft_lcd_r : out std_logic_vector(C_RED_WIDTH-1 downto 0);
+	tft_lcd_g : out std_logic_vector(C_GREEN_WIDTH-1 downto 0);
+	tft_lcd_b : out std_logic_vector(C_BLUE_WIDTH-1 downto 0);
 	tft_lcd_data  : out std_logic_vector(11 downto 0);
 	tft_lcd_de    : out std_logic;
 	tft_lcd_clk_n : out std_logic;
@@ -444,9 +448,9 @@ begin
 	vga_out: if C_USE_VGA_OUT = true generate
 		tft_lcd_vsync <= tft_lcd_vsync_int;
 		tft_lcd_hsync <= tft_lcd_hsync_int;
-		tft_lcd_r     <= tft_lcd_r_int(4 downto 1);
-		tft_lcd_g     <= tft_lcd_g_int(5 downto 2);
-		tft_lcd_b     <= tft_lcd_b_int(4 downto 1);
+		tft_lcd_r     <= tft_lcd_r_int(4 downto 5-C_RED_WIDTH);
+		tft_lcd_g     <= tft_lcd_g_int(5 downto 6-C_GREEN_WIDTH);
+		tft_lcd_b     <= tft_lcd_b_int(4 downto 5-C_BLUE_WIDTH);
 	end generate;
 
 

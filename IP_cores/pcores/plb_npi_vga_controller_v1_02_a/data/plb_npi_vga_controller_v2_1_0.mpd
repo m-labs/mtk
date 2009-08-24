@@ -41,6 +41,9 @@ PARAMETER C_PI_RDWDADDR_WIDTH = 4, DT = INTEGER
 PARAMETER C_NPI_PIXEL_CLK_RATIO = 4, DT = INTEGER
 PARAMETER C_USE_VGA_OUT = TRUE, DT = BOOLEAN
 PARAMETER C_PIXEL_CLK_GREATER_65MHZ = FALSE, DT = BOOLEAN
+PARAMETER C_RED_WIDTH = 4, DT = INTEGER, RANGE = (1:5)
+PARAMETER C_GREEN_WIDTH = 4, DT = INTEGER, RANGE = (1:6)
+PARAMETER C_BLUE_WIDTH = 4, DT = INTEGER, RANGE = (1:5)
 
 
 ## Ports
@@ -96,9 +99,9 @@ PORT tft_lcd_hsync = "", DIR = O
 PORT tft_lcd_vsync = "", DIR = O
 PORT tft_lcd_data = "", DIR = O, VEC = [11:0]
 PORT tft_lcd_de = "", DIR = O
-PORT tft_lcd_r = "", DIR = O, VEC = [5:2]
-PORT tft_lcd_g = "", DIR = O, VEC = [5:2]
-PORT tft_lcd_b = "", DIR = O, VEC = [5:2]
+PORT tft_lcd_r = "", DIR = O, VEC = [(C_RED_WIDTH-1):0]
+PORT tft_lcd_g = "", DIR = O, VEC = [(C_GREEN_WIDTH-1):0]
+PORT tft_lcd_b = "", DIR = O, VEC = [(C_BLUE_WIDTH-1):0]
 PORT tft_lcd_clk_p = "", DIR = O
 PORT tft_lcd_clk_n = "", DIR = O
 PORT tft_lcd_SDA = "", DIR = O
