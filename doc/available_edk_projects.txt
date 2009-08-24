@@ -93,3 +93,15 @@ Details        | Uses the Spartan 3E Starter Kit. Works with the 3 bit VGA
 ------------------------------------------------------------------------------
 Link           | http://www.xilinx.com/products/devkits/HW-SPAR3E-SK-US-G.htm
 
+
+te0304/system.xmp
+=================
+
+EDK Version    | 10.1.03
+------------------------------------------------------------------------------
+Processor used | MicroBlaze
+------------------------------------------------------------------------------
+Details        | Uses the Trenz Electronic TE0300 micro module with the TE0304
+               | base board. Works with the 15-bit VGA port of the TE0304.
+------------------------------------------------------------------------------
+Link           | http://www.trenz-electronic.de/products/fpga-boards/trenz-electronic/industrial-micromodules.html
