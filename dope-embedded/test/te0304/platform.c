@@ -99,7 +99,7 @@ static void ovl_close_callback(dope_event *e, void *arg)
 /**
  * Callback: called when LED state changes
  */
-static void set_led_state(unsigned char led_state)
+static void set_led_state(unsigned led_state)
 {
 	int *ptr = (int *)(XPAR_LED_BASEADDR);
 	*ptr = led_state;
