@@ -69,7 +69,7 @@ LFlags: dope
 ProgStart: 
 StackSize: 
 HeapSize: 
-LinkerScript: ../../dope-embedded/te0304/dope.ld
+LinkerScript: ../../dope-embedded/test/te0304/dope.ld
 ProgCCFlags: 
 CompileInXps: 1
 NonXpsApp: 0

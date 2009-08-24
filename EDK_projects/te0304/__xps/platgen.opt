@@ -1,2 +1,2 @@
- -p xc3s1600efg320-4 -lang vhdl -lp /home/no/src/genode-fx.svn/
+ -p xc3s1600efg320-4 -lang vhdl -lp ../../
 

@@ -1,15 +1,15 @@
 microblaze_0
-DOPE_TEST_SOURCES = /home/no/src/genode-fx.svn/dope-embedded/test/colors.c /home/no/src/genode-fx.svn/dope-embedded/test/disp_img.c /home/no/src/genode-fx.svn/dope-embedded/test/dopecmd.c /home/no/src/genode-fx.svn/dope-embedded/test/grid.c /home/no/src/genode-fx.svn/dope-embedded/test/led.c /home/no/src/genode-fx.svn/dope-embedded/test/settings.c /home/no/src/genode-fx.svn/dope-embedded/test/slides.c /home/no/src/genode-fx.svn/dope-embedded/test/slideshow.c /home/no/src/genode-fx.svn/dope-embedded/test/test.c /home/no/src/genode-fx.svn/dope-embedded/test/te0304/platform.c 
-DOPE_TEST_HEADERS = /home/no/src/genode-fx.svn/dope-embedded/test/colors.h /home/no/src/genode-fx.svn/dope-embedded/test/disp_img.h /home/no/src/genode-fx.svn/dope-embedded/test/dopecmd.h /home/no/src/genode-fx.svn/dope-embedded/test/grid.h /home/no/src/genode-fx.svn/dope-embedded/test/led.h /home/no/src/genode-fx.svn/dope-embedded/test/platform.h /home/no/src/genode-fx.svn/dope-embedded/test/settings.h /home/no/src/genode-fx.svn/dope-embedded/test/slides.h /home/no/src/genode-fx.svn/dope-embedded/test/slideshow.h /home/no/src/genode-fx.svn/dope-embedded/test/util.h 
+DOPE_TEST_SOURCES = ../../dope-embedded/test/colors.c ../../dope-embedded/test/disp_img.c ../../dope-embedded/test/dopecmd.c ../../dope-embedded/test/grid.c ../../dope-embedded/test/led.c ../../dope-embedded/test/settings.c ../../dope-embedded/test/slides.c ../../dope-embedded/test/slideshow.c ../../dope-embedded/test/test.c ../../dope-embedded/test/te0304/platform.c 
+DOPE_TEST_HEADERS = ../../dope-embedded/test/colors.h ../../dope-embedded/test/disp_img.h ../../dope-embedded/test/dopecmd.h ../../dope-embedded/test/grid.h ../../dope-embedded/test/led.h ../../dope-embedded/test/platform.h ../../dope-embedded/test/settings.h ../../dope-embedded/test/slides.h ../../dope-embedded/test/slideshow.h ../../dope-embedded/test/util.h 
 DOPE_TEST_CC = mb-gcc
 DOPE_TEST_CC_SIZE = mb-size
 DOPE_TEST_CC_OPT = -O2
 DOPE_TEST_CFLAGS = 
 DOPE_TEST_CC_SEARCH = # -B
 DOPE_TEST_LIBPATH = -L./microblaze_0/lib/   -L../../dope-embedded/lib/te0304 
-DOPE_TEST_INCLUDES = -I./microblaze_0/include/  -I/home/no/src/genode-fx.svn/dope-embedded/test/   -I../../dope-embedded/include 
+DOPE_TEST_INCLUDES = -I./microblaze_0/include/  -I../../dope-embedded/test/   -I../../dope-embedded/include 
 DOPE_TEST_LFLAGS =   -ldope 
-DOPE_TEST_LINKER_SCRIPT = dope.ld
+DOPE_TEST_LINKER_SCRIPT = ../../dope-embedded/test/te0304/dope.ld
 DOPE_TEST_CC_DEBUG_FLAG =  -g 
 DOPE_TEST_CC_PROFILE_FLAG = # -pg
 DOPE_TEST_CC_GLOBPTR_FLAG= # -mxl-gp-opt
