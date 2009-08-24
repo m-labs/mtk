@@ -28,7 +28,7 @@ core.
 
 In addition to supporting the S3A Starter Kit, we have implemented Genode
 FX for other platforms including Virtex4-based FPGA platforms, the ML405,
-the ML507, and the Euterpe FPGA board.
+the ML507, the Trenz T0304, and the Euterpe FPGA board.
 
 
 Requirements
@@ -108,7 +108,7 @@ In the archive of the Genode FX, you find the following subdirectories:
 
   Ready to use EDK projects for the supported FPGA platforms.
   The currently supported platforms are 's3a_starter' (for Xilinx Spartan3A
-  and Xilinx Spartan3AN Starter Kit boards), 'ml405', and 'ml507'.
+  and Xilinx Spartan3AN Starter Kit boards), 'ml405', 'ml507', and 'te0304'.
 
 
 Building the project with Xilinx' Embedded Development Kit (EDK)
@@ -269,5 +269,5 @@ project.
 
 :Ales Gorkic:
 
-  Adaption to the Spartan-3E platform
+  Adaption to the Spartan-3E platform, refinements of the display-controller
 
