@@ -14,8 +14,19 @@
 # - DDR_SDRAM =  64 MB
 # - FLASH =  16 MB
 # ##############################################################################
-# - Adapted to S3E Starter Kit Board by  Aleš Gorkiè
+# - Adapted to Trenz Electronic TE0304 Demo Board by  Aleš Gorkiè
 # - Date: September 22, 2008
+# Target Board:  Trenz Electronic TE0300-01BMLP
+# Family:	 spartan3e
+# Device:	 xc3s1600e
+# Package:	 fg320
+# Speed Grade:	 -4
+# Processor: microblaze_0
+# System clock frequency: 100.000000 MHz
+# On Chip Memory (block RAM):  648 Kbit (16 KB)
+# Total Off Chip Memory :  80 MB
+# - DDR_SDRAM =  512 Mbit (64 MB)
+# - FLASH =  32 Mbit (16 MB)
 # ##############################################################################
  PARAMETER VERSION = 2.1.0
 

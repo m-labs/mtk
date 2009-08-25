@@ -28,7 +28,7 @@ core.
 
 In addition to supporting the S3A Starter Kit, we have implemented Genode
 FX for other platforms including Virtex4-based FPGA platforms, the ML405,
-the ML507, the Trenz T0304, and the Euterpe FPGA board.
+the ML507, the Trenz Electronic T0304, and the Euterpe FPGA board.
 
 
 Requirements
@@ -269,5 +269,5 @@ project.
 
 :Ales Gorkic:
 
-  Adaption to the Spartan-3E platform, refinements of the display-controller
+  Adaption to the Spartan-3E and Trenz Electronic TE0300 platforms, refinements of the display-controller
 
