@@ -20,7 +20,7 @@ LIBS        += -ldope
 CFLAGS      += -I. -I$(TEST_DIR) -I$(BASE_DIR)/include
 CFLAGS      += -Wall -O2 -MMD -g -Wtrigraphs
 LDFLAGS     += -L$(DOPE_LIB_DIR)
-OBJECTS      = $(SRC_C:.c=.o)
+OBJECTS      = $(SRC_S:.S=.o) $(SRC_C:.c=.o)
 
 vpath test.c      $(TEST_DIR)
 vpath disp_img.c  $(TEST_DIR)
@@ -49,16 +49,19 @@ $(DOPE_LIB_DIR)/libdope.a:
 # Build target
 #
 $(TARGET): $(OBJECTS) $(DOPE_LIB_DIR)/libdope.a
-	$(LD) $(LDFLAGS) $(OBJECTS) $(LIBS) -o $@
+	$(LD) $(LDFLAGS) -Wl,--start-group $(OBJECTS) $(LIBS) -Wl,--end-group -o $@
 
 $(TARGET)-stripped: $(TARGET)
 	cp $< $@
 	$(STRIP) $@
 
+$(TARGET)-raw: $(TARGET)
+	$(OBJCOPY) -O binary $< $@
+
 #
 # Cleanup
 #
 clean::
-	rm -f $(TARGET) $(TARGET)-stripped $(OBJECTS) *.d
+	rm -f $(TARGET) $(TARGET)-stripped $(TARGET)-raw $(OBJECTS) *.d
 
 -include *.d

@@ -4,6 +4,7 @@ help:
 	@echo "                  Build DOpE and test program for..."
 	@echo "s3a_starter     - ... Spartan3A and Spartan 3AN starter kit (standalone)"
 	@echo "s3e_starter     - ... Spartan3E starter kit (standalone)"
+	@echo "milkymist       - ... Milkymist (standalone). MMDIR environment variable must be set."
 	@echo "ml405           - ... ML405 (standalone)"
 	@echo "ml507           - ... ML507 (standalone)"
 	@echo "te0304          - ... Trenz Electronic 0304 demonstrator"
@@ -32,6 +33,10 @@ ml405:
 ml507:
 	make -C lib/ml507
 	make -C test/ml507
+	
+milkymist:
+	make -C lib/milkymist
+	make -C test/milkymist
 
 te0304:
 	make -C lib/te0304
