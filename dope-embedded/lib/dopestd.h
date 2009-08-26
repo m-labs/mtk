@@ -15,8 +15,9 @@
 #ifndef _DOPE_DOPESTD_H_
 #define _DOPE_DOPESTD_H_
 
-#define SHOW_INFOS  0
-#define SHOW_ERRORS 1
+#define SHOW_INFOS     0
+#define SHOW_WARNINGS  1
+#define SHOW_ERRORS    1
 
 #include <string.h>
 
