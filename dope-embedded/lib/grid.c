@@ -113,7 +113,11 @@ void print_grid_info(GRID *g)
 		printf("  index: %d\n", sec->index);
 		printf("   offset:%d\n", sec->offset);
 		printf("   size:  %d\n", sec->size);
+#ifdef NO_DOUBLE
+		printf("   weight:%f\n",  &sec->weight);
+#else
 		printf("   weight:%f\n",  sec->weight);
+#endif
 		sec=sec->next;
 	}
 	printf(" column-sections:\n");
@@ -122,7 +126,11 @@ void print_grid_info(GRID *g)
 		printf("  index: %d\n", sec->index);
 		printf("   offset:%d\n", sec->offset);
 		printf("   size:  %d\n", sec->size);
+#ifdef NO_DOUBLE
+		printf("   weight:%f\n",  &sec->weight);
+#else
 		printf("   weight:%f\n",  sec->weight);
+#endif
 		sec = sec->next;
 	}
 	printf(" child-widgets:\n");
