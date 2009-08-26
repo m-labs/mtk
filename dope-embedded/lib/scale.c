@@ -389,7 +389,7 @@ static void scale_var_notify(SCALE *s, VARIABLE *v)
 	if (depth == 0) {
 		depth++;
 //		s->scale->set_value(s, strtod(v->var->get_string(v), (char **)NULL));
-		scale_set_value(s, strtod(v->var->get_string(v), (char **)NULL));
+		scale_set_value(s, atof(v->var->get_string(v)));
 		depth--;
 	}
 	s->gen->update((WIDGET *)s);
@@ -411,7 +411,7 @@ static void scale_set_var(SCALE *s, VARIABLE *v)
 	s->sd->var = v;
 	v->gen->inc_ref((WIDGET *)v);
 	v->var->connect(v, s, scale_var_notify);
-	scale_set_value(s, strtod(v->var->get_string(v), (char **)NULL));
+	scale_set_value(s, atof(v->var->get_string(v)));
 }
 static VARIABLE *scale_get_var(SCALE *s)
 {

@@ -349,7 +349,7 @@ static int convert_value_arg(int baseclass, char *value, int len,
 
 		case VAR_BASECLASS_FLOAT:
 			if (tokenizer->toktype(value, 0) != TOKEN_NUMBER) break;
-			dst->float_value = strtod(value, NULL);
+			dst->float_value = atof(value);
 			return 0;
 
 		case VAR_BASECLASS_WIDGET:

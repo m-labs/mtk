@@ -412,7 +412,7 @@ static void ld_barconfig(LOADDISPLAY *ld, char *ident, char *value, char *color)
 	if (!(lb = get_loadbar(ld, ident))) return;
 
 	if (!dope_streq("<none>", value, 7)) {
-		lb->value = strtod(value, (char **)NULL);
+		lb->value = atof(value);
 	}
 
 	if (!dope_streq("<default>", color, 9)) {
