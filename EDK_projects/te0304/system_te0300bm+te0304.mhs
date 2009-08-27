@@ -1,0 +1,324 @@
+
+# ##############################################################################
+# Created by Base System Builder Wizard for Xilinx EDK 9.2 Build EDK_Jm.16
+# Sun Dec 23 10:09:42 2007
+# Target Board:  Xilinx Spartan-3A Starter Kit Rev D
+# Family:	 spartan3a
+# Device:	 xc3s700a
+# Package:	 fg484
+# Speed Grade:	 -4
+# Processor: microblaze_0
+# System clock frequency: 66.000000 MHz
+# On Chip Memory :  16 KB
+# Total Off Chip Memory :  80 MB
+# - DDR_SDRAM =  64 MB
+# - FLASH =  16 MB
+# ##############################################################################
+# - Adapted to Trenz Electronic TE0304 Demo Board by  Aleš Gorkiè
+# - Date: September 22, 2008
+# Target Board:  Trenz Electronic TE0300-01BM (1600e Micron)
+# Family:	 spartan3e
+# Device:	 xc3s1600e
+# Package:	 fg320
+# Speed Grade:	 -4
+# Processor: microblaze_0
+# System clock frequency: 125.000000 MHz
+# On Chip Memory (block RAM):  648 Kbit (16 KB)
+# Total Off Chip Memory :  80 MB
+# - DDR_SDRAM =  512 Mbit (64 MB)
+# - FLASH =  32 Mbit (16 MB)
+# ##############################################################################
+ PARAMETER VERSION = 2.1.0
+
+
+ PORT fpga_0_RS232_RX_pin = fpga_0_RS232_RX, DIR = I
+ PORT fpga_0_RS232_TX_pin = fpga_0_RS232_TX, DIR = O
+ PORT fpga_0_LED_GPIO_d_out_pin = fpga_0_LED_GPIO_d_out, DIR = O, VEC = [0:0]
+ PORT fpga_0_DDR_SDRAM_DDR_DQS_Div_I = fpga_0_DDR_SDRAM_DDR_DQS_Div_I, DIR = I
+ PORT fpga_0_DDR_SDRAM_DDR_DQS_Div_O = fpga_0_DDR_SDRAM_DDR_DQS_Div_O, DIR = O
+ PORT fpga_0_DDR_SDRAM_DDR_Clk_pin = fpga_0_DDR_SDRAM_DDR_Clk, DIR = O
+ PORT fpga_0_DDR_SDRAM_DDR_Clk_n_pin = fpga_0_DDR_SDRAM_DDR_Clk_n, DIR = O
+ PORT fpga_0_DDR_SDRAM_DDR_Addr_pin = fpga_0_DDR_SDRAM_DDR_Addr, DIR = O, VEC = [12:0]
+ PORT fpga_0_DDR_SDRAM_DDR_BankAddr_pin = fpga_0_DDR_SDRAM_DDR_BankAddr, DIR = O, VEC = [1:0]
+ PORT fpga_0_DDR_SDRAM_DDR_CAS_n_pin = fpga_0_DDR_SDRAM_DDR_CAS_n, DIR = O
+ PORT fpga_0_DDR_SDRAM_DDR_CE_pin = fpga_0_DDR_SDRAM_DDR_CE, DIR = O
+ PORT fpga_0_DDR_SDRAM_DDR_CS_n_pin = fpga_0_DDR_SDRAM_DDR_CS_n, DIR = O
+ PORT fpga_0_DDR_SDRAM_DDR_RAS_n_pin = fpga_0_DDR_SDRAM_DDR_RAS_n, DIR = O
+ PORT fpga_0_DDR_SDRAM_DDR_WE_n_pin = fpga_0_DDR_SDRAM_DDR_WE_n, DIR = O
+ PORT fpga_0_DDR_SDRAM_DDR_DM_pin = fpga_0_DDR_SDRAM_DDR_DM, DIR = O, VEC = [1:0]
+ PORT fpga_0_DDR_SDRAM_DDR_DQS = fpga_0_DDR_SDRAM_DDR_DQS, DIR = IO, VEC = [1:0]
+ PORT fpga_0_DDR_SDRAM_DDR_DQ = fpga_0_DDR_SDRAM_DDR_DQ, DIR = IO, VEC = [15:0]
+ PORT sys_clk_pin = dcm_clk_s, DIR = I, SIGIS = CLK, CLK_FREQ = 100000000
+ PORT sys_rst_pin = sys_rst_s, DIR = I, RST_POLARITY = 1, SIGIS = RST
+ PORT tft_lcd_hsync = hsync_ext, DIR = O
+ PORT tft_lcd_vsync = vsync_ext, DIR = O
+ PORT tft_lcd_r = lcd_r_ext, DIR = O, VEC = [4:0]
+ PORT tft_lcd_g = lcd_g_ext, DIR = O, VEC = [4:0]
+ PORT tft_lcd_b = lcd_b_ext, DIR = O, VEC = [4:0]
+ PORT plb_ps2_controller_0_mouse_clk_pin = plb_ps2_controller_0_mouse_clk, DIR = IO
+ PORT plb_ps2_controller_0_mouse_data_pin = plb_ps2_controller_0_mouse_data, DIR = IO
+ PORT plb_ps2_controller_0_key_clk_pin = plb_ps2_controller_0_key_clk, DIR = I
+ PORT plb_ps2_controller_0_key_data_pin = plb_ps2_controller_0_key_data, DIR = I
+
+
+BEGIN microblaze
+ PARAMETER HW_VER = 7.10.d
+ PARAMETER INSTANCE = microblaze_0
+ PARAMETER C_USE_ICACHE = 1
+ PARAMETER C_USE_DCACHE = 1
+ PARAMETER C_DCACHE_BYTE_SIZE = 4096
+ PARAMETER C_DEBUG_ENABLED = 1
+ PARAMETER C_ICACHE_BASEADDR = 0x1c000000
+ PARAMETER C_ICACHE_HIGHADDR = 0x1fffffff
+ PARAMETER C_DCACHE_BASEADDR = 0x1c000000
+ PARAMETER C_DCACHE_HIGHADDR = 0x1fffffff
+ PARAMETER C_USE_BARREL = 1
+ PARAMETER C_USE_DIV = 1
+ PARAMETER C_AREA_OPTIMIZED = 1
+ PARAMETER C_FAMILY = spartan3e
+ PARAMETER C_INSTANCE = microblaze_0
+ PARAMETER C_CACHE_BYTE_SIZE = 4096
+ PARAMETER C_ICACHE_LINE_LEN = 8
+ PARAMETER C_DCACHE_LINE_LEN = 8
+ PARAMETER C_ICACHE_ALWAYS_USED = 1
+ PARAMETER C_DCACHE_ALWAYS_USED = 1
+ BUS_INTERFACE DPLB = mb_plb
+ BUS_INTERFACE IPLB = mb_plb
+ BUS_INTERFACE DEBUG = debug_module_MBDEBUG_0
+ BUS_INTERFACE DXCL = microblaze_0_DXCL
+ BUS_INTERFACE IXCL = microblaze_0_IXCL
+ BUS_INTERFACE DLMB = dlmb
+ BUS_INTERFACE ILMB = ilmb
+ PORT RESET = mb_reset
+ PORT Interrupt = Interrupt
+END
+
+BEGIN plb_v46
+ PARAMETER INSTANCE = mb_plb
+ PARAMETER HW_VER = 1.03.a
+ PORT PLB_Clk = sys_clk_s
+ PORT SYS_Rst = sys_bus_reset
+END
+
+BEGIN lmb_v10
+ PARAMETER INSTANCE = ilmb
+ PARAMETER HW_VER = 1.00.a
+ PORT LMB_Clk = sys_clk_s
+ PORT SYS_Rst = sys_bus_reset
+END
+
+BEGIN lmb_v10
+ PARAMETER INSTANCE = dlmb
+ PARAMETER HW_VER = 1.00.a
+ PORT LMB_Clk = sys_clk_s
+ PORT SYS_Rst = sys_bus_reset
+END
+
+BEGIN lmb_bram_if_cntlr
+ PARAMETER INSTANCE = dlmb_cntlr
+ PARAMETER HW_VER = 2.10.a
+ PARAMETER C_BASEADDR = 0x00000000
+ PARAMETER C_HIGHADDR = 0x00003fff
+ BUS_INTERFACE SLMB = dlmb
+ BUS_INTERFACE BRAM_PORT = dlmb_port
+END
+
+BEGIN lmb_bram_if_cntlr
+ PARAMETER INSTANCE = ilmb_cntlr
+ PARAMETER HW_VER = 2.10.a
+ PARAMETER C_BASEADDR = 0x00000000
+ PARAMETER C_HIGHADDR = 0x00003fff
+ BUS_INTERFACE SLMB = ilmb
+ BUS_INTERFACE BRAM_PORT = ilmb_port
+END
+
+BEGIN bram_block
+ PARAMETER INSTANCE = lmb_bram
+ PARAMETER HW_VER = 1.00.a
+ BUS_INTERFACE PORTA = ilmb_port
+ BUS_INTERFACE PORTB = dlmb_port
+END
+
+BEGIN xps_uartlite
+ PARAMETER INSTANCE = RS232
+ PARAMETER HW_VER = 1.00.a
+ PARAMETER C_BAUDRATE = 115200
+ PARAMETER C_DATA_BITS = 8
+ PARAMETER C_ODD_PARITY = 0
+ PARAMETER C_USE_PARITY = 0
+ PARAMETER C_SPLB_CLK_FREQ_HZ = 62500000
+ PARAMETER C_BASEADDR = 0x84000000
+ PARAMETER C_HIGHADDR = 0x8400ffff
+ BUS_INTERFACE SPLB = mb_plb
+ PORT RX = fpga_0_RS232_RX
+ PORT TX = fpga_0_RS232_TX
+END
+
+BEGIN mpmc
+ PARAMETER INSTANCE = DDR_SDRAM
+ PARAMETER HW_VER = 4.03.a
+ PARAMETER C_NUM_PORTS = 4
+ PARAMETER C_PIM0_BASETYPE = 1
+ PARAMETER C_PIM1_BASETYPE = 1
+ PARAMETER C_MEM_PARTNO = MT46V32M16-6
+ PARAMETER C_MEM_DATA_WIDTH = 16
+ PARAMETER C_MEM_TYPE = DDR
+ PARAMETER C_XCL0_WRITEXFER = 0
+ PARAMETER C_MPMC_CLK0_PERIOD_PS = 8000
+ PARAMETER C_PIM3_BASETYPE = 4
+ PARAMETER C_ARB0_ALGO = CUSTOM
+ PARAMETER C_ARB0_NUM_SLOTS = 2
+ PARAMETER C_ARB0_SLOT0 = 3201
+ PARAMETER C_ARB0_SLOT1 = 3210
+ PARAMETER C_PIM3_DATA_WIDTH = 32
+ PARAMETER C_XCL1_LINESIZE = 8
+ PARAMETER C_XCL0_LINESIZE = 8
+ PARAMETER C_PI3_WR_FIFO_TYPE = SRL
+ PARAMETER C_MPMC_BASEADDR = 0x1c000000
+ PARAMETER C_MPMC_HIGHADDR = 0x1fffffff
+ PARAMETER C_PIM2_DATA_WIDTH = 32
+ PARAMETER C_PI2_RD_FIFO_TYPE = SRL
+ BUS_INTERFACE XCL1 = microblaze_0_DXCL
+ BUS_INTERFACE XCL0 = microblaze_0_IXCL
+ BUS_INTERFACE MPMC_PIM3 = plb_npi_vga_controller_0_XIL_NPI
+ PORT DDR_Clk = fpga_0_DDR_SDRAM_DDR_Clk
+ PORT DDR_Clk_n = fpga_0_DDR_SDRAM_DDR_Clk_n
+ PORT DDR_Addr = fpga_0_DDR_SDRAM_DDR_Addr
+ PORT DDR_BankAddr = fpga_0_DDR_SDRAM_DDR_BankAddr
+ PORT DDR_CAS_n = fpga_0_DDR_SDRAM_DDR_CAS_n
+ PORT DDR_CE = fpga_0_DDR_SDRAM_DDR_CE
+ PORT DDR_CS_n = fpga_0_DDR_SDRAM_DDR_CS_n
+ PORT DDR_RAS_n = fpga_0_DDR_SDRAM_DDR_RAS_n
+ PORT DDR_WE_n = fpga_0_DDR_SDRAM_DDR_WE_n
+ PORT DDR_DM = fpga_0_DDR_SDRAM_DDR_DM
+ PORT DDR_DQS = fpga_0_DDR_SDRAM_DDR_DQS
+ PORT DDR_DQ = fpga_0_DDR_SDRAM_DDR_DQ
+ PORT DDR_DQS_Div_O = fpga_0_DDR_SDRAM_DDR_DQS_Div_O
+ PORT DDR_DQS_Div_I = fpga_0_DDR_SDRAM_DDR_DQS_Div_I
+ PORT MPMC_Clk0 = DDR_SDRAM_mpmc_clk_s
+ PORT MPMC_Clk90 = DDR_SDRAM_mpmc_clk_90_s
+ PORT MPMC_Rst = sys_bus_reset
+END
+
+BEGIN xps_timer
+ PARAMETER INSTANCE = xps_timer_1
+ PARAMETER HW_VER = 1.00.a
+ PARAMETER C_COUNT_WIDTH = 32
+ PARAMETER C_ONE_TIMER_ONLY = 0
+ PARAMETER C_BASEADDR = 0x83c00000
+ PARAMETER C_HIGHADDR = 0x83c0ffff
+ BUS_INTERFACE SPLB = mb_plb
+ PORT Interrupt = xps_timer_1_Interrupt
+END
+
+BEGIN clock_generator
+ PARAMETER INSTANCE = clock_generator_0
+ PARAMETER HW_VER = 2.01.a
+ PARAMETER C_EXT_RESET_HIGH = 1
+ PARAMETER C_CLKIN_FREQ = 125000000
+ PARAMETER C_CLKOUT0_FREQ = 62500000
+ PARAMETER C_CLKOUT0_PHASE = 0
+ PARAMETER C_CLKOUT0_GROUP = NONE
+ PARAMETER C_CLKOUT1_FREQ = 125000000
+ PARAMETER C_CLKOUT1_PHASE = 0
+ PARAMETER C_CLKOUT1_GROUP = DCM0
+ PARAMETER C_CLKOUT2_FREQ = 125000000
+ PARAMETER C_CLKOUT2_PHASE = 90
+ PARAMETER C_CLKOUT2_GROUP = DCM0
+ PARAMETER C_CLKIN_BUF = FALSE
+ PARAMETER C_CLKOUT0_BUF = TRUE
+ PARAMETER C_CLKOUT1_BUF = TRUE
+ PARAMETER C_CLKOUT2_BUF = TRUE
+ PORT CLKOUT0 = sys_clk_s
+ PORT CLKOUT1 = DDR_SDRAM_mpmc_clk_s
+ PORT CLKOUT2 = DDR_SDRAM_mpmc_clk_90_s
+ PORT CLKIN = dcm_clk_s
+ PORT LOCKED = Dcm_all_locked
+ PORT RST = net_gnd
+END
+
+BEGIN mdm
+ PARAMETER INSTANCE = debug_module
+ PARAMETER HW_VER = 1.00.d
+ PARAMETER C_BASEADDR = 0x84400000
+ PARAMETER C_HIGHADDR = 0x8440ffff
+ BUS_INTERFACE SPLB = mb_plb
+ BUS_INTERFACE MBDEBUG_0 = debug_module_MBDEBUG_0
+ PORT Debug_SYS_Rst = Debug_SYS_Rst
+END
+
+BEGIN proc_sys_reset
+ PARAMETER INSTANCE = proc_sys_reset_0
+ PARAMETER HW_VER = 2.00.a
+ PARAMETER C_EXT_RESET_HIGH = 1
+ PORT Slowest_sync_clk = sys_clk_s
+ PORT Dcm_locked = Dcm_all_locked
+ PORT Ext_Reset_In = sys_rst_s
+ PORT MB_Reset = mb_reset
+ PORT Bus_Struct_Reset = sys_bus_reset
+ PORT MB_Debug_Sys_Rst = Debug_SYS_Rst
+END
+
+BEGIN xps_intc
+ PARAMETER INSTANCE = xps_intc_0
+ PARAMETER HW_VER = 1.00.a
+ PARAMETER C_BASEADDR = 0x81800000
+ PARAMETER C_HIGHADDR = 0x8180ffff
+ BUS_INTERFACE SPLB = mb_plb
+ PORT Irq = Interrupt
+ PORT Intr = xps_timer_1_Interrupt & plb_npi_vga_controller_0_IP2INTC_Irpt & plb_ps2_controller_0_IP2INTC_Irpt
+END
+
+BEGIN plb_ps2_controller
+ PARAMETER INSTANCE = plb_ps2_controller_0
+ PARAMETER HW_VER = 1.00.a
+ PARAMETER C_CLK_IN = 100
+ PARAMETER C_BASEADDR = 0x81618000
+ PARAMETER C_HIGHADDR = 0x816181ff
+ BUS_INTERFACE SPLB = mb_plb
+ PORT mouse_clk = plb_ps2_controller_0_mouse_clk
+ PORT mouse_data = plb_ps2_controller_0_mouse_data
+ PORT key_clk = plb_ps2_controller_0_key_clk
+ PORT key_data = plb_ps2_controller_0_key_data
+ PORT IP2INTC_Irpt = plb_ps2_controller_0_IP2INTC_Irpt
+END
+
+BEGIN plb_npi_vga_controller
+ PARAMETER INSTANCE = plb_npi_vga_controller_0
+ PARAMETER HW_VER = 1.02.a
+ PARAMETER C_PI_DATA_WIDTH = 32
+ PARAMETER C_PI_BE_WIDTH = 4
+ PARAMETER C_NPI_PIXEL_CLK_RATIO = 2
+ PARAMETER C_PIXEL_CLK_GREATER_65MHZ = true
+ PARAMETER C_BASEADDR = 0xce800000
+ PARAMETER C_HIGHADDR = 0xce80ffff
+ PARAMETER C_RED_WIDTH = 5
+ PARAMETER C_GREEN_WIDTH = 5
+ PARAMETER C_BLUE_WIDTH = 5
+ BUS_INTERFACE SPLB = mb_plb
+ BUS_INTERFACE XIL_NPI = plb_npi_vga_controller_0_XIL_NPI
+ PORT IP2INTC_Irpt = plb_npi_vga_controller_0_IP2INTC_Irpt
+ PORT tft_lcd_b = lcd_b_ext
+ PORT tft_lcd_g = lcd_g_ext
+ PORT tft_lcd_r = lcd_r_ext
+ PORT tft_lcd_vsync = vsync_ext
+ PORT tft_lcd_hsync = hsync_ext
+ PORT NPI_rst = sys_bus_reset
+ PORT NPI_clk = DDR_SDRAM_mpmc_clk_s
+ PORT clk_pixel = sys_clk_s
+END
+
+BEGIN xps_gpio
+ PARAMETER INSTANCE = LED
+ PARAMETER HW_VER = 1.00.a
+ PARAMETER C_GPIO_WIDTH = 1
+ PARAMETER C_IS_DUAL = 1
+ PARAMETER C_IS_BIDIR = 0
+ PARAMETER C_BASEADDR = 0x81400000
+ PARAMETER C_HIGHADDR = 0x8140ffff
+ PARAMETER C_ALL_INPUTS_2 = 1
+ PARAMETER C_IS_BIDIR_2 = 0
+ BUS_INTERFACE SPLB = mb_plb
+ PORT GPIO_d_out = fpga_0_LED_GPIO_d_out
+END
+

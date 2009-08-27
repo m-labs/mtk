@@ -1,0 +1,102 @@
+
+  About using Genode FX on the Trenz Electronic TE0300 + TE0304 platform
+
+
+Hardware-verified designs
+#########################
+
+:TE0304 + TE0300B (2009-08-26):
+
+  use '<XilinxStandardFileName_te0300b>+te0304.<XilinxStandardFileExtension>'
+
+:TE0304 + TE0300IB (2009-08-26):
+
+  use '<XilinxStandardFileName>_te0300b+te0304.<XilinxStandardFileExtension>'
+
+:TE0304 + TE0300BMLP (2009-08-26):
+
+  use '<XilinxStandardFileName_te0300bmlp>+te0304.<XilinxStandardFileExtension>'
+
+
+Other reference designs
+#######################
+
+:TE0304 + TE0300BLP:
+
+  use '<XilinxStandardFileName>_te0300blp+te0304.<XilinxStandardFileExtension>'
+
+:TE0304 + TE0300BM:
+
+  use '<XilinxStandardFileName>_te0300bm+te0304.<XilinxStandardFileExtension>'
+
+For industrial TE0300-01 models (TE0300-01Ixyz), use the same design as for
+commercial TE0300-01 models (TE0300-01xyz).
+
+For Qimonda TE0300-01 models (TE0300-01xyz), you might try the same design as
+for Micron TE0300-01 models (TE0300-01xMz).
+
+
+How to implement a Genode-FX reference design
+#############################################
+
+# Rename '<XilinxStandardFileName>_te0300xyz+te0304.<XilinxStandardFileExtension>'
+  to '<XilinxStandardFileName>.<XilinxStandardFileExtension>' where
+  '<XilinxStandardFileName>.<XilinxStandardFileExtension>' are:
+
+  * 'EDK_projects\te0304\data\system.ucf'
+  * 'EDK_projects\te0304\system.mhs'
+
+# Open 'EDK_projects\te0304\system.xmp'
+
+# Click XMP -> Project -> Project Options ... -> Device and Repository -> Target Device
+  and check that "Target Device" matches your FPGA.
+
+# Read the 'README' file in the top-level Genode-FX directory (NOT this file)
+
+
+How to port Genode-FX from a reference design to different Trenz Electronic TE0300-01 models
+############################################################################################
+
+'system.ucf'
+============
+
+! ...
+!
+! TIMESPEC TS_sys_clk_pin = PERIOD sys_clk_pin 10000 ps; (FPGA system clock: 100 MHz)
+! TIMESPEC TS_sys_clk_pin = PERIOD sys_clk_pin 8000 ps; (FPGA system clock: 125 MHz)
+! ...
+
+'system.mhs'
+============
+
+! ...
+!
+! BEGIN xps_uartlite
+!  PARAMETER C_SPLB_CLK_FREQ_HZ = 50000000 (FPGA system clock: 100 MHz)
+!  PARAMETER C_SPLB_CLK_FREQ_HZ = 62500000 (FPGA system clock: 125 MHz)
+! ...
+!
+! BEGIN mpmc
+! ...
+!  PARAMETER C_MEM_PARTNO = HYB25D512160BF-6 (manufacturer: Qimonda)
+!  PARAMETER C_MEM_PARTNO = MT46V32M16-6 (manufacturer: Micron Technologies; part number: MT46V32M16BN-6:F; FBGA Code; D9GCK)
+! ...
+!  PARAMETER C_MPMC_CLK0_PERIOD_PS = 10000 (FPGA system clock: 100 MHz)
+!  PARAMETER C_MPMC_CLK0_PERIOD_PS = 8000 (FPGA system clock: 125 MHz)
+! ...
+!
+! BEGIN clock_generator
+! ...
+!  PARAMETER C_CLKIN_FREQ = 100000000 (FPGA system clock: 100 MHz)
+!  PARAMETER C_CLKIN_FREQ = 125000000 (FPGA system clock: 125 MHz)
+! ...
+!  PARAMETER C_CLKOUT0_FREQ = 50000000 (FPGA system clock: 100 MHz)
+!  PARAMETER C_CLKOUT0_FREQ = 62500000 (FPGA system clock: 125 MHz)
+! ...
+!  PARAMETER C_CLKOUT1_FREQ = 100000000 (FPGA system clock: 100 MHz)
+!  PARAMETER C_CLKOUT1_FREQ = 125000000 (FPGA system clock: 125 MHz)
+! ...
+!  PARAMETER C_CLKOUT2_FREQ = 100000000 (FPGA system clock: 100 MHz)
+!  PARAMETER C_CLKOUT2_FREQ = 125000000 (FPGA system clock: 125 MHz)
+! ...
+

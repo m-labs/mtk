@@ -16,7 +16,7 @@
 # ##############################################################################
 # - Adapted to Trenz Electronic TE0304 Demo Board by  Aleš Gorkiè
 # - Date: September 22, 2008
-# Target Board:  Trenz Electronic TE0300-01BMLP
+# Target Board:  Trenz Electronic TE0300-01BLP (1600e Qimonda)
 # Family:	 spartan3e
 # Device:	 xc3s1600e
 # Package:	 fg320
