@@ -13,7 +13,7 @@
  */
 
 /* FPGA includes */
-#include <libc.h>
+#include <stdio.h>
 
 /* local includes */
 #include "dopestd.h"

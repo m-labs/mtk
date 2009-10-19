@@ -17,12 +17,11 @@
 #include <dopelib.h>
 
 /* Milkymist includes */
-#include <libc.h>
 #include <irq.h>
 #include <uart.h>
-#include <hw/sysctl.h>
+#include <stdlib.h>
 #include <hw/gpio.h>
-
+#include <hw/sysctl.h>
 
 static int s3e_app_id, mb_app_id, kolt_app_id; /* DOpE application IDs for logos */
 

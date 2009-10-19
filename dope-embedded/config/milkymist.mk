@@ -1,6 +1,6 @@
 PLATFORM  = milkymist
 CFLAGS   += -nostdinc -I$(MMDIR)/software/include -DNO_DOUBLE
-LIBS     += $(MMDIR)/software/baselib/baselib.a
+LIBS     += -lbase
 
 
 include $(BASE_DIR)/config/spec-lm32.mk

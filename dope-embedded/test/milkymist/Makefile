@@ -1,7 +1,7 @@
 BASE_DIR = ../..
 SRC_S    = crt0.S
 SRC_C    = platform.c isr.c
-LDFLAGS  = -nostdlib -nodefaultlibs -Wl,-T -Wl,dope.ld -Wl,-N
+LDFLAGS  = -nostdlib -nodefaultlibs -Wl,-T -Wl,dope.ld -Wl,-N -L$(MMDIR)/software/libbase 
 
 include $(BASE_DIR)/config/milkymist.mk
 include ../test-generic.mk
