@@ -59,9 +59,9 @@ void          free(void *addr);
 int           snprintf(char *str, size_t size, const char *format, ...);
 long          strtol(const char *nptr, char **endptr, int base);
 unsigned long strtoul(const char *nptr, char **endptr, int base);
-double        strtod(const char *nptr, char **endptr);
 int           printf( const char *format, ...);
 long          atol(const char *nptr);
+double        atof(const char *nptr);
 
 
 /******************************
