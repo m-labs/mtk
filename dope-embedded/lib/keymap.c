@@ -29,8 +29,8 @@
 #define PAR 167 /* '§' */
 #define DEG 176 /* '°' */
 
-static char german_keymap[128] = {
-	  0,ESC,'1','2','3','4','5','6','7','8','9','0','-', 39, BS,TAB,
+static char keymap[128] = {
+	  0,ESC,'1','2','3','4','5','6','7','8','9','0','-', '=', BS,TAB,
 	'q','w','e','r','t','z','u','i','o','p', UE,'+', LF,  0,'a','s',
 	'd','f','g','h','j','k','l',OE,  AE,'^',  0,'#','y','x','c','v',
 	'b','n','m',',','.','-',  0,'*',  0,' ',  0,  0,  0,  0,  0,  0,
@@ -39,15 +39,12 @@ static char german_keymap[128] = {
 	 LF,  0,'/',  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
 };
 
-static char german_shift[128] = {
+static char shift[128] = {
 	' ', 0 , 0 , 39, 0 , 0 , 0 , 0 , 0 , 0 , 0 ,'*',';','_',':', 0 ,
 	'=','!','"',PAR,'$','%','&','/','(',')', 0 , 0 ,'>', 0 , 0 , 0 ,
 	 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 ,
 	 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 ,DEG, 0 ,
 };
-
-static char *keymap = german_keymap;
-static char *shift  = german_shift;
 
 int init_keymap(struct dope_services *d);
 
