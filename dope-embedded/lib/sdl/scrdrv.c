@@ -128,7 +128,7 @@ static long set_screen(long width, long height, long depth)
 	if (SCR_DEBUG) {
 		screen = SDL_SetVideoMode(scr_width, scr_height*2 + 100, scr_depth, SDL_SWSURFACE);
 	} else {
-		screen = SDL_SetVideoMode(scr_width, scr_height + 20, scr_depth, SDL_SWSURFACE);
+		screen = SDL_SetVideoMode(scr_width, scr_height, scr_depth, SDL_SWSURFACE);
 	}
 	if (!screen) return 0;
 	scr_adr = screen->pixels;

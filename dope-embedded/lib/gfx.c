@@ -87,7 +87,7 @@ static struct gfx_ds *alloc_scr(char *scrmode)
 
 	new->handler = &gfxscr_rgb16_handler;
 	new->ref_cnt = 1;
-	new->data = gfxscr_rgb16->create(800, 600, &(new->handler));
+	new->data = gfxscr_rgb16->create(640, 480, &(new->handler));
 	return new;
 }
 
