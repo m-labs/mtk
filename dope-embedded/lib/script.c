@@ -33,10 +33,10 @@
 #define ATTRIBS_HASHTAB_SIZE  32
 #define ATTRIBS_HASH_CHARS    5
 
-#define MAX_TOKENS    256  /* max number of command tokens             */
-#define MAX_ARGSTRING 256  /* max lenght of string argument            */
-#define MAX_ARGS      16   /* max number of arguments per dope command */
-#define MAX_ERRBUF    256  /* max size of error result substring       */
+#define MAX_TOKENS    256   /* max number of command tokens             */
+#define MAX_ARGSTRING 16384 /* max length of string argument            */
+#define MAX_ARGS      16    /* max number of arguments per dope command */
+#define MAX_ERRBUF    256   /* max size of error result substring       */
 
 static struct appman_services    *appman;
 static struct hashtab_services   *hashtab;

@@ -119,14 +119,14 @@ static s32 fontman_calc_char_idx(s32 font_id, char *str, s32 xpos, s32 ypos)
 	line = ypos/fonts[font_id].img_h;
 	lastline = str;
 	clineoffset = lineoffset = 0;
-	if(line > 0) {
+	if (line > 0) {
 		cline = 0;
-		while(*str) {
+		while (*str) {
 			if(*str == '\n') {
-				lastline = str+1;
+				lastline = str + 1;
 				cline++;
 				clineoffset = lineoffset + 1;
-				if(line == cline) break;
+				if (line == cline) break;
 			}
 			str++;
 			lineoffset++;

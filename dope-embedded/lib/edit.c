@@ -166,7 +166,6 @@ static void update_text_pos(EDIT *e)
 	int vw, vh;
 	if (!e || !e->ed || !e->ed->txtbuf) return;
 
-	e->ed->ty = 0;
 	e->ed->tw = font->calc_str_width (e->ed->font_id, e->ed->txtbuf);
 	e->ed->th = font->calc_str_height(e->ed->font_id, e->ed->txtbuf);
 	e->ed->ch = font->calc_str_height(e->ed->font_id, "W");
@@ -185,30 +184,20 @@ static void update_text_pos(EDIT *e)
 	//}
 
 	/* set text position so that the cursor is visible */
-	e->ed->tx = 0;
-	e->ed->ty = 0;
 	vw = e->wd->w - 2*e->ed->pad_x - 6;   /* visible width */
 	vh = e->wd->h - 2*e->ed->pad_y - 6;   /* visible height */
 
 	/* X */
-	if ((e->ed->tx > vw - e->ed->tw) && (e->ed->tx > vw + 2 - (vw/3) - e->ed->cx)) {
-		e->ed->tx = vw - (vw/3) - e->ed->cx;
-		if (e->ed->tx < vw - e->ed->tw)
-			e->ed->tx = vw - e->ed->tw;
-	}
-
-	if (e->ed->tx <    - e->ed->cx) e->ed->tx =    - e->ed->cx;
-	if (e->ed->tx > vw - e->ed->cx) e->ed->tx = vw - e->ed->cx;
+	if(e->ed->tx + e->ed->cx < 0)
+		e->ed->tx = -e->ed->cx;
+	if(e->ed->tx + e->ed->cx > vw)
+		e->ed->tx = vw - e->ed->cx;
 
 	/* Y */
-	if ((e->ed->ty > vh - e->ed->th) && (e->ed->ty > vh + 2 - (vh/3) - e->ed->cy)) {
-		e->ed->ty = vh - (vh/3) - e->ed->cy;
-		if (e->ed->ty < vh - e->ed->th)
-			e->ed->ty = vh - e->ed->th;
-	}
-
-	if (e->ed->ty <    - e->ed->cy) e->ed->ty =    - e->ed->cy;
-	if (e->ed->ty > vh - e->ed->cy) e->ed->ty = vh - e->ed->cy;
+	if(e->ed->ty + e->ed->cy < 0)
+		e->ed->ty = -e->ed->cy;
+	if(e->ed->ty + e->ed->cy + e->ed->ch > vh)
+		e->ed->ty = vh - e->ed->cy - e->ed->ch;
 }
 
 static inline void draw_sunken_frame(GFX_CONTAINER *d, s32 x, s32 y, s32 w, s32 h)
@@ -392,25 +381,36 @@ static void edit_handle_event(EDIT *e, EVENT *ev, WIDGET *from)
 				userstate->drag(e, NULL, sel_tick, sel_release);
 				ev_done = 1;
 				break;
+
+			case DOPE_KEY_UP:
+				e->ed->curpos = get_char_index(e, e->ed->cx, e->ed->cy-e->ed->ch);
+				ev_done = 2;
+				break;
+			case DOPE_KEY_DOWN:
+				e->ed->curpos = get_char_index(e, e->ed->cx, e->ed->cy+e->ed->ch);
+				ev_done = 2;
+				break;
+			
 			case DOPE_KEY_LEFT:
 				if (e->ed->curpos > 0) e->ed->curpos--;
 				ev_done = 2;
 				break;
-
 			case DOPE_KEY_RIGHT:
 				if (e->ed->curpos < strlen(e->ed->txtbuf)) e->ed->curpos++;
 				ev_done = 2;
 				break;
 
 			case DOPE_KEY_HOME:
-				e->ed->curpos = 0;
+				while((e->ed->curpos > 0) && (e->ed->txtbuf[e->ed->curpos-1] != '\n'))
+					e->ed->curpos--;
 				ev_done = 2;
 				break;
-
-			case DOPE_KEY_END:
-				e->ed->curpos = strlen(e->ed->txtbuf);
+			case DOPE_KEY_END: {
+				while((e->ed->txtbuf[e->ed->curpos] != 0) && (e->ed->txtbuf[e->ed->curpos] != '\n'))
+					e->ed->curpos++;
 				ev_done = 2;
 				break;
+			}
 
 			case DOPE_KEY_DELETE:
 				if (e->ed->curpos < strlen(e->ed->txtbuf))
