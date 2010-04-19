@@ -390,11 +390,10 @@ static inline void draw_glyph_line(u8 *src_alpha, u16 color, u16 *dst, int len)
 }
 
 
-static void scr_draw_string(struct gfx_ds_data *ds, int x, int y,
-                            color_t fg_rgba, color_t bg_rgba, int fnt_id,
+static char *scr_draw_string_line(struct gfx_ds_data *ds, int x, int y,
+                            color_t fg_rgba, color_t bg_rgba, struct font *font,
                             char *str_signed)
 {
-	struct font *font = fontman->get_by_id(fnt_id);
 	s32         *wtab = font->width_table;
 	s32         *otab = font->offset_table;
 	s32         img_w = font->img_w;
@@ -409,8 +408,6 @@ static void scr_draw_string(struct gfx_ds_data *ds, int x, int y,
 	int          h = font->img_h;
 	pixel_t      color = rgba_to_pixel(fg_rgba);
 
-	if (!str) return;
-
 	/* check top clipping */
 	if (y < clip_y1) {
 		src += (clip_y1 - y)*img_w;   /* skip upper lines in font image */
@@ -422,17 +419,17 @@ static void scr_draw_string(struct gfx_ds_data *ds, int x, int y,
 	if (y+img_h - 1 > clip_y2)
 		h -= (y + img_h - 1 - clip_y2);  /* decr. number of lines to draw */
 
-	if (h < 1) return;
+	if (h < 1) return NULL;
 
 	/* skip characters that are completely hidden by the left clipping border */
-	while (*str && (x+wtab[(int)(*str)] < clip_x1)) {
+	while (*str && (*str != '\n') && (x+wtab[(int)(*str)] < clip_x1)) {
 		x+=wtab[(int)(*str)];
 		dst+=wtab[(int)(*str)];
 		str++;
 	}
 
 	/* draw left cutted character */
-	if (*str && (x+wtab[(int)(*str)] - 1 <= clip_x2) && (x < clip_x1)) {
+	if (*str && (*str != '\n') && (x+wtab[(int)(*str)] - 1 <= clip_x2) && (x < clip_x1)) {
 		w = wtab[(int)(*str)] - (clip_x1 - x);
 		s = src + otab[(int)(*str)] + (clip_x1 - x);
 		d = dst + (clip_x1 - x);
@@ -447,7 +444,7 @@ static void scr_draw_string(struct gfx_ds_data *ds, int x, int y,
 	}
 
 	/* draw horizontally full visible characters */
-	while (*str && (x + wtab[(int)(*str)] - 1 < clip_x2)) {
+	while (*str && (*str != '\n') && (x + wtab[(int)(*str)] - 1 < clip_x2)) {
 		w = wtab[(int)(*str)];
 		s = src + otab[(int)(*str)];
 		d = dst;
@@ -462,7 +459,7 @@ static void scr_draw_string(struct gfx_ds_data *ds, int x, int y,
 	}
 
 	/* draw right cutted character */
-	if (*str) {
+	if (*str && (*str != '\n')) {
 		w = wtab[(int)(*str)];
 		s = src + otab[(int)(*str)];
 		d = dst;
@@ -479,6 +476,28 @@ static void scr_draw_string(struct gfx_ds_data *ds, int x, int y,
 			s += img_w;
 			d += scr_width;
 		}
+	}
+
+	return (char *)str;
+}
+
+static void scr_draw_string(struct gfx_ds_data *ds, int x, int y,
+                            color_t fg_rgba, color_t bg_rgba, int fnt_id,
+                            char *str)
+{
+	struct font *font = fontman->get_by_id(fnt_id);
+	char *s2;
+
+	if(!str) return;
+	
+	while(*str) {
+		s2 = scr_draw_string_line(ds, x, y, fg_rgba, bg_rgba, font, str);
+		if(s2 == NULL) {
+			while(*str && (*str != '\n')) str++;
+		} else
+			str = s2;
+		if(*str) str++;
+		y += font->img_h;
 	}
 }
 

@@ -57,6 +57,7 @@ extern int init_tick             (struct dope_services *);
 extern int init_relax            (struct dope_services *);
 extern int init_button           (struct dope_services *);
 extern int init_entry            (struct dope_services *);
+extern int init_edit             (struct dope_services *);
 extern int init_loaddisplay      (struct dope_services *);
 extern int init_variable         (struct dope_services *);
 extern int init_label            (struct dope_services *);
@@ -216,6 +217,9 @@ int dope_main(int argc,char **argv)
 
 	INFO(printf("%sEntry\n",dbg));
 	init_entry(&dope);
+
+	INFO(printf("%sEdit\n",dbg));
+	init_edit(&dope);
 
 	INFO(printf("%sVariable\n",dbg));
 	init_variable(&dope);
