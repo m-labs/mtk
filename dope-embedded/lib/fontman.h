@@ -30,7 +30,7 @@ struct fontman_services {
 	struct font *(*get_by_id)       (s32 font_id);
 	s32          (*calc_str_width)  (s32 font_id, char *str);
 	s32          (*calc_str_height) (s32 font_id, char *str);
-	s32          (*calc_char_idx)   (s32 font_id, char *str, s32 pixpos);
+	s32          (*calc_char_idx)   (s32 font_id, char *str, s32 xpos, s32 ypos);
 };
 
 

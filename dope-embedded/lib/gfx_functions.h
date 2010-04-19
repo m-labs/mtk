@@ -390,7 +390,7 @@ static inline void draw_glyph_line(u8 *src_alpha, u16 color, u16 *dst, int len)
 }
 
 
-static char *scr_draw_string_line(struct gfx_ds_data *ds, int x, int y,
+static void scr_draw_string_line(struct gfx_ds_data *ds, int x, int y,
                             color_t fg_rgba, color_t bg_rgba, struct font *font,
                             char *str_signed)
 {
@@ -419,7 +419,7 @@ static char *scr_draw_string_line(struct gfx_ds_data *ds, int x, int y,
 	if (y+img_h - 1 > clip_y2)
 		h -= (y + img_h - 1 - clip_y2);  /* decr. number of lines to draw */
 
-	if (h < 1) return NULL;
+	if (h < 1) return;
 
 	/* skip characters that are completely hidden by the left clipping border */
 	while (*str && (*str != '\n') && (x+wtab[(int)(*str)] < clip_x1)) {
@@ -477,8 +477,6 @@ static char *scr_draw_string_line(struct gfx_ds_data *ds, int x, int y,
 			d += scr_width;
 		}
 	}
-
-	return (char *)str;
 }
 
 static void scr_draw_string(struct gfx_ds_data *ds, int x, int y,
@@ -486,17 +484,13 @@ static void scr_draw_string(struct gfx_ds_data *ds, int x, int y,
                             char *str)
 {
 	struct font *font = fontman->get_by_id(fnt_id);
-	char *s2;
 
-	if(!str) return;
+	if (!str) return;
 	
-	while(*str) {
-		s2 = scr_draw_string_line(ds, x, y, fg_rgba, bg_rgba, font, str);
-		if(s2 == NULL) {
-			while(*str && (*str != '\n')) str++;
-		} else
-			str = s2;
-		if(*str) str++;
+	while (*str) {
+		scr_draw_string_line(ds, x, y, fg_rgba, bg_rgba, font, str);
+		while (*str && (*str != '\n')) str++;
+		if (*str) str++;
 		y += font->img_h;
 	}
 }

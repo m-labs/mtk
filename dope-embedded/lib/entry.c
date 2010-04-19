@@ -160,7 +160,7 @@ static inline int get_char_pos(ENTRY *e, int idx)
 /**
  * Calculate character index that corresponds to the specified position
  */
-static inline int get_char_index(ENTRY *e, int pos)
+static inline int get_char_index(ENTRY *e, s32 pos)
 {
 	if (e->ed->flags & ENTRY_FLAGS_BLIND) {
 		int step = font->calc_str_width(e->ed->font_id, "*");
@@ -168,7 +168,7 @@ static inline int get_char_index(ENTRY *e, int pos)
 		if (res > strlen(e->ed->txtbuf)) res = strlen(e->ed->txtbuf);
 		return res;
 	}
-	return font->calc_char_idx(e->ed->font_id, e->ed->txtbuf, pos);
+	return font->calc_char_idx(e->ed->font_id, e->ed->txtbuf, pos, 0);
 }
 
 

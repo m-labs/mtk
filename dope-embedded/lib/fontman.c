@@ -60,28 +60,45 @@ static struct font *fontman_get_by_id(s32 font_id)
 }
 
 
-static s32 fontman_calc_str_width(s32 font_id, char *str)
+static s32 fontman_calc_str_width_line(s32 font_id, char *str)
 {
 	s32 result = 0;
-	if (!str) return 0;
-	if (!valid_font_id(font_id)) return 0;
-	while (*str) {
+
+	while (*str && (*str != '\n')) {
 		result+=fonts[font_id].width_table[(s32)(*str)];
 		str++;
 	}
 	return result;
 }
 
+static s32 fontman_calc_str_width(s32 font_id, char *str)
+{
+	s32 max;
+	s32 w;
+	
+	if (!str) return 0;
+	if (!valid_font_id(font_id)) return 0;
+
+	max = 0;
+	while (*str) {
+		w = fontman_calc_str_width_line(font_id, str);
+		if (w > max) max = w;
+		while (*str && (*str != '\n')) str++;
+		if (*str) str++;
+	}
+
+	return max;
+}
+
 
 /**
  * Calculate character index of specified pixel position
  */
-static s32 fontman_calc_char_idx(s32 font_id, char *str, s32 pixpos)
+static s32 fontman_calc_char_idx_line(s32 font_id, char *str, s32 pixpos)
 {
 	s32 idx = 0, pos = 0, charw;
-	if (!str) return 0;
-	if (!valid_font_id(font_id)) return 0;
-	while (*str) {
+
+	while (*str && (*str != '\n')) {
 		charw = fonts[font_id].width_table[(s32)(*str)];
 		if (pos >= pixpos - (charw>>1)) return idx;
 		pos += charw;
@@ -90,12 +107,47 @@ static s32 fontman_calc_char_idx(s32 font_id, char *str, s32 pixpos)
 	return idx;
 }
 
-
-static s32 fontman_calc_str_height(s32 font_id,char *str)
+static s32 fontman_calc_char_idx(s32 font_id, char *str, s32 xpos, s32 ypos)
 {
+	s32 line, cline;
+	char *lastline;
+	s32 lineoffset, clineoffset;
+	
 	if (!str) return 0;
 	if (!valid_font_id(font_id)) return 0;
-	return fonts[font_id].img_h;
+
+	line = ypos/fonts[font_id].img_h;
+	lastline = str;
+	clineoffset = lineoffset = 0;
+	if(line > 0) {
+		cline = 0;
+		while(*str) {
+			if(*str == '\n') {
+				lastline = str+1;
+				cline++;
+				clineoffset = lineoffset + 1;
+				if(line == cline) break;
+			}
+			str++;
+			lineoffset++;
+		}
+	}
+	return clineoffset + fontman_calc_char_idx_line(font_id, lastline, xpos);
+}
+
+static s32 fontman_calc_str_height(s32 font_id, char *str)
+{
+	s32 lines;
+	
+	if (!str) return 0;
+	if (!valid_font_id(font_id)) return 0;
+
+	lines = 1;
+	while(*str) {
+		if(*str == '\n') lines++;
+		str++;
+	}
+	return lines*fonts[font_id].img_h;
 }
 
 

@@ -38,16 +38,15 @@ static struct tick_services      *tick;
 
 struct edit_data {
 	s16    font_id;                  /* used font                      */
-	s16    flags;                    /* edit properties               */
-	s16    tx;                       /* adaptive text position         */
-	s16    ty;                       /* text position inside the edit */
+	s16    flags;                    /* edit properties                */
+	s16    tx, ty;                   /* text position inside the edit  */
 	s32    tw, th;                   /* pixel width and height of text */
 	s32    sel_beg, sel_end;         /* current selection              */
 	s32    sel_x, sel_w;             /* pixel position of selection    */
 	s32    curpos;                   /* position of cursor             */
-	s32    cx, ch;                   /* cursor x position and height   */
-	s16    pad_x, pad_y;             /* padding aroung edit           */
-	char  *txtbuf;                   /* textual content of the edit   */
+	s32    cx, cy, ch;               /* cursor x/y position and height */
+	s16    pad_x, pad_y;             /* padding aroung edit            */
+	char  *txtbuf;                   /* textual content of the edit    */
 	s32    txtbuflen;                /* current size of text buffer    */
 	s32    maxlen;                   /* max string length              */
 	s32    vislen;                   /* min visible length             */
@@ -120,25 +119,42 @@ static int insert_char(EDIT *e, int idx, char c)
 }
 
 /**
- * Calculate x position of the character at the specified index
+ * Calculate x and y positions of the character at the specified index
  */
-static inline int get_char_pos(EDIT *e, int idx)
+static inline void get_char_pos(EDIT *e, int idx, s32 *xpos, s32 *ypos)
 {
-	int xpos, tmp = e->ed->txtbuf[idx];
+	int tmp;
+	char *linestart;
+	int i, lines;
+	struct font *fnt = font->get_by_id(e->ed->font_id);
 
+	linestart = e->ed->txtbuf;
+	i = 0;
+	lines = 0;
+	while(e->ed->txtbuf[i]) {
+		if(i == idx) break;
+		if(e->ed->txtbuf[i] == '\n') {
+			lines++;
+			linestart = &e->ed->txtbuf[i+1];
+		}
+		i++;
+	}
+
+	*ypos = lines*fnt->img_h;
+
+	tmp = e->ed->txtbuf[idx];
 	e->ed->txtbuf[idx] = 0;
-	xpos = font->calc_str_width(e->ed->font_id, e->ed->txtbuf);
+	*xpos = font->calc_str_width(e->ed->font_id, linestart);
 	e->ed->txtbuf[idx] = tmp;
-	return xpos;
 }
 
 
 /**
  * Calculate character index that corresponds to the specified position
  */
-static inline int get_char_index(EDIT *e, int pos)
+static inline int get_char_index(EDIT *e, s32 xpos, s32 ypos)
 {
-	return font->calc_char_idx(e->ed->font_id, e->ed->txtbuf, pos);
+	return font->calc_char_idx(e->ed->font_id, e->ed->txtbuf, xpos, ypos);
 }
 
 
@@ -147,31 +163,34 @@ static inline int get_char_index(EDIT *e, int pos)
  */
 static void update_text_pos(EDIT *e)
 {
-	int vw;
+	int vw, vh;
 	if (!e || !e->ed || !e->ed->txtbuf) return;
 
 	e->ed->ty = 0;
 	e->ed->tw = font->calc_str_width (e->ed->font_id, e->ed->txtbuf);
 	e->ed->th = font->calc_str_height(e->ed->font_id, e->ed->txtbuf);
-	e->ed->ch = e->ed->th;
+	e->ed->ch = font->calc_str_height(e->ed->font_id, "W");
 
-	/* calculate x position of cursor */
-	e->ed->cx = get_char_pos(e, e->ed->curpos);
+	/* calculate position of cursor */
+	get_char_pos(e, e->ed->curpos, &e->ed->cx, &e->ed->cy);
 
-	if (e->ed->sel_beg < e->ed->sel_end) {
+	/*if (e->ed->sel_beg < e->ed->sel_end) {
 		e->ed->sel_x = get_char_pos(e, e->ed->sel_beg);
 		e->ed->sel_w = get_char_pos(e, e->ed->sel_end) - e->ed->sel_x + 1;
 	} else if (e->ed->sel_beg > e->ed->sel_end) {
 		e->ed->sel_x = get_char_pos(e, e->ed->sel_end);
 		e->ed->sel_w = get_char_pos(e, e->ed->sel_beg) - e->ed->sel_x + 1;
-	} else {
+	} else {*/
 		e->ed->sel_x = e->ed->sel_w = 0;
-	}
+	//}
 
 	/* set text position so that the cursor is visible */
 	e->ed->tx = 0;
+	e->ed->ty = 0;
 	vw = e->wd->w - 2*e->ed->pad_x - 6;   /* visible width */
+	vh = e->wd->h - 2*e->ed->pad_y - 6;   /* visible height */
 
+	/* X */
 	if ((e->ed->tx > vw - e->ed->tw) && (e->ed->tx > vw + 2 - (vw/3) - e->ed->cx)) {
 		e->ed->tx = vw - (vw/3) - e->ed->cx;
 		if (e->ed->tx < vw - e->ed->tw)
@@ -180,6 +199,16 @@ static void update_text_pos(EDIT *e)
 
 	if (e->ed->tx <    - e->ed->cx) e->ed->tx =    - e->ed->cx;
 	if (e->ed->tx > vw - e->ed->cx) e->ed->tx = vw - e->ed->cx;
+
+	/* Y */
+	if ((e->ed->ty > vh - e->ed->th) && (e->ed->ty > vh + 2 - (vh/3) - e->ed->cy)) {
+		e->ed->ty = vh - (vh/3) - e->ed->cy;
+		if (e->ed->ty < vh - e->ed->th)
+			e->ed->ty = vh - e->ed->th;
+	}
+
+	if (e->ed->ty <    - e->ed->cy) e->ed->ty =    - e->ed->cy;
+	if (e->ed->ty > vh - e->ed->cy) e->ed->ty = vh - e->ed->cy;
 }
 
 static inline void draw_sunken_frame(GFX_CONTAINER *d, s32 x, s32 y, s32 w, s32 h)
@@ -218,7 +247,7 @@ static int edit_draw(EDIT *e, struct gfx_ds *ds, long x, long y, WIDGET *origin)
 	long tx = e->ed->tx, ty = e->ed->ty;
 	u32  tc = GFX_RGB(32, 32, 32);
 	u32  cc = BLACK_MIXED;
-	s32  cx;
+	s32  cx, cy;
 	long w  = e->wd->w,  h  = e->wd->h;
 
 	if (origin == e) return 1;
@@ -260,9 +289,10 @@ static int edit_draw(EDIT *e, struct gfx_ds *ds, long x, long y, WIDGET *origin)
 	/* draw cursor */
 	if (e->wd->flags & WID_FLAGS_KFOCUS) {
 		cx = tx + e->ed->cx - 2;
-		gfx->draw_vline(ds, cx + 1, ty, e->ed->ch, cc);
-		gfx->draw_hline(ds, cx, ty, 3, cc);
-		gfx->draw_hline(ds, cx, ty + e->ed->ch - 1, 3, cc);
+		cy = ty + e->ed->cy;
+		gfx->draw_vline(ds, cx + 1, cy, e->ed->ch, cc);
+		gfx->draw_hline(ds, cx, cy, 3, cc);
+		gfx->draw_hline(ds, cx, cy + e->ed->ch - 1, 3, cc);
 	}
 
 	gfx->pop_clipping(ds);
@@ -288,10 +318,14 @@ static EDIT *edit_find(EDIT *e, long x, long y)
 static void sel_tick(EDIT *e, int dx, int dy)
 {
 	int mx = userstate->get_mx();
+	int my = userstate->get_my();
 	int lx = e->gen->get_abs_x(e);
+	int ly = e->gen->get_abs_y(e);
 	int xpos = mx - lx - e->ed->tx - e->ed->pad_x - 3;
+	int ypos = my - ly - e->ed->ty - e->ed->pad_y - 3;
 	int csel;
 	int vw = e->wd->w - 2*e->ed->pad_x - 6;
+	int vh = e->wd->h - 2*e->ed->pad_y - 6;
 
 	/* mouse beyond left widget border - scroll text area */
 	if (mx < lx) {
@@ -307,7 +341,21 @@ static void sel_tick(EDIT *e, int dx, int dy)
 		xpos = vw - e->ed->tx;
 	}
 
-	csel = get_char_index(e, xpos);
+	/* mouse beyond top widget border - scroll text area */
+	if (my < ly) {
+		e->ed->ty += (ly - my)/4;
+		if (e->ed->ty > 0) e->ed->ty = 0;
+		ypos = -e->ed->ty;
+	}
+	/* mouse beyond bottom widget border - scroll teyt area */
+	if (my > ly + e->wd->h) {
+		e->ed->ty += (ly + e->wd->h - my)/4;
+		if (e->ed->ty + e->ed->th < vh) e->ed->ty = vh - e->ed->th;
+		if (e->ed->ty > 0) e->ed->ty = 0;
+		ypos = vh - e->ed->ty;
+	}
+
+	csel = get_char_index(e, xpos, ypos);
 	e->ed->sel_end = csel;
 
 	update_text_pos(e);
@@ -326,6 +374,7 @@ static void (*orig_handle_event) (EDIT *e, EVENT *ev, WIDGET *from);
 static void edit_handle_event(EDIT *e, EVENT *ev, WIDGET *from)
 {
 	int xpos = userstate->get_mx() - e->gen->get_abs_x(e);
+	int ypos = userstate->get_my() - e->gen->get_abs_y(e);
 	int ascii;
 	int ev_done = 0;
 
@@ -336,7 +385,8 @@ static void edit_handle_event(EDIT *e, EVENT *ev, WIDGET *from)
 		switch (ev->code) {
 			case DOPE_BTN_MOUSE:
 				xpos -= e->ed->tx + e->ed->pad_x + 3;
-				e->ed->curpos = get_char_index(e, xpos);
+				ypos -= e->ed->ty + e->ed->pad_y + 3;
+				e->ed->curpos = get_char_index(e, xpos, ypos);
 				e->ed->sel_beg = e->ed->sel_end = e->ed->curpos;
 				e->ed->sel_w = 0;
 				userstate->drag(e, NULL, sel_tick, sel_release);
@@ -457,7 +507,7 @@ static void edit_set_text(EDIT *e, char *new_txt)
 	/* clear old text */
 	while (e->ed->txtbuf[0]) delete_char(e, 0);
 
-	/* insert new charaters */
+	/* insert new characters */
 	for (i = 0; new_txt[i]; i++) insert_char(e, i, new_txt[i]);
 
 	/* make the new text visible */
@@ -492,7 +542,7 @@ static EDIT *create(void)
 	new->ed->vislen    = 2;
 	new->ed->sel_beg   = -1;
 	new->ed->sel_end   = -1;
-	new->ed->txtbuflen = 16;
+	new->ed->txtbuflen = 256;
 	new->ed->txtbuf    = zalloc(new->ed->txtbuflen);
 	new->wd->flags    |= WID_FLAGS_EDITABLE | WID_FLAGS_HIGHLIGHT;
 
