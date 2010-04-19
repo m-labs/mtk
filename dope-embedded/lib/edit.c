@@ -50,7 +50,7 @@ struct edit_data {
 	char  *txtbuf;                   /* textual content of the edit    */
 	s32    txtbuflen;                /* current size of text buffer    */
 	s32    maxlen;                   /* max string length              */
-	s32    vislen;                   /* min visible length             */
+	s32    hvislen, vvislen;         /* min visible length             */
 	void (*click)  (WIDGET *);
 	void (*release)(WIDGET *);
 };
@@ -261,14 +261,11 @@ static int edit_draw(EDIT *e, struct gfx_ds *ds, long x, long y, WIDGET *origin)
 	if (e->wd->flags & WID_FLAGS_KFOCUS)
 		draw_kfocus_frame(ds, x - 1, y - 1, w + 2, h + 2);
 
-	if (e->wd->flags & WID_FLAGS_MFOCUS)
-		gfx->draw_box(ds, x, y, w, h, GFX_RGB(190, 190, 190));
-	else
-		gfx->draw_box(ds, x, y, w, h, GFX_RGB(162, 162, 162));
+	gfx->draw_box(ds, x, y, w, h, GFX_RGB(190, 190, 190));
 
 	draw_sunken_frame(ds, x, y, w, h);
 
-	if (e->wd->flags & WID_FLAGS_MFOCUS) tc = cc = BLACK_SOLID;
+	tc = cc = BLACK_SOLID;
 
 	tx += x + 3; ty += y + 2;
 
@@ -470,9 +467,9 @@ static void edit_handle_event(EDIT *e, EVENT *ev, WIDGET *from)
  */
 static void edit_calc_minmax(EDIT *e)
 {
-	e->wd->min_w = e->ed->pad_x*2 + 4 + e->ed->vislen*font->calc_str_width(e->ed->font_id, "W");
+	e->wd->min_w = e->ed->pad_x*2 + 4 + e->ed->hvislen*font->calc_str_width(e->ed->font_id, "W");
 	e->wd->max_w = 99999;
-	e->wd->min_h = font->calc_str_height(e->ed->font_id, "W")
+	e->wd->min_h = e->ed->vvislen*font->calc_str_height(e->ed->font_id, "W")
 	                            + e->ed->pad_y*2 + 4;
 	e->wd->max_h = 99999;
 }
@@ -553,15 +550,14 @@ static EDIT *create(void)
 
 	/* set edit specific attributes */
 	new->ed->pad_x     = new->ed->pad_y = 2;
-	new->ed->vislen    = 2;
+	new->ed->font_id   = 1;
+	new->ed->hvislen   = 80;
+	new->ed->vvislen   = 25;
 	new->ed->sel_beg   = -1;
 	new->ed->sel_end   = -1;
 	new->ed->txtbuflen = 256;
 	new->ed->txtbuf    = zalloc(new->ed->txtbuflen);
-	new->wd->flags    |= WID_FLAGS_EDITABLE | WID_FLAGS_HIGHLIGHT;
-
-	/* let the edit receive the keyboard focus even without any bindings */
-	new->wd->flags    |= WID_FLAGS_TAKEFOCUS;
+	new->wd->flags    |= WID_FLAGS_EDITABLE | WID_FLAGS_TAKEFOCUS;
 
 	update_text_pos(new);
 	edit_calc_minmax(new);
