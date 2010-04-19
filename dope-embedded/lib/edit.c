@@ -42,7 +42,8 @@ struct edit_data {
 	s16    tx, ty;                   /* text position inside the edit  */
 	s32    tw, th;                   /* pixel width and height of text */
 	s32    sel_beg, sel_end;         /* current selection              */
-	s32    sel_x, sel_w;             /* pixel position of selection    */
+	s32    sel_x, sel_y;             /* pixel position of selection    */
+	s32    sel_w, sel_h;             /* pixel size of selection        */
 	s32    curpos;                   /* position of cursor             */
 	s32    cx, cy, ch;               /* cursor x/y position and height */
 	s16    pad_x, pad_y;             /* padding aroung edit            */
@@ -173,15 +174,20 @@ static void update_text_pos(EDIT *e)
 	/* calculate position of cursor */
 	get_char_pos(e, e->ed->curpos, &e->ed->cx, &e->ed->cy);
 
-	/*if (e->ed->sel_beg < e->ed->sel_end) {
-		e->ed->sel_x = get_char_pos(e, e->ed->sel_beg);
-		e->ed->sel_w = get_char_pos(e, e->ed->sel_end) - e->ed->sel_x + 1;
+	if (e->ed->sel_beg < e->ed->sel_end) {
+		get_char_pos(e, e->ed->sel_beg, &e->ed->sel_x, &e->ed->sel_y);
+		get_char_pos(e, e->ed->sel_end, &e->ed->sel_w, &e->ed->sel_h);
+		e->ed->sel_w = e->ed->sel_w - e->ed->sel_x;
+		e->ed->sel_h = e->ed->sel_h - e->ed->sel_y + e->ed->ch;
 	} else if (e->ed->sel_beg > e->ed->sel_end) {
-		e->ed->sel_x = get_char_pos(e, e->ed->sel_end);
-		e->ed->sel_w = get_char_pos(e, e->ed->sel_beg) - e->ed->sel_x + 1;
-	} else {*/
-		e->ed->sel_x = e->ed->sel_w = 0;
-	//}
+		get_char_pos(e, e->ed->sel_end, &e->ed->sel_x, &e->ed->sel_y);
+		get_char_pos(e, e->ed->sel_beg, &e->ed->sel_w, &e->ed->sel_h);
+		e->ed->sel_w = e->ed->sel_w - e->ed->sel_x;
+		e->ed->sel_h = e->ed->sel_h - e->ed->sel_y + e->ed->ch;
+	} else {
+		e->ed->sel_x = e->ed->sel_y = 0;
+		e->ed->sel_w = e->ed->sel_h = 0;
+	}
 
 	/* set text position so that the cursor is visible */
 	vw = e->wd->w - 2*e->ed->pad_x - 6;   /* visible width */
@@ -268,9 +274,17 @@ static int edit_draw(EDIT *e, struct gfx_ds *ds, long x, long y, WIDGET *origin)
 
 	gfx->push_clipping(ds, x+2, y+2, w-3, h-3);
 
+	w -= 3;
 	/* draw selection */
-	if (e->ed->sel_w)
-		gfx->draw_box(ds, e->ed->sel_x + tx - 1, ty, e->ed->sel_w, e->ed->ch+1, GFX_RGBA(127,127,127,127));
+	if (e->ed->sel_w) {
+		if(e->ed->sel_h > e->ed->ch) {
+			gfx->draw_box(ds, e->ed->sel_x + tx, e->ed->sel_y + ty, w - e->ed->sel_x - e->ed->tx, e->ed->ch, GFX_RGBA(127,127,127,127));
+			if(e->ed->sel_h > 2*e->ed->ch)
+				gfx->draw_box(ds, tx, e->ed->sel_y + ty + e->ed->ch, w - e->ed->tx, e->ed->sel_h - 2*e->ed->ch, GFX_RGBA(127,127,127,127));
+			gfx->draw_box(ds, tx, ty + e->ed->sel_y + e->ed->sel_h - e->ed->ch, e->ed->sel_w+e->ed->sel_x, e->ed->ch, GFX_RGBA(127,127,127,127));
+		} else
+			gfx->draw_box(ds, e->ed->sel_x + tx, e->ed->sel_y + ty, e->ed->sel_w, e->ed->ch, GFX_RGBA(127,127,127,127));
+	}
 
 	if (e->ed->txtbuf)
 		gfx->draw_string(ds, tx, ty, tc, 0, e->ed->font_id, e->ed->txtbuf);
@@ -336,7 +350,7 @@ static void sel_tick(EDIT *e, int dx, int dy)
 		if (e->ed->ty > 0) e->ed->ty = 0;
 		ypos = -e->ed->ty;
 	}
-	/* mouse beyond bottom widget border - scroll teyt area */
+	/* mouse beyond bottom widget border - scroll text area */
 	if (my > ly + e->wd->h) {
 		e->ed->ty += (ly + e->wd->h - my)/4;
 		if (e->ed->ty + e->ed->th < vh) e->ed->ty = vh - e->ed->th;
