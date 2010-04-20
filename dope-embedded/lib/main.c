@@ -61,6 +61,7 @@ extern int init_edit             (struct dope_services *);
 extern int init_loaddisplay      (struct dope_services *);
 extern int init_variable         (struct dope_services *);
 extern int init_label            (struct dope_services *);
+extern int init_separator        (struct dope_services *);
 extern int init_background       (struct dope_services *);
 extern int init_container        (struct dope_services *);
 extern int init_window           (struct dope_services *);
@@ -117,8 +118,8 @@ int config_transparency  = 0;   /* use translucent effects                */
 int config_don_scheduler = 0;   /* use donation scheduler                 */
 int config_clackcommit   = 0;   /* deliver commit events on mouse release */
 int config_winborder     = 5;   /* size of window resize border           */
-int config_menubar       = 1;   /* menubar visibility                     */
-int config_dropshadows   = 0;   /* draw dropshadows behind windows        */
+int config_menubar       = 0;   /* menubar visibility                     */
+int config_dropshadows   = 1;   /* draw dropshadows behind windows        */
 
 extern int dope_main(int argc, char **argv);
 int dope_main(int argc,char **argv)
@@ -128,8 +129,8 @@ int dope_main(int argc,char **argv)
 	native_startup(argc, argv);
 
 	/**
- * init modules
- */
+	 * init modules
+	 */
 
 	INFO(printf("%sSharedMemory\n",dbg));
 	init_sharedmem(&dope);
@@ -226,6 +227,9 @@ int dope_main(int argc,char **argv)
 
 	INFO(printf("%sLabel\n",dbg));
 	init_label(&dope);
+
+	INFO(printf("%sSeparator\n",dbg));
+	init_separator(&dope);
 
 	INFO(printf("%sLoadDisplay\n",dbg));
 	init_loaddisplay(&dope);
