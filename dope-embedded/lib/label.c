@@ -32,9 +32,9 @@ static struct script_services  *script;
 
 struct label_data {
 	char     *text;
-	s16       font_id;
-	s16       tx, ty;       /* text position inside the label cell */
-	s16       pad_x, pad_y;
+	s32       font_id;
+	s32       tx, ty;       /* text position inside the label cell */
+	s32       pad_x, pad_y;
 	VARIABLE *var;
 };
 
@@ -142,8 +142,8 @@ static char *lab_get_text(LABEL *l)
 /**
  * Set font of label
  *
- * Currently, only the font identifiers 'default' and
- * 'monospaced' are defined.
+ * Currently, only the font identifiers 'default',
+ * 'monospaced' and 'title' are defined.
  */
 static void lab_set_font(LABEL *l, char *fontname)
 {
@@ -151,6 +151,8 @@ static void lab_set_font(LABEL *l, char *fontname)
 		l->ld->font_id = 0;
 	} else if (dope_streq(fontname, "monospaced", 255)) {
 		l->ld->font_id = 1;
+	} else if (dope_streq(fontname, "title", 255)) {
+		l->ld->font_id = 2;
 	}
 	l->wd->update |= WID_UPDATE_MINMAX;
 }
@@ -163,10 +165,10 @@ static char *lab_get_font(LABEL *l)
 {
 	switch (l->ld->font_id) {
 		case 1:  return "monospaced";
+		case 2:  return "title";
 		default: return "default";
 	}
 }
-
 
 /**
  * Callback on variable modifications
