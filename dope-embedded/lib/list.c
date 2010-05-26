@@ -221,10 +221,10 @@ static void lst_calc_minmax(LIST *l)
 {
 	int mw, mh;
 	
-	l->wd->min_w = 100;
+	l->wd->min_w = 40;
 	l->wd->min_h = 100;
 	if (l->ld->text) {
-		mw = font->calc_str_height(l->ld->font_id, l->ld->text) + 2*2 + 3;
+		mw = font->calc_str_width(l->ld->font_id, l->ld->text) + 2*2 + 3;
 		mh = font->calc_str_height(l->ld->font_id, l->ld->text) + 2*2 + 3;
 		if (l->wd->min_w < mw) l->wd->min_w = mw;
 		if (l->wd->min_h < mh) l->wd->min_h = mh;
