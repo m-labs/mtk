@@ -61,6 +61,7 @@ extern int init_edit             (struct dope_services *);
 extern int init_loaddisplay      (struct dope_services *);
 extern int init_variable         (struct dope_services *);
 extern int init_label            (struct dope_services *);
+extern int init_list             (struct dope_services *);
 extern int init_separator        (struct dope_services *);
 extern int init_background       (struct dope_services *);
 extern int init_container        (struct dope_services *);
@@ -227,6 +228,9 @@ int dope_main(int argc,char **argv)
 
 	INFO(printf("%sLabel\n",dbg));
 	init_label(&dope);
+
+	INFO(printf("%sLabel\n",dbg));
+	init_list(&dope);
 
 	INFO(printf("%sSeparator\n",dbg));
 	init_separator(&dope);

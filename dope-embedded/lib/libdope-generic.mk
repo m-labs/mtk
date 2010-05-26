@@ -33,7 +33,8 @@ SRC_C  += \
 	smallmouse.c  mono_fnt.c    title_fnt.c \
 	dummies.c     thread.c      eventmsg.c  \
 	sharedmem.c   gfx_scr16.c   sched.c     \
-	vera16_tff.c  edit.c        separator.c
+	vera16_tff.c  edit.c        separator.c \
+	list.c
 
 vpath % $(LIBDOPE_DIR)
 

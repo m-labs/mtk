@@ -46,7 +46,6 @@ struct edit_data {
 	s32    sel_w, sel_h;             /* pixel size of selection        */
 	s32    curpos;                   /* position of cursor             */
 	s32    cx, cy, ch;               /* cursor x/y position and height */
-	s16    pad_x, pad_y;             /* padding aroung edit            */
 	char  *txtbuf;                   /* textual content of the edit    */
 	s32    txtbuflen;                /* current size of text buffer    */
 	s32    maxlen;                   /* max string length              */
@@ -190,8 +189,8 @@ static void update_text_pos(EDIT *e)
 	}
 
 	/* set text position so that the cursor is visible */
-	vw = e->wd->w - 2*e->ed->pad_x - 6;   /* visible width */
-	vh = e->wd->h - 2*e->ed->pad_y - 6;   /* visible height */
+	vw = e->wd->w - 2*2 - 6;   /* visible width */
+	vh = e->wd->h - 2*2 - 6;   /* visible height */
 
 	/* X */
 	if(e->ed->tx + e->ed->cx < 0)
@@ -253,10 +252,10 @@ static int edit_draw(EDIT *e, struct gfx_ds *ds, long x, long y, WIDGET *origin)
 
 	gfx->push_clipping(ds, x, y, w, h);
 
-	x += e->ed->pad_x;
-	y += e->ed->pad_y;
-	w -= e->ed->pad_x*2;
-	h -= e->ed->pad_y*2;
+	x += 2;
+	y += 2;
+	w -= 2*2;
+	h -= 2*2;
 
 	if (e->wd->flags & WID_FLAGS_KFOCUS)
 		draw_kfocus_frame(ds, x - 1, y - 1, w + 2, h + 2);
@@ -307,8 +306,8 @@ static EDIT *edit_find(EDIT *e, long x, long y)
 	y -= e->wd->y;
 
 	/* check if position is inside the edit */
-	if ((x >= e->ed->pad_x) && (x < e->wd->w - e->ed->pad_x)
-	 && (y >= e->ed->pad_y) && (y < e->wd->h - e->ed->pad_y))
+	if ((x >= 2) && (x < e->wd->w - 2)
+	 && (y >= 2) && (y < e->wd->h - 2))
 		return e;
 
 	return NULL;
@@ -321,11 +320,11 @@ static void sel_tick(EDIT *e, int dx, int dy)
 	int my = userstate->get_my();
 	int lx = e->gen->get_abs_x(e);
 	int ly = e->gen->get_abs_y(e);
-	int xpos = mx - lx - e->ed->tx - e->ed->pad_x - 3;
-	int ypos = my - ly - e->ed->ty - e->ed->pad_y - 3;
+	int xpos = mx - lx - e->ed->tx - 2 - 3;
+	int ypos = my - ly - e->ed->ty - 2 - 3;
 	int csel;
-	int vw = e->wd->w - 2*e->ed->pad_x - 6;
-	int vh = e->wd->h - 2*e->ed->pad_y - 6;
+	int vw = e->wd->w - 2*2 - 6;
+	int vh = e->wd->h - 2*2 - 6;
 
 	/* mouse beyond left widget border - scroll text area */
 	if (mx < lx) {
@@ -384,8 +383,8 @@ static void edit_handle_event(EDIT *e, EVENT *ev, WIDGET *from)
 		e->ed->sel_beg = e->ed->sel_end = e->ed->sel_w = 0;
 		switch (ev->code) {
 			case DOPE_BTN_MOUSE:
-				xpos -= e->ed->tx + e->ed->pad_x + 3;
-				ypos -= e->ed->ty + e->ed->pad_y + 3;
+				xpos -= e->ed->tx + 2 + 3;
+				ypos -= e->ed->ty + 2 + 3;
 				e->ed->curpos = get_char_index(e, xpos, ypos);
 				e->ed->sel_beg = e->ed->sel_end = e->ed->curpos;
 				e->ed->sel_w = 0;
@@ -467,10 +466,10 @@ static void edit_handle_event(EDIT *e, EVENT *ev, WIDGET *from)
  */
 static void edit_calc_minmax(EDIT *e)
 {
-	e->wd->min_w = e->ed->pad_x*2 + 4 + e->ed->hvislen*font->calc_str_width(e->ed->font_id, "W");
+	e->wd->min_w = 2*2 + 4 + e->ed->hvislen*font->calc_str_width(e->ed->font_id, "W");
 	e->wd->max_w = 99999;
 	e->wd->min_h = e->ed->vvislen*font->calc_str_height(e->ed->font_id, "W")
-	                            + e->ed->pad_y*2 + 4;
+	                            + 2*2 + 4;
 	e->wd->max_h = 99999;
 }
 
@@ -549,7 +548,6 @@ static EDIT *create(void)
 	SET_WIDGET_DEFAULTS(new, struct edit, &edit_methods);
 
 	/* set edit specific attributes */
-	new->ed->pad_x     = new->ed->pad_y = 2;
 	new->ed->font_id   = 1;
 	new->ed->hvislen   = 80;
 	new->ed->vvislen   = 25;
@@ -560,7 +558,6 @@ static EDIT *create(void)
 	new->wd->flags    |= WID_FLAGS_EDITABLE | WID_FLAGS_TAKEFOCUS;
 
 	update_text_pos(new);
-	edit_calc_minmax(new);
 	return new;
 }
 
