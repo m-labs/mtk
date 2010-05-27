@@ -173,6 +173,10 @@ static void lst_handle_event(LIST *l, EVENT *ev, WIDGET *from)
 				}
 				break;
 
+			case DOPE_KEY_ENTER:
+				ev_done = 2;
+				break;
+
 			case DOPE_KEY_UP:
 				if(l->ld->sel > 0)
 					l->ld->sel--;
@@ -224,8 +228,8 @@ static void lst_calc_minmax(LIST *l)
 	l->wd->min_w = 40;
 	l->wd->min_h = 100;
 	if (l->ld->text) {
-		mw = font->calc_str_width(l->ld->font_id, l->ld->text) + 2*2 + 3;
-		mh = font->calc_str_height(l->ld->font_id, l->ld->text) + 2*2 + 3;
+		mw = font->calc_str_width(l->ld->font_id, l->ld->text) + 8;
+		mh = font->calc_str_height(l->ld->font_id, l->ld->text) + 8;
 		if (l->wd->min_w < mw) l->wd->min_w = mw;
 		if (l->wd->min_h < mh) l->wd->min_h = mh;
 	}
@@ -373,7 +377,7 @@ static void build_script_lang(void)
 
 	script->reg_widget_attrib(widtype, "string text", lst_get_text, lst_set_text, gen_methods.update);
 	script->reg_widget_attrib(widtype, "string font", lst_get_font, lst_set_font, gen_methods.update);
-	script->reg_widget_attrib(widtype, "integer selection", lst_get_selection, lst_set_selection, gen_methods.update);
+	script->reg_widget_attrib(widtype, "long selection", lst_get_selection, lst_set_selection, gen_methods.update);
 
 	widman->build_script_lang(widtype, &gen_methods);
 }

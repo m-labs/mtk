@@ -90,7 +90,7 @@ static void rt_set_sync_mutex(WIDGET *w,MUTEX *m)
  ** Dope client lib emulation **
  *******************************/
 
-static char cmdstr[1024];
+static char cmdstr[32768];
 extern int dope_main(int argc, char **argv);
 
 
