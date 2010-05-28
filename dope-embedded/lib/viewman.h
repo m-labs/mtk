@@ -1,7 +1,5 @@
 /*
  * \brief   Interface of view manager module
- * \date    2004-09-03
- * \author  Norman Feske <norman.feske@genode-labs.com>
  */
 
 /*

@@ -1,7 +1,5 @@
 /*
  * \brief   DOpE LoadDisplay widget module
- * \date    2004-01-09
- * \author  Norman Feske <norman.feske@genode-labs.com>
  */
 
 /*

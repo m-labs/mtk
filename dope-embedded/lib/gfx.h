@@ -1,7 +1,5 @@
 /*
  * \brief   Interface of DOpE gfx layer
- * \date    2003-04-01
- * \author  Norman Feske <norman.feske@genode-labs.com>
  */
 
 /*

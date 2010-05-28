@@ -1,7 +1,5 @@
 /*
  * \brief   DOpE gfx 16bit image handler module
- * \date    2003-04-05
- * \author  Norman Feske <norman.feske@genode-labs.com>
  */
 
 /*

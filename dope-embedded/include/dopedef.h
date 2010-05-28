@@ -1,7 +1,5 @@
 /*
  * \brief   Error values that are exported by DOpE
- * \date    2004-08-06
- * \author  Norman Feske <norman.feske@genode-labs.com>
  */
 
 /*

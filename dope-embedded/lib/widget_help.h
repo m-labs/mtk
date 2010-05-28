@@ -1,7 +1,5 @@
 /*
  * \brief   Widget type default includes
- * \date    2004-02-01
- * \author  Norman Feske <norman.feske@genode-labs.com>
  */
 
 /*

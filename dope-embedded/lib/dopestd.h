@@ -1,7 +1,5 @@
 /*
  * \brief   Standard types and functions used by DOpE
- * \date    2003-08-01
- * \author  Norman Feske <norman.feske@genode-labs.com>
  */
 
 /*

@@ -1,7 +1,5 @@
 /*
  * \brief   Interface of the real-time scheduler of DOpE
- * \date    2004-04-27
- * \author  Norman Feske <norman.feske@genode-labs.com>
  */
 
 /*

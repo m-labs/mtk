@@ -1,7 +1,5 @@
 #
 # \brief  Generic part of the libdope makefile.
-# \author Norman Feske
-# \date   2007-12-03
 #
 # The following variables must be defined before
 # including this file:

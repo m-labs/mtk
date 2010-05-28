@@ -1,7 +1,5 @@
 /*
  * \brief   Keycodes used by DOpE
- * \date    2004-04-01
- * \author  Norman Feske <norman.feske@genode-labs.com>
  *
  * This file defines the keycodes used by DOpE to deliver events to its
  * client applications. The definitions are derrived from Linux-2.4.25.

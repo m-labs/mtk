@@ -1,7 +1,5 @@
 /*
  * \brief   DOpE messenger module
- * \date    2004-05-31
- * \author  Norman Feske <norman.feske@genode-labs.com>
  */
 
 /*

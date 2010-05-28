@@ -1,7 +1,5 @@
 /*
  * \brief   DOpE hash table module
- * \date    2002-11-13
- * \author  Norman Feske <norman.feske@genode-labs.com>
  *
  * This component provides a generic interface
  * to handle hash  tables. New elements can be

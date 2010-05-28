@@ -1,12 +1,11 @@
 /*
  * \brief   DOpE Separator widget module
- * \date    2002-05-15
- * \author  Norman Feske <norman.feske@genode-labs.com>
  */
 
 /*
  * Copyright (C) 2002-2008 Norman Feske <norman.feske@genode-labs.com>
  * Genode Labs, Feske & Helmuth Systementwicklung GbR
+ * Copyright (C) 2010 Sebastien Bourdeauducq <sebastien.bourdeauducq@lekernel.net>
  *
  * This file is part of the DOpE-embedded package, which is distributed
  * under the terms of the GNU General Public License version 2.

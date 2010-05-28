@@ -1,7 +1,5 @@
 /*
  * \brief   Interface of DOpE VTextScreen widget module
- * \date    2004-03-02
- * \author  Norman Feske <norman.feske@genode-labs.com>
  */
 
 /*

@@ -1,7 +1,5 @@
 /*
  * \brief   Interface of DOpE Screen widget module
- * \date    2003-11-16
- * \author  Norman Feske <norman.feske@genode-labs.com>
  */
 
 /*

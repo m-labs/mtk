@@ -1,7 +1,5 @@
 /*
  * \brief   DOpE timer tick module
- * \date    2004-04-7
- * \author  Norman Feske <norman.feske@genode-labs.com>
  */
 
 /*

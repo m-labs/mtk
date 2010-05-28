@@ -1,7 +1,5 @@
 /*
  * \brief   Heap memory management
- * \date    2004-05-23
- * \author  Norman Feske <norman.feske@genode-labs.com>
  *
  * This implementation is quite stupid and slow.
  */

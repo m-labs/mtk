@@ -1,7 +1,5 @@
 /*
  * \brief   DOpE Scale widget module
- * \date    2002-06-05
- * \author  Norman Feske <norman.feske@genode-labs.com>
  *
  * This widget type handles numeric scales.
  */

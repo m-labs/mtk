@@ -1,7 +1,5 @@
 /*
  * \brief   Interface of relaxation module
- * \date    2004-08-20
- * \author  Norman Feske <norman.feske@genode-labs.com>
  */
 
 /*

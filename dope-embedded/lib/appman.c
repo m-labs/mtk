@@ -1,7 +1,5 @@
 /*
  * \brief   DOpE application manager module
- * \date    2002-11-13
- * \author  Norman Feske <norman.feske@genode-labs.com>
  *
  * This module is used to manage DOpE-clients.
  * It handles all needed application specific

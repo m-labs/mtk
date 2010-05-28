@@ -1,7 +1,5 @@
 /*
  * \brief   DOpE gfx 8bit indexed image handler module
- * \date    2003-04-07
- * \author  Norman Feske <norman.feske@genode-labs.com>
  */
 
 /*

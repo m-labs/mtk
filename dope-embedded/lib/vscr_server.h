@@ -1,7 +1,5 @@
 /*
  * \brief   Interface of VScreen server module
- * \date    2002-11-13
- * \author  Norman Feske <norman.feske@genode-labs.com>
  */
 
 /*

@@ -1,7 +1,5 @@
 /*
  * \brief   DOpE shared memory management module
- * \date    2002-02-04
- * \author  Norman Feske <norman.feske@genode-labs.com>
  *
  * This implementation is meant be used if DOpE and its client
  * reside in the same address space. Here, shared memory is

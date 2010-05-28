@@ -1,7 +1,5 @@
 /*
  * \brief   General widget data structures
- * \date    2002-11-13
- * \author  Norman Feske <norman.feske@genode-labs.com>
  */
 
 /*

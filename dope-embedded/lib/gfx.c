@@ -1,7 +1,5 @@
 /*
  * \brief  DOpE gfx module
- * \date   2003-03-31
- * \author Norman Feske <norman.feske@genode-labs.com>
  *
  * This module contains the implementation of the
  * graphics hardware abstraction interface. It

@@ -1,7 +1,5 @@
 /*
  * \brief   DOpE entry function
- * \date    2002-11-13
- * \author  Norman Feske <norman.feske@genode-labs.com>
  *
  * This file describes the startup of DOpE. It
  * initialises all needed modules and calls the

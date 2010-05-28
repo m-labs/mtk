@@ -1,7 +1,5 @@
 /*
  * \brief   TFF (trivial font format) import module
- * \date    2009-02-02
- * \author  Norman Feske <norman.feske@genode-labs.com>
  *
  * This module converts tff data to a generic font
  * structure that can be  used by other components

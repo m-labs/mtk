@@ -1,7 +1,5 @@
 /*
  * \brief   DOpE simple scheduling module
- * \date    2004-04-27
- * \author  Norman Feske <norman.feske@genode-labs.com>
  *
  * There are four time-slots where real-time opera-
  * tions can be  (interleaved) executed.  Given an

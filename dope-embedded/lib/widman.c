@@ -1,7 +1,5 @@
 /*
  * \brief   DOpE widget base class module
- * \date    2002-11-13
- * \author  Norman Feske <norman.feske@genode-labs.com>
  *
  * This module implements common functionality of all widgets.
  *

@@ -1,7 +1,5 @@
 /*
  * \brief  Generic implementation of gfx container functions
- * \author Norman Feske
- * \date   2009-03-09
  *
  * This file contains graphics functions that operate on a 'pixel_t' type.
  * They contain the generic program logic of the graphical primitives
@@ -15,6 +13,15 @@
  * :scrdrv:     pointer to screen-driver service structure
  *
  * For an example of how to use this file, please refer to the 'gfx_scr16.c'.
+ */
+
+/*
+ * Copyright (C) 2004-2008 Norman Feske <norman.feske@genode-labs.com>
+ * Genode Labs, Feske & Helmuth Systementwicklung GbR
+ * Copyright (C) 2010 Sebastien Bourdeauducq <sebastien.bourdeauducq@lekernel.net>
+ *
+ * This file is part of the DOpE-embedded package, which is distributed
+ * under the terms of the GNU General Public License version 2.
  */
 
 #ifndef _DOPE_GFX_FUNCTIONS_H_

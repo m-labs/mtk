@@ -1,7 +1,5 @@
 /*
  * \brief   Interface of DOpE Label widget module
- * \date    2003-05-15
- * \author  Norman Feske <norman.feske@genode-labs.com>
  */
 
 /*

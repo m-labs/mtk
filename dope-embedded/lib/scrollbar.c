@@ -1,7 +1,5 @@
 /*
  * \brief   DOpE Scrollbar widget module
- * \date    2002-11-13
- * \author  Norman Feske <norman.feske@genode-labs.com>
  *
  * This widget type handles scrollbars. It uses
  * Buttons as child widgets.

@@ -1,7 +1,5 @@
 /*
  * \brief   DOpE List widget module
- * \date    2002-05-15
- * \author  Norman Feske <norman.feske@genode-labs.com>
  */
 
 /*

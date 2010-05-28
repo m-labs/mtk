@@ -1,7 +1,5 @@
 /*
  * \brief   DOpE utility functions
- * \date    2003-08-02
- * \author  Norman Feske <norman.feske@genode-labs.com>
  *
  * This file contains several utility functions used by
  * other components. This way inconsistencies between

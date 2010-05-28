@@ -1,7 +1,5 @@
 /*
  * \brief   DOpE scheduling module and DOpElib interface emulation
- * \date    2004-05-18
- * \author  Norman Feske <norman.feske@genode-labs.com>
  */
 
 /*

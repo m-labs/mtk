@@ -1,7 +1,5 @@
 /*
  * \brief   DOpE pool module
- * \date    2002-11-13
- * \author  Norman Feske <norman.feske@genode-labs.com>
  *
  * Pool is the component provider of DOpE.  Each
  * component can register at  Pool by specifying

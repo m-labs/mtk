@@ -1,7 +1,5 @@
 /*
  * \brief   DOpE cache handling module
- * \date    2002-11-13
- * \author  Norman Feske <norman.feske@genode-labs.com>
  *
  * This module provides the needed functionality
  * to handle caches.  Although the caches can be

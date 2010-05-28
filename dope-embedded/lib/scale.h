@@ -1,7 +1,5 @@
 /*
  * \brief   Interface of DOpE Scale widget module
- * \date    2003-06-11
- * \author  Norman Feske <norman.feske@genode-labs.com>
  */
 
 /*

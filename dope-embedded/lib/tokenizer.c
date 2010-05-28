@@ -1,7 +1,5 @@
 /*
  * \brief   DOpE tokenizer module
- * \date    2002-11-13
- * \author  Norman Feske <norman.feske@genode-labs.com>
  *
  * This module splits a given DOpE command string
  * into its tokens. It returns a table of offsets

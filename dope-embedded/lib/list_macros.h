@@ -1,7 +1,5 @@
 /*
  * \brief   Macros to deal with connected lists
- * \date    2004-05-18
- * \author  Norman Feske <norman.feske@genode-labs.com>
  */
 
 /*

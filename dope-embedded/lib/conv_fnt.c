@@ -1,7 +1,5 @@
 /*
  * \brief   DOpE Button widget module
- * \date    2002-11-13
- * \author  Norman Feske <norman.feske@genode-labs.com>
  *
  * This module converts fnt data to a generic font
  * structure that can be  used by other components

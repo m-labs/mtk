@@ -1,7 +1,5 @@
 /*
  * \brief   DOpE messenger module
- * \date    2002-11-13
- * \author  Norman Feske <norman.feske@genode-labs.com>
  *
  * This module enables DOpE to tell its clients about
  * events. It uses DICE to communicate.

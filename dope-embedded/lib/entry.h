@@ -1,7 +1,5 @@
 /*
  * \brief   Interface of DOpE Entry widget module
- * \date    2004-04-07
- * \author  Norman Feske <norman.feske@genode-labs.com>
  */
 
 /*

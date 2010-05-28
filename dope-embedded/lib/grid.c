@@ -1,7 +1,5 @@
 /*
  * \brief   DOpE Grid widget module
- * \date    2002-11-13
- * \author  Norman Feske <norman.feske@genode-labs.com>
  *
  * The Grid  layout  widget  enables the  placement
  * of  multiple  child-widgets on a  grid.  Row and

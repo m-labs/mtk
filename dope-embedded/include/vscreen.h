@@ -1,7 +1,5 @@
 /*
  * \brief   Interface of VScreen library
- * \date    2002-11-25
- * \author  Norman Feske <norman.feske@genode-labs.com>
  */
 
 /*

@@ -1,7 +1,5 @@
 /*
  * \brief   DOpE view manager
- * \date    2004-09-03
- * \author  Norman Feske <norman.feske@genode-labs.com>
  *
  * This is just a dummy implementation that is used for DOpE
  * as standalone window server.

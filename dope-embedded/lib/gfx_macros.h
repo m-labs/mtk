@@ -1,7 +1,5 @@
 /*
  * \brief   Utility macros to deal with gfx containers
- * \date    2005-08-11
- * \author  Norman Feske <norman.feske@genode-labs.com>
  */
 
 /*

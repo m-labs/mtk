@@ -1,7 +1,5 @@
 /*
  * \brief   DOpE user state module
- * \date    2002-11-13
- * \author  Norman Feske <norman.feske@genode-labs.com>
  *
  * This component manages the different states of,
  * the user interface. These states depend on the
