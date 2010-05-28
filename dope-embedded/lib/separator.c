@@ -31,7 +31,6 @@ static struct script_services  *script;
 
 struct separator_data {
 	s32       vertical;
-	s16       pad_x, pad_y;
 };
 
 int init_separator(struct dope_services *d);
@@ -76,10 +75,10 @@ static int sep_draw(SEPARATOR *s, struct gfx_ds *ds, long x, long y, WIDGET *ori
 
 	gfx->push_clipping(ds, x, y, w, h);
 
-	x += s->sd->pad_x;
-	y += s->sd->pad_y;
-	h -= s->sd->pad_x*2;
-	w -= s->sd->pad_y*2;
+	x += 2;
+	y += 2;
+	h -= 2*2;
+	w -= 2*2;
 	if(s->sd->vertical)
 		draw_pressed_frame(ds, x, y, 3, h);
 	else
@@ -97,13 +96,13 @@ static int sep_draw(SEPARATOR *s, struct gfx_ds *ds, long x, long y, WIDGET *ori
 static void sep_calc_minmax(SEPARATOR *s)
 {
 	if (s->sd->vertical) {
-		s->wd->min_w = s->wd->max_w = 3 + s->sd->pad_x * 2;
-		s->wd->min_h = s->sd->pad_y * 2;
+		s->wd->min_w = s->wd->max_w = 3 + 2 * 2;
+		s->wd->min_h = 2 * 2;
 		s->wd->max_h = 99999;
 	} else {
-		s->wd->min_w = s->sd->pad_x * 2;
+		s->wd->min_w = 2 * 2;
 		s->wd->max_w = 99999;
-		s->wd->min_h = s->wd->max_h = 3 + s->sd->pad_y * 2;
+		s->wd->min_h = s->wd->max_h = 3 + 2 * 2;
 	}
 }
 
@@ -151,7 +150,6 @@ static SEPARATOR *create(void)
 	SET_WIDGET_DEFAULTS(new, struct separator, &sep_methods);
 
 	/* set separator specific attributes */
-	new->sd->pad_x = new->sd->pad_y = 2;
 	new->sd->vertical = 0;
 	gen_methods.update(new);
 

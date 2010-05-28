@@ -46,7 +46,6 @@ struct entry_data {
 	s32    sel_x, sel_w;             /* pixel position of selection    */
 	s32    curpos;                   /* position of cursor             */
 	s32    cx, ch;                   /* cursor x position and height   */
-	s16    pad_x, pad_y;             /* padding aroung entry           */
 	char  *txtbuf;                   /* textual content of the entry   */
 	s32    txtbuflen;                /* current size of text buffer    */
 	s32    maxlen;                   /* max string length              */
@@ -198,7 +197,7 @@ static void update_text_pos(ENTRY *e)
 
 	/* set text position so that the cursor is visible */
 	e->ed->tx.dst = 0;
-	vw = e->wd->w - 2*e->ed->pad_x - 6;   /* visible width */
+	vw = e->wd->w - 2*2 - 6;   /* visible width */
 
 	if ((e->ed->tx.dst > vw - e->ed->tw) && (e->ed->tx.dst > vw + 2 - (vw/3) - e->ed->cx)) {
 		e->ed->tx.dst = vw - (vw/3) - e->ed->cx;
@@ -274,10 +273,10 @@ static int entry_draw(ENTRY *e, struct gfx_ds *ds, long x, long y, WIDGET *origi
 
 	gfx->push_clipping(ds, x, y, w, h);
 
-	x += e->ed->pad_x;
-	y += e->ed->pad_y;
-	w -= e->ed->pad_x*2;
-	h -= e->ed->pad_y*2;
+	x += 2;
+	y += 2;
+	w -= 2*2;
+	h -= 2*2;
 
 	if (e->wd->flags & WID_FLAGS_KFOCUS)
 		draw_kfocus_frame(ds, x - 1, y - 1, w + 2, h + 2);
@@ -329,8 +328,8 @@ static ENTRY *entry_find(ENTRY *e, long x, long y)
 	y -= e->wd->y;
 	
 	/* check if position is inside the entry */
-	if ((x >= e->ed->pad_x) && (x < e->wd->w - e->ed->pad_x)
-	 && (y >= e->ed->pad_y) && (y < e->wd->h - e->ed->pad_y))
+	if ((x >= 2) && (x < e->wd->w - 2)
+	 && (y >= 2) && (y < e->wd->h - 2))
 		return e;
 
 	return NULL;
@@ -341,9 +340,9 @@ static void sel_tick(ENTRY *e, int dx, int dy)
 {
 	int mx = userstate->get_mx();
 	int lx = e->gen->get_abs_x(e);
-	int xpos = mx - lx - e->ed->tx.curr - e->ed->pad_x - 3;
+	int xpos = mx - lx - e->ed->tx.curr - 2 - 3;
 	int csel;
-	int vw = e->wd->w - 2*e->ed->pad_x - 6;
+	int vw = e->wd->w - 2*2 - 6;
 
 	/* mouse beyond left widget border - scroll text area */
 	if (mx < lx) {
@@ -388,7 +387,7 @@ static void entry_handle_event(ENTRY *e, EVENT *ev, WIDGET *from)
 		e->ed->sel_beg = e->ed->sel_end = e->ed->sel_w = 0;
 		switch (ev->code) {
 			case DOPE_BTN_MOUSE:
-				xpos -= e->ed->tx.curr + e->ed->pad_x + 3;
+				xpos -= e->ed->tx.curr + 2 + 3;
 				e->ed->curpos = get_char_index(e, xpos);
 				e->ed->sel_beg = e->ed->sel_end = e->ed->curpos;
 				e->ed->sel_w = 0;
@@ -471,10 +470,10 @@ static void entry_handle_event(ENTRY *e, EVENT *ev, WIDGET *from)
  */
 static void entry_calc_minmax(ENTRY *e)
 {
-	e->wd->min_w = e->ed->pad_x*2 + 4 + e->ed->vislen*font->calc_str_width(e->ed->font_id, "W");
+	e->wd->min_w = 2*2 + 4 + e->ed->vislen*font->calc_str_width(e->ed->font_id, "W");
 	e->wd->max_w = 99999;
 	e->wd->min_h = e->wd->max_h = font->calc_str_height(e->ed->font_id, "W")
-	                            + e->ed->pad_y*2 + 4;
+	                            + 2*2 + 4;
 }
 
 
@@ -580,7 +579,6 @@ static ENTRY *create(void)
 	SET_WIDGET_DEFAULTS(new, struct entry, &entry_methods);
 
 	/* set entry specific attributes */
-	new->ed->pad_x     = new->ed->pad_y = 2;
 	new->ed->vislen    = 2;
 	new->ed->sel_beg   = -1;
 	new->ed->sel_end   = -1;

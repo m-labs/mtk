@@ -32,7 +32,6 @@ struct label_data {
 	char     *text;
 	s32       font_id;
 	s32       tx, ty;       /* text position inside the label cell */
-	s32       pad_x, pad_y;
 	VARIABLE *var;
 };
 
@@ -82,12 +81,12 @@ static void lab_calc_minmax(LABEL *l)
 {
 	if (l->ld->text) {
 		l->wd->min_w = l->wd->max_w = font->calc_str_width (l->ld->font_id, l->ld->text)
-		                            + l->ld->pad_x * 2;
+		                            + 2 * 2;
 		l->wd->min_h = l->wd->max_h = font->calc_str_height(l->ld->font_id, l->ld->text)
-		                            + l->ld->pad_y * 2;
+		                            + 2 * 2;
 	} else {
-		l->wd->min_w = l->wd->min_h = l->ld->pad_x * 2;
-		l->wd->max_w = l->wd->max_h = l->ld->pad_y * 2;
+		l->wd->min_w = l->wd->min_h = 2 * 2;
+		l->wd->max_w = l->wd->max_h = 2 * 2;
 	}
 }
 
@@ -231,7 +230,6 @@ static LABEL *create(void)
 	SET_WIDGET_DEFAULTS(new, struct label, &lab_methods);
 
 	/* set label specific attributes */
-	new->ld->pad_x  = new->ld->pad_y = 2;
 	new->ld->text   = dope_strdup("");
 	update_text_pos(new);
 	gen_methods.update(new);
