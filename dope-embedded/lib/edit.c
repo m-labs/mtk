@@ -412,7 +412,9 @@ static void edit_handle_event(EDIT *e, EVENT *ev, WIDGET *from)
 
 	switch (ev->type) {
     case EVENT_RELEASE:
-        ctrl_pressed = 0;
+        if(ev->code == DOPE_KEY_LEFTCTRL){
+            ctrl_pressed = 0;
+        }
         break;
 	case EVENT_PRESS:
 	case EVENT_KEY_REPEAT:
