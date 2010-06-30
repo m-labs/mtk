@@ -93,6 +93,7 @@ extern int init_vscreen          (struct dope_services *);
 extern int init_vscr_server      (struct dope_services *);
 extern int init_vtextscreen      (struct dope_services *);
 extern int init_sharedmem        (struct dope_services *);
+extern int init_clipboard        (struct dope_services *);
 
 /**
  * Prototypes from eventloop.c
@@ -154,6 +155,9 @@ int dope_main(int argc,char **argv)
 
 	INFO(printf("%sHashTable\n",dbg));
 	init_hashtable(&dope);
+
+	INFO(printf("%sClipboard\n",dbg));
+	init_clipboard(&dope);
 
 	INFO(printf("%sApplication Manager\n",dbg));
 	init_appman(&dope);

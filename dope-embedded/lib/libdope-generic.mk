@@ -32,7 +32,7 @@ SRC_C  += \
 	dummies.c     thread.c      eventmsg.c  \
 	sharedmem.c   gfx_scr16.c   sched.c     \
 	vera16_tff.c  edit.c        separator.c \
-	list.c
+	list.c        clipboard.c
 
 vpath % $(LIBDOPE_DIR)
 
