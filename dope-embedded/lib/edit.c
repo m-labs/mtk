@@ -26,6 +26,7 @@ struct edit;
 #include "messenger.h"
 #include "keycodes.h"
 #include "tick.h"
+#include "clipboard.h"
 
 static struct widman_services    *widman;
 static struct gfx_services       *gfx;
@@ -34,6 +35,7 @@ static struct script_services    *script;
 static struct userstate_services *userstate;
 static struct messenger_services *msg;
 static struct tick_services      *tick;
+static struct clipboard_services *clipb;
 
 struct edit_data {
 	s16    font_id;                  /* used font                      */
@@ -367,6 +369,36 @@ static void sel_release(EDIT *e, int dx, int dy)
 	update_text_pos(e);
 }
 
+static void sel_copy(EDIT *e)
+{
+    if(e->ed->sel_beg >= e->ed->sel_end) return;
+    clipb->set(e->ed->txtbuf + e->ed->sel_beg, e->ed->sel_end - e->ed->sel_beg);
+}
+
+static void sel_cut(EDIT *e)
+{
+    s32 i;
+
+    if(e->ed->sel_beg >= e->ed->sel_end) return;
+    clipb->set(e->ed->txtbuf + e->ed->sel_beg, e->ed->sel_end - e->ed->sel_beg);
+    for(i = e->ed->sel_beg; i<e->ed->sel_end; ++i){
+        delete_char(e, e->ed->sel_beg);
+    }
+}
+
+static void clipboard_paste(EDIT *e)
+{
+    char* clip_data;
+    s32 clip_length;
+    int i;
+
+    clipb->get(&clip_data, &clip_length);
+    if(clip_length == 0) return;
+    for(i = 0; i<clip_length; ++i){
+        insert_char(e, e->ed->sel_beg + i, clip_data[i]);
+    }
+}
+
 
 static void (*orig_handle_event) (EDIT *e, EVENT *ev, WIDGET *from);
 static void edit_handle_event(EDIT *e, EVENT *ev, WIDGET *from)
@@ -375,11 +407,15 @@ static void edit_handle_event(EDIT *e, EVENT *ev, WIDGET *from)
 	int ypos = userstate->get_my() - e->gen->get_abs_y(e);
 	int ascii;
 	int ev_done = 0;
+    static char ctrl_pressed = 0;
 
 	switch (ev->type) {
+    case EVENT_RELEASE:
+        ctrl_pressed = 0;
+        break;
 	case EVENT_PRESS:
 	case EVENT_KEY_REPEAT:
-		e->ed->sel_beg = e->ed->sel_end = e->ed->sel_w = 0;
+		//e->ed->sel_beg = e->ed->sel_end = e->ed->sel_w = 0;
 		switch (ev->code) {
 			case DOPE_BTN_MOUSE:
 				xpos -= e->ed->tx + 2 + 3;
@@ -434,6 +470,31 @@ static void edit_handle_event(EDIT *e, EVENT *ev, WIDGET *from)
 				}
 				ev_done = 2;
 				break;
+
+            case DOPE_KEY_LEFTCTRL:
+                ctrl_pressed = 1;
+                break;
+
+            case DOPE_KEY_C:
+                if(ctrl_pressed){
+                    sel_copy(e);
+                    ev_done = 2;
+                }
+                break;
+
+            case DOPE_KEY_X:
+                if(ctrl_pressed){
+                    sel_cut(e);
+                    ev_done = 2;
+                }
+                break;
+
+            case DOPE_KEY_V:
+                if(ctrl_pressed){
+                    clipboard_paste(e);
+                    ev_done = 2;
+                }
+                break;
 
 			case DOPE_KEY_TAB:
 				orig_handle_event(e, ev, from);
@@ -593,6 +654,7 @@ int init_edit(struct dope_services *d)
 	userstate = d->get_module("UserState 1.0");
 	msg       = d->get_module("Messenger 1.0");
 	tick      = d->get_module("Tick 1.0");
+    clipb     = d->get_module("Clipboard 1.0");
 
 	/* define general widget functions */
 	widman->default_widget_methods(&gen_methods);

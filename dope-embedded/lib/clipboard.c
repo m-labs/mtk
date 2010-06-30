@@ -5,12 +5,12 @@
 
 struct clipboard {
     char data[CLIPBOARD_SIZE];
-    u32 length;
+    s32 length;
 } the_clipboard;
 
 int init_clipboard(struct dope_services *d);
 
-static void clipboard_set(char *dataIn, u32 length){
+static void clipboard_set(char *dataIn, s32 length){
     if(!dataIn) return;
     memcpy(the_clipboard.data, dataIn, MIN(length, CLIPBOARD_SIZE));
     the_clipboard.length = MIN(length, CLIPBOARD_SIZE);
@@ -18,7 +18,7 @@ static void clipboard_set(char *dataIn, u32 length){
 
 //Returns the start address of the data and its length. Copying
 //is the responsibility of the caller.
-static void clipboard_get(char **dataOut, u32 *length){
+static void clipboard_get(char **dataOut, s32 *length){
     if((!dataOut) || (!length)) return;
     *dataOut = the_clipboard.data;
     *length = the_clipboard.length;
