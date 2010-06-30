@@ -377,8 +377,10 @@ void sel_reset(EDIT *e)
 
 static void sel_copy(EDIT *e)
 {
-    if(e->ed->sel_beg >= e->ed->sel_end) return;
-    clipb->set(e->ed->txtbuf + e->ed->sel_beg, e->ed->sel_end - e->ed->sel_beg);
+    s32 start_idx = MIN(e->ed->sel_beg, e->ed->sel_end);
+    s32 end_idx = MAX(e->ed->sel_beg, e->ed->sel_end);
+    if(start_idx == end_idx) return;
+    clipb->set(e->ed->txtbuf + start_idx, end_idx - start_idx);
     e->ed->curpos = e->ed->sel_beg;
 }
 
@@ -386,12 +388,14 @@ static void sel_cut(EDIT *e)
 {
     s32 i;
 
-    if(e->ed->sel_beg >= e->ed->sel_end) return;
-    clipb->set(e->ed->txtbuf + e->ed->sel_beg, e->ed->sel_end - e->ed->sel_beg);
-    for(i = e->ed->sel_beg; i<e->ed->sel_end; ++i){
-        delete_char(e, e->ed->sel_beg);
+    s32 start_idx = MIN(e->ed->sel_beg, e->ed->sel_end);
+    s32 end_idx = MAX(e->ed->sel_beg, e->ed->sel_end);
+    if(start_idx == end_idx) return;
+    clipb->set(e->ed->txtbuf + start_idx, end_idx - start_idx);
+    for(i = start_idx; i<end_idx; ++i){
+        delete_char(e, start_idx);
     }
-    e->ed->curpos -= (e->ed->sel_end - e->ed->sel_beg);
+    e->ed->curpos = start_idx;
 }
 
 static void clipboard_paste(EDIT *e)
