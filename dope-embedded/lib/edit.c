@@ -6,6 +6,7 @@
  * Copyright (C) 2004-2008 Norman Feske <norman.feske@genode-labs.com>
  * Genode Labs, Feske & Helmuth Systementwicklung GbR
  * Copyright (C) 2010 Sebastien Bourdeauducq <sebastien.bourdeauducq@lekernel.net>
+ * Copyright (C) 2010 Romain P<rom1@netcourrier.com>
  *
  * This file is part of the DOpE-embedded package, which is distributed
  * under the terms of the GNU General Public License version 2.
@@ -369,10 +370,16 @@ static void sel_release(EDIT *e, int dx, int dy)
 	update_text_pos(e);
 }
 
+void sel_reset(EDIT *e)
+{
+    e->ed->sel_beg = e->ed->sel_end = e->ed->curpos;
+}
+
 static void sel_copy(EDIT *e)
 {
     if(e->ed->sel_beg >= e->ed->sel_end) return;
     clipb->set(e->ed->txtbuf + e->ed->sel_beg, e->ed->sel_end - e->ed->sel_beg);
+    e->ed->curpos = e->ed->sel_beg;
 }
 
 static void sel_cut(EDIT *e)
@@ -384,6 +391,7 @@ static void sel_cut(EDIT *e)
     for(i = e->ed->sel_beg; i<e->ed->sel_end; ++i){
         delete_char(e, e->ed->sel_beg);
     }
+    e->ed->curpos -= (e->ed->sel_end - e->ed->sel_beg);
 }
 
 static void clipboard_paste(EDIT *e)
@@ -432,30 +440,36 @@ static void edit_handle_event(EDIT *e, EVENT *ev, WIDGET *from)
 
 			case DOPE_KEY_UP:
 				e->ed->curpos = get_char_index(e, e->ed->cx, e->ed->cy-e->ed->ch);
+                sel_reset(e);
 				ev_done = 2;
 				break;
 			case DOPE_KEY_DOWN:
 				e->ed->curpos = get_char_index(e, e->ed->cx, e->ed->cy+e->ed->ch);
+                sel_reset(e);
 				ev_done = 2;
 				break;
 			
 			case DOPE_KEY_LEFT:
 				if (e->ed->curpos > 0) e->ed->curpos--;
+                sel_reset(e);
 				ev_done = 2;
 				break;
 			case DOPE_KEY_RIGHT:
 				if (e->ed->curpos < strlen(e->ed->txtbuf)) e->ed->curpos++;
+                sel_reset(e);
 				ev_done = 2;
 				break;
 
 			case DOPE_KEY_HOME:
 				while((e->ed->curpos > 0) && (e->ed->txtbuf[e->ed->curpos-1] != '\n'))
 					e->ed->curpos--;
+                sel_reset(e);
 				ev_done = 2;
 				break;
 			case DOPE_KEY_END: {
 				while((e->ed->txtbuf[e->ed->curpos] != 0) && (e->ed->txtbuf[e->ed->curpos] != '\n'))
 					e->ed->curpos++;
+                sel_reset(e);
 				ev_done = 2;
 				break;
 			}
@@ -463,6 +477,7 @@ static void edit_handle_event(EDIT *e, EVENT *ev, WIDGET *from)
 			case DOPE_KEY_DELETE:
 				if (e->ed->curpos < strlen(e->ed->txtbuf))
 					delete_char(e, e->ed->curpos);
+                sel_reset(e);
 				ev_done = 2;
 				break;
 
@@ -471,6 +486,7 @@ static void edit_handle_event(EDIT *e, EVENT *ev, WIDGET *from)
 					e->ed->curpos--;
 					delete_char(e, e->ed->curpos);
 				}
+                sel_reset(e);
 				ev_done = 2;
 				break;
 
@@ -488,6 +504,7 @@ static void edit_handle_event(EDIT *e, EVENT *ev, WIDGET *from)
             case DOPE_KEY_X:
                 if(ctrl_pressed){
                     sel_cut(e);
+                    sel_reset(e);
                     ev_done = 2;
                 }
                 break;
@@ -495,6 +512,7 @@ static void edit_handle_event(EDIT *e, EVENT *ev, WIDGET *from)
             case DOPE_KEY_V:
                 if(ctrl_pressed){
                     clipboard_paste(e);
+                    sel_reset(e);
                     ev_done = 2;
                 }
                 break;
@@ -514,6 +532,7 @@ static void edit_handle_event(EDIT *e, EVENT *ev, WIDGET *from)
 		ascii = userstate->get_ascii(ev->code);
 		if (!ascii) return;
 		insert_char(e, e->ed->curpos, ascii);
+        sel_reset(e);
 		e->ed->curpos++;
 		e->wd->update |= WID_UPDATE_REFRESH;
 		e->gen->update(e);
