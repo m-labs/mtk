@@ -1,3 +1,13 @@
+/*
+ * \brief   DOpE clipboard module
+ */
+
+/*
+ * Copyright (C) 2010 Romain P<rom1@netcourrier.com>
+ *
+ * This file is part of the DOpE-embedded package, which is distributed
+ * under the terms of the GNU General Public License version 2.
+ */
 #include "dopestd.h"
 #include "clipboard.h"
 
@@ -42,3 +52,4 @@ int init_clipboard(struct dope_services *d)
 	d->register_module("Clipboard 1.0", &services);
 	return 1;
 }
+
