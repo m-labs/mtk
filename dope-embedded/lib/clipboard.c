@@ -13,6 +13,7 @@ int init_clipboard(struct dope_services *d);
 static void clipboard_set(char *dataIn, u32 length){
     if(!dataIn) return;
     memcpy(the_clipboard.data, dataIn, MIN(length, CLIPBOARD_SIZE));
+    the_clipboard.length = MIN(length, CLIPBOARD_SIZE);
 }
 
 //Returns the start address of the data and its length. Copying
