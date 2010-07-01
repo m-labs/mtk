@@ -14,24 +14,24 @@
 #define CLIPBOARD_SIZE 65536 
 
 struct clipboard {
-    char data[CLIPBOARD_SIZE];
-    s32 length;
+	char data[CLIPBOARD_SIZE];
+	s32 length;
 } the_clipboard;
 
 int init_clipboard(struct dope_services *d);
 
 static void clipboard_set(char *dataIn, s32 length){
-    if(!dataIn) return;
-    memcpy(the_clipboard.data, dataIn, MIN(length, CLIPBOARD_SIZE));
-    the_clipboard.length = MIN(length, CLIPBOARD_SIZE);
+	if(!dataIn) return;
+	memcpy(the_clipboard.data, dataIn, MIN(length, CLIPBOARD_SIZE));
+	the_clipboard.length = MIN(length, CLIPBOARD_SIZE);
 }
 
 //Returns the start address of the data and its length. Copying
 //is the responsibility of the caller.
 static void clipboard_get(char **dataOut, s32 *length){
-    if((!dataOut) || (!length)) return;
-    *dataOut = the_clipboard.data;
-    *length = the_clipboard.length;
+	if((!dataOut) || (!length)) return;
+	*dataOut = the_clipboard.data;
+	*length = the_clipboard.length;
 }
 
 /**************************************
@@ -40,7 +40,7 @@ static void clipboard_get(char **dataOut, s32 *length){
 
 static struct clipboard_services services = {
 	clipboard_set,
-    clipboard_get	
+	clipboard_get
 };
 
 /************************
