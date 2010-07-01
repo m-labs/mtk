@@ -372,44 +372,43 @@ static void sel_release(EDIT *e, int dx, int dy)
 
 void sel_reset(EDIT *e)
 {
-    e->ed->sel_beg = e->ed->sel_end = e->ed->curpos;
+	e->ed->sel_beg = e->ed->sel_end = e->ed->curpos;
 }
 
 static void sel_copy(EDIT *e)
 {
-    s32 start_idx = MIN(e->ed->sel_beg, e->ed->sel_end);
-    s32 end_idx = MAX(e->ed->sel_beg, e->ed->sel_end);
-    if(start_idx == end_idx) return;
-    clipb->set(e->ed->txtbuf + start_idx, end_idx - start_idx);
-    e->ed->curpos = e->ed->sel_beg;
+	s32 start_idx = MIN(e->ed->sel_beg, e->ed->sel_end);
+	s32 end_idx = MAX(e->ed->sel_beg, e->ed->sel_end);
+	if(start_idx == end_idx) return;
+	clipb->set(e->ed->txtbuf + start_idx, end_idx - start_idx);
+	e->ed->curpos = e->ed->sel_beg;
 }
 
 static void sel_cut(EDIT *e)
 {
-    s32 i;
-
-    s32 start_idx = MIN(e->ed->sel_beg, e->ed->sel_end);
-    s32 end_idx = MAX(e->ed->sel_beg, e->ed->sel_end);
-    if(start_idx == end_idx) return;
-    clipb->set(e->ed->txtbuf + start_idx, end_idx - start_idx);
-    for(i = start_idx; i<end_idx; ++i){
-        delete_char(e, start_idx);
-    }
-    e->ed->curpos = start_idx;
+	s32 i;
+	s32 start_idx = MIN(e->ed->sel_beg, e->ed->sel_end);
+	s32 end_idx = MAX(e->ed->sel_beg, e->ed->sel_end);
+	if(start_idx == end_idx) return;
+	clipb->set(e->ed->txtbuf + start_idx, end_idx - start_idx);
+	for(i = start_idx; i<end_idx; ++i){
+		delete_char(e, start_idx);
+	}
+	e->ed->curpos = start_idx;
 }
 
 static void clipboard_paste(EDIT *e)
 {
-    char* clip_data;
-    s32 clip_length;
-    int i;
+	char* clip_data;
+	s32 clip_length;
+	int i;
 
-    clipb->get(&clip_data, &clip_length);
-    if(clip_length == 0) return;
-    for(i = 0; i<clip_length; ++i){
-        insert_char(e, e->ed->curpos + i, clip_data[i]);
-    }
-    e->ed->curpos += clip_length;
+	clipb->get(&clip_data, &clip_length);
+	if(clip_length == 0) return;
+	for(i = 0; i<clip_length; ++i){
+		insert_char(e, e->ed->curpos + i, clip_data[i]);
+	}
+	e->ed->curpos += clip_length;
 }
 
 
@@ -423,11 +422,11 @@ static void edit_handle_event(EDIT *e, EVENT *ev, WIDGET *from)
     static char ctrl_pressed = 0;
 
 	switch (ev->type) {
-    case EVENT_RELEASE:
-        if(ev->code == DOPE_KEY_LEFTCTRL){
-            ctrl_pressed = 0;
-        }
-        break;
+	case EVENT_RELEASE:
+		if(ev->code == DOPE_KEY_LEFTCTRL){
+			ctrl_pressed = 0;
+		}
+		break;
 	case EVENT_PRESS:
 	case EVENT_KEY_REPEAT:
 		//e->ed->sel_beg = e->ed->sel_end = e->ed->sel_w = 0;
@@ -444,36 +443,36 @@ static void edit_handle_event(EDIT *e, EVENT *ev, WIDGET *from)
 
 			case DOPE_KEY_UP:
 				e->ed->curpos = get_char_index(e, e->ed->cx, e->ed->cy-e->ed->ch);
-                sel_reset(e);
+				sel_reset(e);
 				ev_done = 2;
 				break;
 			case DOPE_KEY_DOWN:
 				e->ed->curpos = get_char_index(e, e->ed->cx, e->ed->cy+e->ed->ch);
-                sel_reset(e);
+				sel_reset(e);
 				ev_done = 2;
 				break;
 			
 			case DOPE_KEY_LEFT:
 				if (e->ed->curpos > 0) e->ed->curpos--;
-                sel_reset(e);
+				sel_reset(e);
 				ev_done = 2;
 				break;
 			case DOPE_KEY_RIGHT:
 				if (e->ed->curpos < strlen(e->ed->txtbuf)) e->ed->curpos++;
-                sel_reset(e);
+				sel_reset(e);
 				ev_done = 2;
 				break;
 
 			case DOPE_KEY_HOME:
 				while((e->ed->curpos > 0) && (e->ed->txtbuf[e->ed->curpos-1] != '\n'))
 					e->ed->curpos--;
-                sel_reset(e);
+				sel_reset(e);
 				ev_done = 2;
 				break;
 			case DOPE_KEY_END: {
 				while((e->ed->txtbuf[e->ed->curpos] != 0) && (e->ed->txtbuf[e->ed->curpos] != '\n'))
 					e->ed->curpos++;
-                sel_reset(e);
+				sel_reset(e);
 				ev_done = 2;
 				break;
 			}
@@ -481,7 +480,7 @@ static void edit_handle_event(EDIT *e, EVENT *ev, WIDGET *from)
 			case DOPE_KEY_DELETE:
 				if (e->ed->curpos < strlen(e->ed->txtbuf))
 					delete_char(e, e->ed->curpos);
-                sel_reset(e);
+				sel_reset(e);
 				ev_done = 2;
 				break;
 
@@ -490,36 +489,36 @@ static void edit_handle_event(EDIT *e, EVENT *ev, WIDGET *from)
 					e->ed->curpos--;
 					delete_char(e, e->ed->curpos);
 				}
-                sel_reset(e);
+				sel_reset(e);
 				ev_done = 2;
 				break;
 
-            case DOPE_KEY_LEFTCTRL:
-                ctrl_pressed = 1;
-                break;
+			case DOPE_KEY_LEFTCTRL:
+				ctrl_pressed = 1;
+				break;
 
-            case DOPE_KEY_C:
-                if(ctrl_pressed){
-                    sel_copy(e);
-                    ev_done = 2;
-                }
-                break;
+			case DOPE_KEY_C:
+				if(ctrl_pressed){
+					sel_copy(e);
+					ev_done = 2;
+				}
+				break;
 
-            case DOPE_KEY_X:
-                if(ctrl_pressed){
-                    sel_cut(e);
-                    sel_reset(e);
-                    ev_done = 2;
-                }
-                break;
+			case DOPE_KEY_X:
+				if(ctrl_pressed){
+					sel_cut(e);
+					sel_reset(e);
+					ev_done = 2;
+				}
+				break;
 
-            case DOPE_KEY_V:
-                if(ctrl_pressed){
-                    clipboard_paste(e);
-                    sel_reset(e);
-                    ev_done = 2;
-                }
-                break;
+			case DOPE_KEY_V:
+				if(ctrl_pressed){
+					clipboard_paste(e);
+					sel_reset(e);
+					ev_done = 2;
+				}
+				break;
 
 			case DOPE_KEY_TAB:
 				orig_handle_event(e, ev, from);
@@ -536,7 +535,7 @@ static void edit_handle_event(EDIT *e, EVENT *ev, WIDGET *from)
 		ascii = userstate->get_ascii(ev->code);
 		if (!ascii) return;
 		insert_char(e, e->ed->curpos, ascii);
-        sel_reset(e);
+		sel_reset(e);
 		e->ed->curpos++;
 		e->wd->update |= WID_UPDATE_REFRESH;
 		e->gen->update(e);
