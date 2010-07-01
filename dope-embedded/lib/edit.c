@@ -407,7 +407,7 @@ static void clipboard_paste(EDIT *e)
     clipb->get(&clip_data, &clip_length);
     if(clip_length == 0) return;
     for(i = 0; i<clip_length; ++i){
-        insert_char(e, e->ed->sel_beg + i, clip_data[i]);
+        insert_char(e, e->ed->curpos + i, clip_data[i]);
     }
     e->ed->curpos += clip_length;
 }
