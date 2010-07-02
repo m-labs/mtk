@@ -407,12 +407,15 @@ static void clipboard_paste(ENTRY *e)
 {
 	char* clip_data;
 	s32 clip_length;
-	int i;
+	int i, j=0;
 
 	clipb->get(&clip_data, &clip_length);
 	if(clip_length == 0) return;
 	for(i = 0; i<clip_length; ++i){
-		insert_char(e, e->ed->curpos + i, clip_data[i]);
+		if(clip_data[i] != '\n'){
+			insert_char(e, e->ed->curpos + j, clip_data[i]);
+			++j;
+		}
 	}
 	e->ed->curpos += clip_length;
 }
