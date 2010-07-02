@@ -679,7 +679,7 @@ int init_edit(struct dope_services *d)
 	userstate = d->get_module("UserState 1.0");
 	msg       = d->get_module("Messenger 1.0");
 	tick      = d->get_module("Tick 1.0");
-    clipb     = d->get_module("Clipboard 1.0");
+	clipb     = d->get_module("Clipboard 1.0");
 
 	/* define general widget functions */
 	widman->default_widget_methods(&gen_methods);
