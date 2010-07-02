@@ -370,7 +370,7 @@ static void sel_release(EDIT *e, int dx, int dy)
 	update_text_pos(e);
 }
 
-void sel_reset(EDIT *e)
+static void sel_reset(EDIT *e)
 {
 	e->ed->sel_beg = e->ed->sel_end = e->ed->curpos;
 }
