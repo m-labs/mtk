@@ -5,8 +5,9 @@
 /*
  * Copyright (C) 2004-2008 Norman Feske <norman.feske@genode-labs.com>
  * Genode Labs, Feske & Helmuth Systementwicklung GbR
+ * Copyright (C) 2010 Romain P <rom1@netcourrier.com>
  *
- * This file is part of the DOpE-embedded package, which is distributed
+This file is part of the DOpE-embedded package, which is distributed
  * under the terms of the GNU General Public License version 2.
  */
 
@@ -26,6 +27,7 @@ struct entry;
 #include "keycodes.h"
 #include "relax.h"
 #include "tick.h"
+#include "clipboard.h"
 
 static struct widman_services    *widman;
 static struct gfx_services       *gfx;
@@ -35,6 +37,7 @@ static struct userstate_services *userstate;
 static struct relax_services     *relax;
 static struct messenger_services *msg;
 static struct tick_services      *tick;
+static struct clipboard_services *clipb;
 
 struct entry_data {
 	s16    font_id;                  /* used font                      */
@@ -373,6 +376,46 @@ static void sel_release(ENTRY *e, int dx, int dy)
 	start_relax(e);
 }
 
+static void sel_reset(ENTRY *e)
+{
+	e->ed->sel_beg = e->ed->sel_end = e->ed->curpos;
+}
+
+static void sel_copy(ENTRY *e)
+{
+	s32 start_idx = MIN(e->ed->sel_beg, e->ed->sel_end);
+	s32 end_idx = MAX(e->ed->sel_beg, e->ed->sel_end);
+	if(start_idx == end_idx) return;
+	clipb->set(e->ed->txtbuf + start_idx, end_idx - start_idx);
+	e->ed->curpos = e->ed->sel_beg;
+}
+
+static void sel_cut(ENTRY *e)
+{
+	s32 i;
+	s32 start_idx = MIN(e->ed->sel_beg, e->ed->sel_end);
+	s32 end_idx = MAX(e->ed->sel_beg, e->ed->sel_end);
+	if(start_idx == end_idx) return;
+	clipb->set(e->ed->txtbuf + start_idx, end_idx - start_idx);
+	for(i = start_idx; i<end_idx; ++i){
+		delete_char(e, start_idx);
+	}
+	e->ed->curpos = start_idx;
+}
+
+static void clipboard_paste(ENTRY *e)
+{
+	char* clip_data;
+	s32 clip_length;
+	int i;
+
+	clipb->get(&clip_data, &clip_length);
+	if(clip_length == 0) return;
+	for(i = 0; i<clip_length; ++i){
+		insert_char(e, e->ed->curpos + i, clip_data[i]);
+	}
+	e->ed->curpos += clip_length;
+}
 
 static void (*orig_handle_event) (ENTRY *e, EVENT *ev, WIDGET *from);
 static void entry_handle_event(ENTRY *e, EVENT *ev, WIDGET *from)
@@ -380,11 +423,17 @@ static void entry_handle_event(ENTRY *e, EVENT *ev, WIDGET *from)
 	int xpos = userstate->get_mx() - e->gen->get_abs_x(e);
 	int ascii;
 	int ev_done = 0;
+	static char ctrl_pressed = 0;
 
 	switch (ev->type) {
+	case EVENT_RELEASE:
+		if(ev->code == DOPE_KEY_LEFTCTRL){
+			ctrl_pressed = 0;
+		}
+		break;
 	case EVENT_PRESS:
 	case EVENT_KEY_REPEAT:
-		e->ed->sel_beg = e->ed->sel_end = e->ed->sel_w = 0;
+		//e->ed->sel_beg = e->ed->sel_end = e->ed->sel_w = 0;
 		switch (ev->code) {
 			case DOPE_BTN_MOUSE:
 				xpos -= e->ed->tx.curr + 2 + 3;
@@ -396,27 +445,32 @@ static void entry_handle_event(ENTRY *e, EVENT *ev, WIDGET *from)
 				break;
 			case DOPE_KEY_LEFT:
 				if (e->ed->curpos > 0) e->ed->curpos--;
+				sel_reset(e);
 				ev_done = 2;
 				break;
 				
 			case DOPE_KEY_RIGHT:
 				if (e->ed->curpos < strlen(e->ed->txtbuf)) e->ed->curpos++;
+				sel_reset(e);
 				ev_done = 2;
 				break;
 
 			case DOPE_KEY_HOME:
 				e->ed->curpos = 0;
+				sel_reset(e);
 				ev_done = 2;
 				break;
 
 			case DOPE_KEY_END:
 				e->ed->curpos = strlen(e->ed->txtbuf);
+				sel_reset(e);
 				ev_done = 2;
 				break;
 
 			case DOPE_KEY_DELETE:
 				if (e->ed->curpos < strlen(e->ed->txtbuf))
 					delete_char(e, e->ed->curpos);
+				sel_reset(e);
 				ev_done = 2;
 				break;
 
@@ -425,7 +479,35 @@ static void entry_handle_event(ENTRY *e, EVENT *ev, WIDGET *from)
 					e->ed->curpos--;
 					delete_char(e, e->ed->curpos);
 				}
+				sel_reset(e);
 				ev_done = 2;
+				break;
+
+			case DOPE_KEY_LEFTCTRL:
+				ctrl_pressed = 1;
+				break;
+
+			case DOPE_KEY_C:
+				if(ctrl_pressed){
+					sel_copy(e);
+					ev_done = 2;
+				}
+				break;
+
+			case DOPE_KEY_X:
+				if(ctrl_pressed){
+					sel_cut(e);
+					sel_reset(e);
+					ev_done = 2;
+				}
+				break;
+
+			case DOPE_KEY_V:
+				if(ctrl_pressed){
+					clipboard_paste(e);
+					sel_reset(e);
+					ev_done = 2;
+				}
 				break;
 
 			case DOPE_KEY_ENTER:
@@ -455,6 +537,7 @@ static void entry_handle_event(ENTRY *e, EVENT *ev, WIDGET *from)
 		ascii = userstate->get_ascii(ev->code);
 		if (!ascii) return;
 		insert_char(e, e->ed->curpos, ascii);
+		sel_reset(e);
 		e->ed->curpos++;
 		e->wd->update |= WID_UPDATE_REFRESH;
 		e->gen->update(e);
@@ -629,6 +712,7 @@ int init_entry(struct dope_services *d)
 	msg       = d->get_module("Messenger 1.0");
 	tick      = d->get_module("Tick 1.0");
 	relax     = d->get_module("Relax 1.0");
+	clipb     = d->get_module("Clipboard 1.0");
 
 	normal_img = gen_range_img(gfx, 85, 85, 85, 148, 148, 148);
 	focus_img  = gen_range_img(gfx, 85, 85, 85, 162, 162, 162);
