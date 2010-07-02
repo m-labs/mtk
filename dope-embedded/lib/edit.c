@@ -419,7 +419,7 @@ static void edit_handle_event(EDIT *e, EVENT *ev, WIDGET *from)
 	int ypos = userstate->get_my() - e->gen->get_abs_y(e);
 	int ascii;
 	int ev_done = 0;
-    static char ctrl_pressed = 0;
+	static char ctrl_pressed = 0;
 
 	switch (ev->type) {
 	case EVENT_RELEASE:
