@@ -1,6 +1,5 @@
 PLATFORM  = milkymist
-CFLAGS   += -nostdinc -I$(MMDIR)/software/include -DNO_DOUBLE
-LIBS     += -lbase
+CFLAGS   += -I$(RTEMS_MAKEFILE_PATH)/lib/include 
 
 
 include $(BASE_DIR)/config/spec-lm32.mk

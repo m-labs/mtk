@@ -1,12 +1,7 @@
 /*
- * \brief   DOpE screen driver module for Milkymist
- * \date    2005-02-04
- * \author  Norman Feske <norman.feske@genode-labs.com>
- */
-
-/*
  * Copyright (C) 2005-2008 Norman Feske <norman.feske@genode-labs.com>
  * Genode Labs, Feske & Helmuth Systementwicklung GbR
+ * Copyright (C) 2010 Sebastien Bourdeauducq
  *
  * This file is part of the DOpE-embedded package, which is distributed
  * under the terms of the GNU General Public License version 2.
@@ -15,8 +10,7 @@
 /**
  * General includes
  */
-#include <hw/vga.h>
-#include <hw/fmlbrg.h>
+#include <rtems/fb.h>
 
 /**
  * Local includes
@@ -29,7 +23,7 @@ static long scr_width, scr_height, scr_depth;
 static long curr_mx = 100,curr_my = 100;
 static struct clipping_services *clip;
 
-static short scr[1024*768] __attribute__((aligned(32)));
+static short *scr;
 static short buf[1024*768] __attribute__((aligned(32)));
 
 int init_scrdrv(struct dope_services *d);
@@ -111,21 +105,17 @@ extern short bigmouse_trp;
 static long set_screen(long width, long height, long depth)
 {
 	int i;
-	
-	/****************************************
-	 * 25 MHz Pixel clock: 640x480 at 60 Hz *
-	 ****************************************/
+
 	scr_width  = 640;
 	scr_height = 480;
 	scr_depth  = 16;
 
+	/* TODO: set scr */
+	
 	for(i=0;i<640*480;i++) {
 		scr[i] = 0;
 		buf[i] = 0;
 	}
-
-	CSR_VGA_BASEADDRESS = (unsigned int)&scr;
-	CSR_VGA_RESET = 0;
 	
 	return 1;
 }
@@ -152,18 +142,6 @@ static void *get_buf_adr    (void) {return &buf;}
 /**
  * Make changes on the screen visible (buffered output)
  */
-
-static void flush_bridge_cache()
-{
-	volatile char *flushbase = (char *)FMLBRG_FLUSH_BASE;
-	int i, offset;
-
-	offset = 0;
-	for(i=0;i<FMLBRG_LINE_COUNT;i++) {
-		flushbase[offset] = 0;
-		offset += FMLBRG_LINE_LENGTH;
-	}
-}
 
 static void update_area(long x1, long y1, long x2, long y2)
 {
@@ -213,8 +191,6 @@ static void update_area(long x1, long y1, long x2, long y2)
 
 	if (cursor_visible)
 		restore_background(curr_mx, curr_my);
-
-	flush_bridge_cache();
 }
 
 

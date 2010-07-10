@@ -16,12 +16,7 @@
 /* DOpE includes */
 #include <dopelib.h>
 
-/* Milkymist includes */
-#include <irq.h>
-#include <uart.h>
 #include <stdlib.h>
-#include <hw/gpio.h>
-#include <hw/sysctl.h>
 
 static int s3e_app_id, mb_app_id, kolt_app_id; /* DOpE application IDs for logos */
 
@@ -67,18 +62,12 @@ static void kolt_menu_button_callback(dope_event *e, void *arg)
  */
 static void set_led_state(unsigned led_state)
 {
-	if (led_state)
-		CSR_GPIO_OUT |= GPIO_LED2;
-	else
-		CSR_GPIO_OUT &= ~GPIO_LED2;
+	/* TODO */
 }
 
 
 void init_platform(void)
 {
-	irq_setmask(0);
-	irq_enable(1);
-	uart_async_init();
 }
 
 

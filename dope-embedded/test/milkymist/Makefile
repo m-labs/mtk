@@ -1,13 +1,6 @@
 BASE_DIR = ../..
-SRC_S    = crt0.S
-SRC_C    = platform.c isr.c
-LDFLAGS  = -nostdlib -nodefaultlibs -Wl,-T -Wl,dope.ld -Wl,-N -L$(MMDIR)/software/libbase 
+SRC_C    = platform.c
+LDFLAGS  = -B$(RTEMS_MAKEFILE_PATH)/lib -specs bsp_specs -qrtems
 
 include $(BASE_DIR)/config/milkymist.mk
 include ../test-generic.mk
-
-#
-# Convenience rules for uploading and testing
-#
-test: $(TARGET)-raw
-	flterm --port /dev/ttyUSB0 --kernel $(TARGET)-raw --kernel-adr 0x40000000

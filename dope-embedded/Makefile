@@ -4,7 +4,7 @@ help:
 	@echo "                  Build DOpE and test program for..."
 	@echo "s3a_starter     - ... Spartan3A and Spartan 3AN starter kit (standalone)"
 	@echo "s3e_starter     - ... Spartan3E starter kit (standalone)"
-	@echo "milkymist       - ... Milkymist (standalone). MMDIR environment variable must be set."
+	@echo "milkymist       - ... Milkymist (using RTEMS). RTEMS_MAKEFILE_PATH environment variable must be set."
 	@echo "ml405           - ... ML405 (standalone)"
 	@echo "ml507           - ... ML507 (standalone)"
 	@echo "te0304          - ... Trenz Electronic 0304 demonstrator"
