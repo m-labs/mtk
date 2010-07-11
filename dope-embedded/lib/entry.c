@@ -417,7 +417,7 @@ static void clipboard_paste(ENTRY *e)
 			++j;
 		}
 	}
-	e->ed->curpos += clip_length;
+	e->ed->curpos += j;
 }
 
 static void (*orig_handle_event) (ENTRY *e, EVENT *ev, WIDGET *from);
