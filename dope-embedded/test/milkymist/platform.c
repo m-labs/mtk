@@ -16,6 +16,8 @@
 /* DOpE includes */
 #include <dopelib.h>
 
+#include <bsp.h>
+#include <pthread.h>
 #include <stdlib.h>
 
 static int s3e_app_id, mb_app_id, kolt_app_id; /* DOpE application IDs for logos */
@@ -101,3 +103,22 @@ void init_platform_gui(int menu_app_id)
 	dope_bind(menu_app_id, "b_mb_logo",     "commit", mb_menu_button_callback,   NULL);
 	dope_bind(menu_app_id, "b_kolt_logo",   "commit", kolt_menu_button_callback, NULL);
 }
+
+int main(int argc, char **argv);
+
+void *POSIX_Init(void *argument)
+{
+	main(0, NULL);
+	return NULL;
+}
+
+#define CONFIGURE_APPLICATION_NEEDS_CLOCK_DRIVER
+#define CONFIGURE_APPLICATION_NEEDS_CONSOLE_DRIVER
+#define CONFIGURE_APPLICATION_NEEDS_FRAME_BUFFER_DRIVER
+#define CONFIGURE_EXTRA_TASK_STACKS 1900
+#define CONFIGURE_LIBIO_MAXIMUM_FILE_DESCRIPTORS 4
+#define CONFIGURE_MAXIMUM_POSIX_THREADS         1
+#define CONFIGURE_POSIX_INIT_THREAD_TABLE
+#define CONFIGURE_MAXIMUM_POSIX_MUTEXES 1
+#define CONFIGURE_INIT
+#include <rtems/confdefs.h>

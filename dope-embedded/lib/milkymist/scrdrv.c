@@ -10,6 +10,13 @@
 /**
  * General includes
  */
+
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <fcntl.h>
+#include <sys/ioctl.h>
+#include <unistd.h>
+#include <assert.h>
 #include <rtems/fb.h>
 
 /**
@@ -23,6 +30,7 @@ static long scr_width, scr_height, scr_depth;
 static long curr_mx = 100,curr_my = 100;
 static struct clipping_services *clip;
 
+static int fb;
 static short *scr;
 static short buf[1024*768] __attribute__((aligned(32)));
 
@@ -105,12 +113,16 @@ extern short bigmouse_trp;
 static long set_screen(long width, long height, long depth)
 {
 	int i;
+	struct fb_fix_screeninfo fb_fix;
 
 	scr_width  = 640;
 	scr_height = 480;
 	scr_depth  = 16;
-
-	/* TODO: set scr */
+	
+	fb = open("/dev/fb", O_RDWR);
+	assert(fb != -1);
+	ioctl(fb, FBIOGET_FSCREENINFO, &fb_fix);
+	scr = (short int *)fb_fix.smem_start;
 	
 	for(i=0;i<640*480;i++) {
 		scr[i] = 0;
@@ -126,6 +138,7 @@ static long set_screen(long width, long height, long depth)
  */
 static void restore_screen(void)
 {
+	close(fb);
 }
 
 
