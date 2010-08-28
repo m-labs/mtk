@@ -1,27 +1,28 @@
 /*
- * \brief   DOpE input driver module for Milkymist
- * \date    2009-08-06
- * \author  Norman Feske <norman.feske@genode-labs.com>
+ * \brief   DOpE input driver module for Milkymist/RTEMS
  */
 
 /*
  * Copyright (C) 2005-2008 Norman Feske <norman.feske@genode-labs.com>
  * Genode Labs, Feske & Helmuth Systementwicklung GbR
+ * Copyright (C) 2010 Sebastien Bourdeauducq <sebastien.bourdeauducq@lekernel.net>
  *
  * This file is part of the DOpE-embedded package, which is distributed
  * under the terms of the GNU General Public License version 2.
  */
 
-/* FPGA includes */
 #include <stdio.h>
+#include <assert.h>
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <unistd.h>
+#include <fcntl.h>
 
 /* local includes */
 #include "dopestd.h"
 #include "event.h"
 #include "input.h"
 #include "keycodes.h"
-
-#define EV_FIFO_SIZE 200
 
 /* translation table for scancode set 2 to scancode set 1 conversion */
 static int keyb_translation_table[16][16] = {
@@ -45,89 +46,63 @@ static int keyb_translation_table[16][16] = {
 
 int init_input(struct dope_services *d);
 
-struct input_event {
-	u32 type;
-	u32 code;
-	u32 rel_x;
-	u32 rel_y;
-};
+/**********************
+ ** System interface **
+ **********************/
 
-static struct input_event evqueue[EV_FIFO_SIZE];
-static int head = 0, tail = 0;
+static int mouse_fd;
 
-
-/***********************
- ** Utility functions **
- ***********************/
-
-/**
- * Insert event into event queue
- */
-void enqueue_event(int type, int code, int rel_x, int rel_y)
-{
-	evqueue[head].type  = type;
-	evqueue[head].code  = code;
-	evqueue[head].rel_x = rel_x;
-	evqueue[head].rel_y = rel_y;
-
-	head = (head + 1) % EV_FIFO_SIZE;
-
-	/* if queue is full, discard old elements */
-	if (head == tail)
-		tail = (tail + 1) % EV_FIFO_SIZE;
-
-}
-
-
-/***********************
- ** Interrupt handler **
- ***********************/
-
-#define EVENT_FROM_KEYBD      0x1
-#define EVENT_FROM_MOUSE      0x2
-
-#define MOUSE_LEFT            0x1
-#define MOUSE_RIGHT           0x2
-#define MOUSE_HOR_MASK   0x00ff00
-#define MOUSE_VER_MASK   0xff0000
-#define MOUSE_HOR_SHIFT         8
-#define MOUSE_VER_SHIFT        16
-#define MOUSE_HOR_NEG    0x008000
-#define MOUSE_VER_NEG    0x800000
-
+#define MOUSE_LEFT       0x01000000
+#define MOUSE_RIGHT      0x02000000
+#define MOUSE_HOR_MASK   0x00ff0000
+#define MOUSE_VER_MASK   0x0000ff00
+#define MOUSE_HOR_SHIFT  16
+#define MOUSE_VER_SHIFT  8
+#define MOUSE_HOR_NEG    0x00800000
+#define MOUSE_VER_NEG    0x00008000
 
 #define KEYBD_TYPE_MASK     0x100
 #define KEYBD_CODE_MASK      0xff
 
+static inline void write_event(EVENT *e, int type, int code, int rel_x, int rel_y)
+{
+	e->type = type;
+	e->code = code;
+	e->rel_x = rel_x;
+	e->rel_y = rel_y;
+}
 
 /**
  * Convert mouse event to dope event
  */
-void handle_mouse_event(u32 new_mstate)
+void handle_mouse_event(EVENT *e, u32 new_mstate)
 {
 	static u32 old_mstate;
+	
+	if((old_mstate & (MOUSE_LEFT|MOUSE_RIGHT)) != (new_mstate & (MOUSE_LEFT|MOUSE_RIGHT)))
+		printf("btn state: %x\n", (new_mstate & (MOUSE_LEFT|MOUSE_RIGHT)));
 
 	/* left mouse button pressed */
 	if (!(old_mstate & MOUSE_LEFT) && (new_mstate & MOUSE_LEFT))
-		enqueue_event(EVENT_PRESS, DOPE_BTN_LEFT, 0, 0);
+		write_event(e, EVENT_PRESS, DOPE_BTN_LEFT, 0, 0);
 
 	/* left mouse button released */
 	if ((old_mstate & MOUSE_LEFT) && !(new_mstate & MOUSE_LEFT))
-		enqueue_event(EVENT_RELEASE, DOPE_BTN_LEFT, 0, 0);
+		write_event(e, EVENT_RELEASE, DOPE_BTN_LEFT, 0, 0);
 
 	/* right mouse button pressed */
 	if (!(old_mstate & MOUSE_RIGHT) && (new_mstate & MOUSE_RIGHT))
-		enqueue_event(EVENT_PRESS, DOPE_BTN_RIGHT, 0, 0);
+		write_event(e, EVENT_PRESS, DOPE_BTN_RIGHT, 0, 0);
 
 	/* right mouse button released */
 	if ((old_mstate & MOUSE_RIGHT) && !(new_mstate & MOUSE_RIGHT))
-		enqueue_event(EVENT_RELEASE, DOPE_BTN_RIGHT, 0, 0);
+		write_event(e, EVENT_RELEASE, DOPE_BTN_RIGHT, 0, 0);
 
 	/* check for mouse motion */
 	if ((new_mstate & MOUSE_HOR_MASK) || (new_mstate & MOUSE_VER_MASK)) {
-		enqueue_event(EVENT_MOTION, 0,
+		write_event(e, EVENT_MOTION, 0,
 		      (new_mstate & MOUSE_HOR_NEG) ? (((new_mstate & MOUSE_HOR_MASK) >> MOUSE_HOR_SHIFT) | 0xFFFFFF00) : (new_mstate & MOUSE_HOR_MASK) >> MOUSE_HOR_SHIFT,
-		      (new_mstate & MOUSE_VER_NEG) ?  (int)((new_mstate & MOUSE_VER_MASK) >> MOUSE_VER_SHIFT | 0xFFFFFF00) * -1 : (int)((new_mstate & MOUSE_VER_MASK) >> MOUSE_VER_SHIFT) * -1 );
+		      (new_mstate & MOUSE_VER_NEG) ?  (int)((new_mstate & MOUSE_VER_MASK) >> MOUSE_VER_SHIFT | 0xFFFFFF00) : (int)((new_mstate & MOUSE_VER_MASK) >> MOUSE_VER_SHIFT) );
 	}
 
 	/* remember current mouse state for the next time */
@@ -138,7 +113,7 @@ void handle_mouse_event(u32 new_mstate)
 /**
  * Convert keyboard event to dope event
  */
-static void handle_keybd_event(u32 keystate)
+static void handle_keybd_event(EVENT *e, u32 keystate)
 {
 	int scancode;
 
@@ -147,63 +122,24 @@ static void handle_keybd_event(u32 keystate)
 
 	/* key released */
 	if (keystate & KEYBD_TYPE_MASK)
-		enqueue_event(EVENT_RELEASE, scancode & KEYBD_CODE_MASK, 0, 0);
+		write_event(e, EVENT_RELEASE, scancode & KEYBD_CODE_MASK, 0, 0);
 
 	/* key pressed */
-	else enqueue_event(EVENT_PRESS, scancode & KEYBD_CODE_MASK, 0, 0);
+	else write_event(e, EVENT_PRESS, scancode & KEYBD_CODE_MASK, 0, 0);
 }
 
-
-#if 0
-/**
- * TODO: Input interrupt handler
- */
-void PS2_InterruptHandler(void *CallbackRef)
-{
-	u32 mouse_state, keybd_state, flags;
-	Xuint32 baseaddr = (Xuint32) XPAR_PLB_PS2_CONTROLLER_0_BASEADDR;
-
-	/* read information from device registers */
-	keybd_state = ((u32 *)baseaddr)[0];
-	mouse_state = ((u32 *)baseaddr)[1];
-	flags       = PLB_PS2_CONTROLLER_mReadReg(baseaddr, PLB_PS2_CONTROLLER_INTR_IPISR_OFFSET);
-
-	if (flags & EVENT_FROM_MOUSE)
-		handle_mouse_event(mouse_state);
-
-	if (flags & EVENT_FROM_KEYBD)
-		handle_keybd_event(keybd_state);
-
-
-	/* clear interrupt flags in PS/2 controller */
-	PLB_PS2_CONTROLLER_mWriteReg(baseaddr, PLB_PS2_CONTROLLER_INTR_IPISR_OFFSET, flags);
-}
-#endif
-
-/***********************
- ** Service functions **
- ***********************/
-
-/**
- * Get next event of event queue
- *
- * \return  0 if there is no pending event
- *          1 if there an event was returned in out parameter e
- */
 static int get_event(EVENT *e)
 {
-	/* no event in queue */
-	if (head == tail) return 0;
+	int r;
+	u32 m;
 
-	e->type  = evqueue[tail].type;
-	e->code  = evqueue[tail].code;
-	e->rel_x = evqueue[tail].rel_x;
-	e->rel_y = evqueue[tail].rel_y;
-
-	tail = (tail + 1) % EV_FIFO_SIZE;
+	r = read(mouse_fd, &m, 4);
+	if(r <= 0)
+		return 0;
+	handle_mouse_event(e, m);
 	return 1;
+	return 0;
 }
-
 
 /*************************************
  * Service structure of this module **
@@ -220,9 +156,8 @@ static struct input_services input = {
 
 int init_input(struct dope_services *d)
 {
-
-
-
+	mouse_fd = open("/dev/usbmouse", O_RDONLY);
+	assert(mouse_fd != -1);
 	d->register_module("Input 1.0", &input);
 	return 1;
 }
