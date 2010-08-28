@@ -48,8 +48,8 @@
  * no libC.
  */
 
-#define malloc dope_malloc
-#define free   dope_free
+//#define malloc dope_malloc
+//#define free   dope_free
 
 void         *malloc(size_t size);
 void         *zalloc(unsigned long size);

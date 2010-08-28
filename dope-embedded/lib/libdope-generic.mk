@@ -18,7 +18,7 @@ SRC_C  += \
 	cache.c       clipping.c    container.c \
 	conv_fnt.c    dopestd.c     entry.c     \
 	fontman.c     frame.c       gfx.c       \
-	gfx_img16.c   gfx_img32.c   memory.c    \
+	gfx_img16.c   gfx_img32.c   \
 	widman.c      conv_tff.c    grid.c      \
 	hashtab.c     keymap.c      label.c     \
 	loaddisplay.c relax.c       pool.c      \
