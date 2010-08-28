@@ -78,9 +78,6 @@ static inline void write_event(EVENT *e, int type, int code, int rel_x, int rel_
 void handle_mouse_event(EVENT *e, u32 new_mstate)
 {
 	static u32 old_mstate;
-	
-	if((old_mstate & (MOUSE_LEFT|MOUSE_RIGHT)) != (new_mstate & (MOUSE_LEFT|MOUSE_RIGHT)))
-		printf("btn state: %x\n", (new_mstate & (MOUSE_LEFT|MOUSE_RIGHT)));
 
 	/* left mouse button pressed */
 	if (!(old_mstate & MOUSE_LEFT) && (new_mstate & MOUSE_LEFT))
