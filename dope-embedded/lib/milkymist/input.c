@@ -72,40 +72,56 @@ static inline void write_event(EVENT *e, int type, int code, int rel_x, int rel_
 	e->rel_y = rel_y;
 }
 
+static u32 old_mstate;
+static u32 new_mstate;
+
 /**
  * Convert mouse event to dope event
  */
-void handle_mouse_event(EVENT *e, u32 new_mstate)
+static int handle_mouse_event(EVENT *e)
 {
-	static u32 old_mstate;
-
 	/* left mouse button pressed */
-	if (!(old_mstate & MOUSE_LEFT) && (new_mstate & MOUSE_LEFT))
+	if (!(old_mstate & MOUSE_LEFT) && (new_mstate & MOUSE_LEFT)) {
 		write_event(e, EVENT_PRESS, DOPE_BTN_LEFT, 0, 0);
+		old_mstate |= MOUSE_LEFT;
+		return 1;
+	}
 
 	/* left mouse button released */
-	if ((old_mstate & MOUSE_LEFT) && !(new_mstate & MOUSE_LEFT))
+	if ((old_mstate & MOUSE_LEFT) && !(new_mstate & MOUSE_LEFT)) {
 		write_event(e, EVENT_RELEASE, DOPE_BTN_LEFT, 0, 0);
+		old_mstate &= ~MOUSE_LEFT;
+		return 1;
+	}
 
 	/* right mouse button pressed */
-	if (!(old_mstate & MOUSE_RIGHT) && (new_mstate & MOUSE_RIGHT))
+	if (!(old_mstate & MOUSE_RIGHT) && (new_mstate & MOUSE_RIGHT)) {
 		write_event(e, EVENT_PRESS, DOPE_BTN_RIGHT, 0, 0);
+		old_mstate |= MOUSE_RIGHT;
+		return 1;
+	}
 
 	/* right mouse button released */
-	if ((old_mstate & MOUSE_RIGHT) && !(new_mstate & MOUSE_RIGHT))
+	if ((old_mstate & MOUSE_RIGHT) && !(new_mstate & MOUSE_RIGHT)) {
 		write_event(e, EVENT_RELEASE, DOPE_BTN_RIGHT, 0, 0);
+		old_mstate &= ~MOUSE_RIGHT;
+		return 1;
+	}
 
 	/* check for mouse motion */
 	if ((new_mstate & MOUSE_HOR_MASK) || (new_mstate & MOUSE_VER_MASK)) {
 		write_event(e, EVENT_MOTION, 0,
 		      (new_mstate & MOUSE_HOR_NEG) ? (((new_mstate & MOUSE_HOR_MASK) >> MOUSE_HOR_SHIFT) | 0xFFFFFF00) : (new_mstate & MOUSE_HOR_MASK) >> MOUSE_HOR_SHIFT,
 		      (new_mstate & MOUSE_VER_NEG) ?  (int)((new_mstate & MOUSE_VER_MASK) >> MOUSE_VER_SHIFT | 0xFFFFFF00) : (int)((new_mstate & MOUSE_VER_MASK) >> MOUSE_VER_SHIFT) );
+		/* other events (buttons) have already been processed */
+		old_mstate = new_mstate;
+		return 1;
 	}
-
-	/* remember current mouse state for the next time */
+	
+	/* no events for us, update new_mstate so we read from the USB controller again */
 	old_mstate = new_mstate;
+	return 0;
 }
-
 
 /**
  * Convert keyboard event to dope event
@@ -127,15 +143,17 @@ static void handle_keybd_event(EVENT *e, u32 keystate)
 
 static int get_event(EVENT *e)
 {
-	int r;
-	u32 m;
+	if(new_mstate != old_mstate)
+		return handle_mouse_event(e);
+	else {
+		int r;
 
-	r = read(mouse_fd, &m, 4);
-	if(r <= 0)
-		return 0;
-	handle_mouse_event(e, m);
-	return 1;
-	return 0;
+		r = read(mouse_fd, &new_mstate, 4);
+		if(r <= 0)
+			return 0;
+		else
+			return handle_mouse_event(e);
+	}
 }
 
 /*************************************
@@ -155,6 +173,8 @@ int init_input(struct dope_services *d)
 {
 	mouse_fd = open("/dev/usbmouse", O_RDONLY);
 	assert(mouse_fd != -1);
+	old_mstate = 0;
+	new_mstate = 0;
 	d->register_module("Input 1.0", &input);
 	return 1;
 }
