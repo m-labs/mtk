@@ -11,7 +11,7 @@
 TARGET      = libdope.a
 LIBDOPE_DIR = $(BASE_DIR)/lib
 CFLAGS     += -I$(LIBDOPE_DIR) -I$(BASE_DIR)/include
-CFLAGS     += -Wall -O2 -MMD -g
+CFLAGS     += -Wall -O9 -MMD -g
 
 SRC_C  += \
 	appman.c      background.c  button.c    \
