@@ -3,4 +3,4 @@
 #
 
 CROSS_PREFIX = lm32-rtems4.11-
-CFLAGS      += -mbarrel-shift-enabled -mmultiply-enabled -mdivide-enabled -msign-extend-enabled -fsigned-char
+CFLAGS      += -mbarrel-shift-enabled -mmultiply-enabled -mdivide-enabled -msign-extend-enabled -fsingle-precision-constant
