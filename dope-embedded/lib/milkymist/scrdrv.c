@@ -30,7 +30,7 @@ static long scr_width, scr_height, scr_depth;
 static long curr_mx = 100,curr_my = 100;
 static struct clipping_services *clip;
 
-static int fb;
+int dope_rtems_framebuffer_fd;
 static short *scr;
 static short buf[1024*768] __attribute__((aligned(32)));
 
@@ -118,17 +118,17 @@ static long set_screen(long width, long height, long depth)
 	scr_width  = 640;
 	scr_height = 480;
 	scr_depth  = 16;
-	
-	fb = open("/dev/fb", O_RDWR);
-	assert(fb != -1);
-	ioctl(fb, FBIOGET_FSCREENINFO, &fb_fix);
+
+	dope_rtems_framebuffer_fd = open("/dev/fb", O_RDWR);
+	assert(dope_rtems_framebuffer_fd != -1);
+	ioctl(dope_rtems_framebuffer_fd, FBIOGET_FSCREENINFO, &fb_fix);
 	scr = (short int *)fb_fix.smem_start;
-	
+
 	for(i=0;i<640*480;i++) {
 		scr[i] = 0;
 		buf[i] = 0;
 	}
-	
+
 	return 1;
 }
 
@@ -138,7 +138,7 @@ static long set_screen(long width, long height, long depth)
  */
 static void restore_screen(void)
 {
-	close(fb);
+	close(dope_rtems_framebuffer_fd);
 }
 
 
