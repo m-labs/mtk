@@ -15,6 +15,8 @@
 struct edit;
 #define WIDGET struct edit
 
+#include <string.h>
+#include <stdlib.h>
 #include "dopestd.h"
 #include "edit.h"
 #include "gfx_macros.h"
@@ -100,9 +102,9 @@ static int insert_char(EDIT *e, int idx, char c)
 	char *src, *dst;
 
 	/* if txtbuffer exceeds, reallocate a bigger one */
-	if (len >= e->ed->txtbuflen) {
+	if (len >= (e->ed->txtbuflen-1)) {
 		char *new;
-		e->ed->txtbuflen = e->ed->txtbuflen * 2 + 1;
+		e->ed->txtbuflen = e->ed->txtbuflen * 2;
 		new = (char *)zalloc(e->ed->txtbuflen);
 		if (!new) return 0;
 		for(i=0; i<=len; i++) new[i] = e->ed->txtbuf[i];
@@ -451,7 +453,7 @@ static void edit_handle_event(EDIT *e, EVENT *ev, WIDGET *from)
 				sel_reset(e);
 				ev_done = 2;
 				break;
-			
+
 			case DOPE_KEY_LEFT:
 				if (e->ed->curpos > 0) e->ed->curpos--;
 				sel_reset(e);
@@ -595,15 +597,15 @@ static char *edit_get_type(EDIT *e)
 
 static void edit_set_text(EDIT *e, char *new_txt)
 {
-	int i;
+	char *newt;
 
-	if (!new_txt) return;
+	if(!new_txt) return;
+	newt = strdup(new_txt);
+	if(!newt) return;
 
-	/* clear old text */
-	while (e->ed->txtbuf[0]) delete_char(e, 0);
-
-	/* insert new characters */
-	for (i = 0; new_txt[i]; i++) insert_char(e, i, new_txt[i]);
+	free(e->ed->txtbuf);
+	e->ed->txtbuf = newt;
+	e->ed->txtbuflen = strlen(new_txt) + 1;
 
 	/* make the new text visible */
 	e->wd->update |= WID_UPDATE_REFRESH;

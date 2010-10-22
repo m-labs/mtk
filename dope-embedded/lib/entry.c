@@ -14,6 +14,8 @@ This file is part of the DOpE-embedded package, which is distributed
 struct entry;
 #define WIDGET struct entry
 
+#include <string.h>
+#include <stdlib.h>
 #include "dopestd.h"
 #include "entry.h"
 #include "gfx_macros.h"
@@ -106,9 +108,9 @@ static int insert_char(ENTRY *e, int idx, char c)
 	char *src, *dst;
 
 	/* if txtbuffer exceeds, reallocate a bigger one */
-	if (len >= e->ed->txtbuflen) {
+	if (len >= (e->ed->txtbuflen-1)) {
 		char *new;
-		e->ed->txtbuflen = e->ed->txtbuflen * 2 + 1;
+		e->ed->txtbuflen = e->ed->txtbuflen * 2;
 		new = (char *)zalloc(e->ed->txtbuflen);
 		if (!new) return 0;
 		for(i=0; i<=len; i++) new[i] = e->ed->txtbuf[i];
@@ -179,7 +181,7 @@ static void update_text_pos(ENTRY *e)
 {
 	int vw;
 	if (!e || !e->ed || !e->ed->txtbuf) return;
-	
+
 	e->ed->ty = 0;
 	e->ed->tw = font->calc_str_width (e->ed->font_id, e->ed->txtbuf);
 	e->ed->th = font->calc_str_height(e->ed->font_id, e->ed->txtbuf);
@@ -207,7 +209,7 @@ static void update_text_pos(ENTRY *e)
 		if (e->ed->tx.dst < vw - e->ed->tw)
 			e->ed->tx.dst = vw - e->ed->tw;
 	}
-	
+
 	if (e->ed->tx.dst <    - e->ed->cx) e->ed->tx.dst =    - e->ed->cx;
 	if (e->ed->tx.dst > vw - e->ed->cx) e->ed->tx.dst = vw - e->ed->cx;
 }
@@ -236,7 +238,7 @@ static inline void draw_sunken_frame(GFX_CONTAINER *d, s32 x, s32 y, s32 w, s32 
 	gfx->draw_vline(d, x,         y,         h,     BLACK_MIXED);
 	gfx->draw_hline(d, x + 1,     y + h - 1, w - 2, BLACK_MIXED);
 	gfx->draw_vline(d, x + w - 1, y,         h,     BLACK_MIXED);
-	
+
 	/* inner frame */
 	gfx->draw_hline(d, x + 1, y + 1, w - 2, DGRAY_MIXED);
 	gfx->draw_vline(d, x + 1, y + 1, h - 2, DGRAY_MIXED);
@@ -292,7 +294,7 @@ static int entry_draw(ENTRY *e, struct gfx_ds *ds, long x, long y, WIDGET *origi
 	draw_sunken_frame(ds, x, y, w, h);
 
 	if (e->wd->flags & WID_FLAGS_MFOCUS) tc = cc = BLACK_SOLID;
-	
+
 	tx += x + 3; ty += y + 2;
 
 	gfx->push_clipping(ds, x+2, y+2, w-3, h-3);
@@ -300,7 +302,7 @@ static int entry_draw(ENTRY *e, struct gfx_ds *ds, long x, long y, WIDGET *origi
 	/* draw selection */
 	if (e->ed->sel_w)
 		gfx->draw_box(ds, e->ed->sel_x + tx - 1, ty, e->ed->sel_w, e->ed->ch+1, GFX_RGBA(127,127,127,127));
-	
+
 	if (e->ed->txtbuf) {
 		if (e->ed->flags & ENTRY_FLAGS_BLIND) {
 			int step = font->calc_str_width(e->ed->font_id, "*");
@@ -329,7 +331,7 @@ static ENTRY *entry_find(ENTRY *e, long x, long y)
 {
 	x -= e->wd->x;
 	y -= e->wd->y;
-	
+
 	/* check if position is inside the entry */
 	if ((x >= 2) && (x < e->wd->w - 2)
 	 && (y >= 2) && (y < e->wd->h - 2))
@@ -360,10 +362,10 @@ static void sel_tick(ENTRY *e, int dx, int dy)
 		if (e->ed->tx.curr > 0) e->ed->tx.curr = 0;
 		xpos = vw - e->ed->tx.curr;
 	}
-	
+
 	csel = get_char_index(e, xpos);
 	e->ed->sel_end = csel;
-	
+
 	update_text_pos(e);
 	e->gen->force_redraw(e);
 }
@@ -451,7 +453,7 @@ static void entry_handle_event(ENTRY *e, EVENT *ev, WIDGET *from)
 				sel_reset(e);
 				ev_done = 2;
 				break;
-				
+
 			case DOPE_KEY_RIGHT:
 				if (e->ed->curpos < strlen(e->ed->txtbuf)) e->ed->curpos++;
 				sel_reset(e);
@@ -609,15 +611,15 @@ static char *entry_get_type(ENTRY *e)
 
 static void entry_set_text(ENTRY *e, char *new_txt)
 {
-	int i;
+	char *newt;
 
-	if (!new_txt) return;
+	if(!new_txt) return;
+	newt = strdup(new_txt);
+	if(!newt) return;
 
-	/* clear old text */
-	while (e->ed->txtbuf[0]) delete_char(e, 0);
-
-	/* insert new charaters */
-	for (i = 0; new_txt[i]; i++) insert_char(e, i, new_txt[i]);
+	free(e->ed->txtbuf);
+	e->ed->txtbuf = newt;
+	e->ed->txtbuflen = strlen(new_txt) + 1;
 
 	/* make the new text visible */
 	e->wd->update |= WID_UPDATE_REFRESH;

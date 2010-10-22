@@ -32,7 +32,7 @@
 #define ATTRIBS_HASH_CHARS    5
 
 #define MAX_TOKENS    256   /* max number of command tokens             */
-#define MAX_ARGSTRING 16384 /* max length of string argument            */
+#define MAX_ARGSTRING 32768 /* max length of string argument            */
 #define MAX_ARGS      16    /* max number of arguments per dope command */
 #define MAX_ERRBUF    256   /* max size of error result substring       */
 
@@ -596,7 +596,7 @@ static void register_widget_attrib(struct widtype *widtype, char *desc,
 //
 //	/* count conditions and arguments */
 //	for (i=0; i<num_tok; i++) {
-//		
+//
 //	}
 //	return NULL;
 //}
@@ -909,7 +909,7 @@ static int exec_function(INTERPRETER *ci, WIDGET *w, struct widtype *w_type,
 	/* set optional parameters that are specified as tag value pairs */
 	for (; tok<ci->num_tok-1;) {
 		char *tag = ci->tokens[tok];
-		
+
 		CHECK(constraints_tag(ci, tok));
 		for (o_arg = m_arg, i = num_args; o_arg; o_arg = o_arg->next, i++)
 			if (dope_streq(tag+1, o_arg->arg_name, ci->tok_len[tok]-1))
