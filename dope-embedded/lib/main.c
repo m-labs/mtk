@@ -119,7 +119,7 @@ int config_don_scheduler = 0;   /* use donation scheduler                 */
 int config_clackcommit   = 0;   /* deliver commit events on mouse release */
 int config_winborder     = 5;   /* size of window resize border           */
 int config_menubar       = 0;   /* menubar visibility                     */
-int config_dropshadows   = 1;   /* draw dropshadows behind windows        */
+int config_dropshadows   = 0;   /* draw dropshadows behind windows        */
 
 extern int dope_main(int argc, char **argv);
 int dope_main(int argc,char **argv)
