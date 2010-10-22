@@ -53,7 +53,7 @@ int init_input(struct dope_services *d);
  ** System interface **
  **********************/
 
-static int input_fd;
+int dope_rtems_input_fd;
 
 #define MOUSE_LEFT       0x01000000
 #define MOUSE_RIGHT      0x02000000
@@ -151,7 +151,7 @@ static int get_event(EVENT *e)
 	else {
 		int r;
 
-		r = read(input_fd, &new_mstate, 4);
+		r = read(dope_rtems_input_fd, &new_mstate, 4);
 		if(r <= 0)
 			return 0;
 		else
@@ -174,9 +174,9 @@ static struct input_services input = {
 
 int init_input(struct dope_services *d)
 {
-	input_fd = open("/dev/usbinput", O_RDONLY);
-	assert(input_fd != -1);
-	ioctl(input_fd, USBINPUT_SETTIMEOUT, 1);
+	dope_rtems_input_fd = open("/dev/usbinput", O_RDONLY);
+	assert(dope_rtems_input_fd != -1);
+	ioctl(dope_rtems_input_fd, USBINPUT_SETTIMEOUT, 1);
 	old_mstate = 0;
 	new_mstate = 0;
 	d->register_module("Input 1.0", &input);
