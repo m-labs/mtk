@@ -271,14 +271,17 @@ static inline float adapt_pix_per_usec(float value, int pixels, float usec)
  * If a request is bigger than max_pixels, only a fraction of the
  * request is executed and the remaining part stays at the queue.
  */
-static inline s32 process_pixels(s32 max_pixels)
+static s32 process_pixels(s32 max_pixels)
 {
 	WIDGET *cw;
 	int x, y, w, h, cut_h;
 	int processed_pixels = 0;
 
+	if (last == first)
+		return -1;
+
 	while (last != first && max_pixels > 0) {
-		
+
 		/* get pending redraw request */
 		cw = action_queue[last].wid;
 		x  = action_queue[last].x1;
@@ -287,7 +290,7 @@ static inline s32 process_pixels(s32 max_pixels)
 		h  = action_queue[last].y2 - y + 1;
 
 		//printf("process_pixels: element wid=%p, type=%s, xywh=%d,%d,%d,%d\n", cw, cw->gen->get_type(cw), x, y, w, h);
-		
+
 		/* calc fraction of request to be processed */
 		cut_h = max_pixels / w;
 

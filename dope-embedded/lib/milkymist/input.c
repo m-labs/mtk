@@ -15,8 +15,11 @@
 #include <assert.h>
 #include <sys/types.h>
 #include <sys/stat.h>
+#include <sys/ioctl.h>
 #include <unistd.h>
 #include <fcntl.h>
+#include <rtems.h>
+#include <bsp/milkymist_usbinput.h>
 
 /* local includes */
 #include "dopestd.h"
@@ -50,7 +53,7 @@ int init_input(struct dope_services *d);
  ** System interface **
  **********************/
 
-static int mouse_fd;
+static int input_fd;
 
 #define MOUSE_LEFT       0x01000000
 #define MOUSE_RIGHT      0x02000000
@@ -117,7 +120,7 @@ static int handle_mouse_event(EVENT *e)
 		old_mstate = new_mstate;
 		return 1;
 	}
-	
+
 	/* no events for us, update new_mstate so we read from the USB controller again */
 	old_mstate = new_mstate;
 	return 0;
@@ -148,7 +151,7 @@ static int get_event(EVENT *e)
 	else {
 		int r;
 
-		r = read(mouse_fd, &new_mstate, 4);
+		r = read(input_fd, &new_mstate, 4);
 		if(r <= 0)
 			return 0;
 		else
@@ -171,11 +174,11 @@ static struct input_services input = {
 
 int init_input(struct dope_services *d)
 {
-	mouse_fd = open("/dev/usbmouse", O_RDONLY);
-	assert(mouse_fd != -1);
+	input_fd = open("/dev/usbinput", O_RDONLY);
+	assert(input_fd != -1);
+	ioctl(input_fd, USBINPUT_SETTIMEOUT, 1);
 	old_mstate = 0;
 	new_mstate = 0;
 	d->register_module("Input 1.0", &input);
 	return 1;
 }
-
