@@ -12,6 +12,9 @@
  * under the terms of the GNU General Public License version 2.
  */
 
+#include <rtems.h>
+#include <unistd.h>
+
 #include "dopestd.h"
 #include "timer.h"
 
@@ -22,15 +25,14 @@ int init_timer(struct dope_services *d);
  ** Service functions **
  ***********************/
 
+#define MICROSECONDS_PER_TICK 10000
+
 /**
  * Return current system time counter in microseconds
  */
 static u32 get_time(void)
 {
-	static u32 curr_time;
-	curr_time += 1000;
-//	printf("curr_time = %lu\n", curr_time);
-	return curr_time;
+	return rtems_clock_get_ticks_since_boot()*MICROSECONDS_PER_TICK;
 }
 
 
@@ -51,7 +53,10 @@ static u32 get_diff(u32 time1,u32 time2)
 /**
  * Wait specified number of microseconds
  */
-static void wait_usec(u32 num_usec) { }
+static void wait_usec(u32 num_usec)
+{
+	usleep(num_usec);
+}
 
 
 /**************************************
@@ -71,6 +76,6 @@ static struct timer_services services = {
 
 int init_timer(struct dope_services *d)
 {
-	d->register_module("Timer 1.0",&services);
+	d->register_module("Timer 1.0", &services);
 	return 1;
 }
