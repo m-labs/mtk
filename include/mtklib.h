@@ -18,7 +18,6 @@
 #define EVENT_TYPE_MOTION       2
 #define EVENT_TYPE_PRESS        3
 #define EVENT_TYPE_RELEASE      4
-#define EVENT_TYPE_KEYREPEAT    5
 
 typedef struct command_event {
 	long  type;                     /* must be EVENT_TYPE_COMMAND */
@@ -170,34 +169,7 @@ extern void mtk_bindf(long id, const char *varfmt, const char *event_type,
                        void (*callback)(mtk_event *,void *), void *arg,...);
 
 
-/**
- * Enter mtk eventloop
- *
- * \param app_id  MTK application id
- */
-extern void mtk_eventloop(long app_id);
-
-
-/**
- * Return number of pending events
- *
- * \param app_id  MTK application id
- * \return        number of pending events
- */
-int mtk_events_pending(int app_id);
-
-
-/**
- * Process one single mtk event
- *
- * This function processes exactly one MTK event. If no event is pending, it
- * blocks until an event is available. Thus, for non-blocking operation, this
- * function should be called only if mtk_events_pending was consulted before.
- *
- * \param app_id  MTK application id
- */
-extern void mtk_process_event(long app_id);
-
+extern void mtk_input(mtk_event *e);
 
 /**
  * Request key or button state

@@ -20,7 +20,6 @@
 #include "mtkstd.h"
 #include "event.h"
 #include "widget.h"
-#include "input.h"
 #include "scrdrv.h"
 #include "screen.h"
 #include "userstate.h"
@@ -32,7 +31,6 @@
 #include "keycodes.h"
 #include "window.h"
 
-static struct input_services  *input;
 static struct scrdrv_services *scrdrv;
 static struct redraw_services *redraw;
 static struct tick_services   *tick;
@@ -334,11 +332,11 @@ static void update_mfocus(void)
 }
 
 
-static void handle(void)
+static void handle(EVENT *e)
 {
-	static long    old_mx, old_my, old_mb;
-	static long    update_needed = 0;
-	static EVENT   event;
+	long old_mx, old_my, old_mb;
+	static long update_needed = 0;
+	EVENT event;
 
 	WIDGET *new_mfocus = NULL;
 
@@ -346,27 +344,27 @@ static void handle(void)
 	old_my = curr_my;
 	old_mb = curr_mb;
 
-	while (input->get_event(&event)) {
-		switch (event.type) {
+	if(e != NULL) {
+		switch (e->type) {
 
 		case EVENT_MOTION:
-			set_pos(curr_mx + event.rel_x, curr_my + event.rel_y);
+			set_pos(curr_mx + e->rel_x, curr_my + e->rel_y);
 			break;
 
 		case EVENT_ABSMOTION:
-			set_pos(event.abs_x, event.abs_y);
+			set_pos(e->abs_x, e->abs_y);
 			break;
 
 		case EVENT_PRESS:
 			press_cnt++;
 
-			if (event.code == MTK_BTN_LEFT)  curr_mb = curr_mb | 0x01;
-			if (event.code == MTK_BTN_RIGHT) curr_mb = curr_mb | 0x02;
-			keytab[event.code] = 1;
-			if (get_ascii(event.code)
-			 || (event.code >= MTK_KEY_UP && event.code <= MTK_KEY_DELETE)) {
+			if (e->code == MTK_BTN_LEFT)  curr_mb = curr_mb | 0x01;
+			if (e->code == MTK_BTN_RIGHT) curr_mb = curr_mb | 0x02;
+			keytab[e->code] = 1;
+			if (get_ascii(e->code)
+			 || (e->code >= MTK_KEY_UP && e->code <= MTK_KEY_DELETE)) {
 				curr_keystate = USERSTATE_KEY_PRESS;
-				curr_keycode  = event.code;
+				curr_keycode  = e->code;
 				tick->add(key_repeat_delay, tick_handle_delay, (void *)curr_keycode);
 			} else {
 				curr_keystate = USERSTATE_KEY_IDLE;
@@ -382,9 +380,9 @@ static void handle(void)
 				curr_motion_callback(curr_selected, curr_mx - omx, curr_my - omy);
 			}
 
-			if (event.code == MTK_BTN_LEFT)  curr_mb = curr_mb & 0x00fe;
-			if (event.code == MTK_BTN_RIGHT) curr_mb = curr_mb & 0x00fd;
-			keytab[event.code] = 0;
+			if (e->code == MTK_BTN_LEFT)  curr_mb = curr_mb & 0x00fe;
+			if (e->code == MTK_BTN_RIGHT) curr_mb = curr_mb & 0x00fd;
+			keytab[e->code] = 0;
 			curr_keystate = USERSTATE_KEY_IDLE;
 			curr_keycode  = 0;
 			break;
@@ -392,12 +390,12 @@ static void handle(void)
 
 		update_mfocus();
 
-		if ((event.type == EVENT_PRESS) || (event.type == EVENT_RELEASE)) {
+		if ((e->type == EVENT_PRESS) || (e->type == EVENT_RELEASE)) {
 
 			WIDGET *win_kfocus = NULL;
 
 			/* make clicked window the active one */
-			if (curr_mfocus && key_sets_focus(event.code)) {
+			if (curr_mfocus && key_sets_focus(e->code)) {
 				WINDOW *w = (WINDOW *)curr_mfocus->gen->get_window(curr_mfocus);
 
 				/* ignore clicks on the desktop (last window of window stack) */
@@ -409,19 +407,19 @@ static void handle(void)
 				win_kfocus = curr_window->win->get_kfocus(curr_window);
 
 				/* redefine keyboard focus */
-				if (curr_mfocus && key_sets_focus(event.code) && curr_mfocus != win_kfocus)
+				if (curr_mfocus && key_sets_focus(e->code) && curr_mfocus != win_kfocus)
 					curr_mfocus->gen->focus(curr_mfocus);
 
 				/* request new keyboard focus - just in case it denied the focus */
 				win_kfocus = curr_window->win->get_kfocus(curr_window);
 			}
 
-			if ((event.type == EVENT_PRESS) && (press_cnt == 1)) {
+			if ((e->type == EVENT_PRESS) && (press_cnt == 1)) {
 
 				WIDGET *old_receiver = curr_receiver;
 
 				/* send keyboard event to actually focused widget if set */
-				if (win_kfocus && !key_sets_focus(event.code)) {
+				if (win_kfocus && !key_sets_focus(e->code)) {
 					if (win_kfocus) win_kfocus->gen->inc_ref(win_kfocus);
 					curr_receiver = win_kfocus;
 				} else {
@@ -434,7 +432,7 @@ static void handle(void)
 			}
 
 			if (curr_receiver)
-				curr_receiver->gen->handle_event(curr_receiver, &event, NULL);
+				curr_receiver->gen->handle_event(curr_receiver, e, NULL);
 		}
 	}
 
@@ -462,7 +460,7 @@ static void handle(void)
 			}
 		}
 		break;
-		
+
 	case USERSTATE_TOUCH:
 
 		if (!curr_selected)
@@ -675,7 +673,6 @@ static struct userstate_services services = {
 
 int init_userstate(struct mtk_services *d)
 {
-	input   = d->get_module("Input 1.0");
 	scrdrv  = d->get_module("ScreenDriver 1.0");
 	redraw  = d->get_module("RedrawManager 1.0");
 	tick    = d->get_module("Tick 1.0");

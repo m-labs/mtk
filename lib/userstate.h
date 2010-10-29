@@ -32,7 +32,7 @@ struct userstate_services {
 	                              void (*release)(WIDGET *, int dx, int dy));
 	void    (*grab)    (WIDGET *, void (*tick)   (WIDGET *, int dx, int dy));
 	long    (*get)               (void);
-	void    (*handle)            (void);
+	void    (*handle)            (EVENT *);
 	WIDGET *(*get_mfocus)        (void);
 	void    (*set_active_window) (WINDOW *, int force);
 	WIDGET *(*get_selected)      (void);

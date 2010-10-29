@@ -196,31 +196,53 @@ void mtk_bindf(long id, const char *varfmt, const char *event_type,
 	mtk_cmd(id, cmdstr);
 }
 
-
-void mtk_process_event(long app_id)
+static long convert_type(long t)
 {
-	userstate->handle();
-	redraw->process_pixels(config_redraw_granularity);
+	switch(t) {
+		case EVENT_TYPE_MOTION: return EVENT_MOTION;
+		case EVENT_TYPE_PRESS: return EVENT_PRESS;
+		case EVENT_TYPE_RELEASE: return EVENT_RELEASE;
+		default: return -1;
+	}
 }
 
-
-void mtk_eventloop(long app_id)
+void mtk_input(mtk_event *e)
 {
-	while (1) mtk_process_event(app_id);
+	if(e == NULL)
+		userstate->handle(NULL);
+	else {
+		EVENT internal_event;
+
+		internal_event.type = convert_type(e->type);
+		if(internal_event.type == -1) {
+			userstate->handle(NULL);
+			return;
+		}
+		switch(internal_event.type) {
+			case EVENT_TYPE_MOTION:
+				internal_event.code = 0;
+				internal_event.abs_x = e->motion.abs_x;
+				internal_event.abs_y = e->motion.abs_y;
+				internal_event.rel_x = e->motion.rel_x;
+				internal_event.rel_y = e->motion.rel_y;
+				break;
+			case EVENT_TYPE_PRESS:
+			case EVENT_TYPE_RELEASE:
+				internal_event.code = e->press.code;
+				internal_event.abs_x = 0;
+				internal_event.abs_y = 0;
+				internal_event.rel_x = 0;
+				internal_event.rel_y = 0;
+				break;
+		}
+		userstate->handle(&internal_event);
+	}
 }
-
-
-int mtk_events_pending(int app_id)
-{
-	return 1;
-}
-
 
 long mtk_get_keystate(long app_id, long keycode)
 {
 	return userstate->get_keystate(keycode);
 }
-
 
 char mtk_get_ascii(long app_id, long keycode)
 {

@@ -44,7 +44,6 @@ extern void *pool_get(char *name);
 extern int init_keymap           (struct mtk_services *);
 extern int init_clipping         (struct mtk_services *);
 extern int init_scrdrv           (struct mtk_services *);
-extern int init_input            (struct mtk_services *);
 extern int init_viewman          (struct mtk_services *);
 extern int init_widman           (struct mtk_services *);
 extern int init_screen           (struct mtk_services *);
@@ -153,9 +152,6 @@ int mtk_main()
 
 	INFO(printf("%sScreen Driver\n",dbg));
 	init_scrdrv(&mtk);
-
-	INFO(printf("%sInput\n",dbg));
-	init_input(&mtk);
 
 	INFO(printf("%sViewManager\n",dbg));
 	init_viewman(&mtk);
