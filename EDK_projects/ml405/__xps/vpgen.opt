@@ -1,1 +1,0 @@
- -p xc4vfx20ff672-10 -lp /home/xilinx/src/genode-fx.hg/genode-fx/ -lp /home/xilinx/gsrc/fgpa/genode-fx/

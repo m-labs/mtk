@@ -1,1 +1,0 @@
- -p spartan3e -lang vhdl -lp /media/blubb/genode/genode-fx/trunk/   $(MICROBLAZE_0_XMDSTUB)  -s mti

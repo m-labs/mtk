@@ -1,1 +1,0 @@
-   -pe microblaze_0  $(MICROBLAZE_0_XMDSTUB) 

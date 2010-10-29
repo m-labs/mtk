@@ -1,6 +1,0 @@
-FlashFile: demo.elf.srec
-FlashMode: ONESHOT
-ProcInst: microblaze_0
-FlashMem: FLASH_c_mem0_baseaddr
-FlashOffset: 0x00000000
-ScratchMem: DDR_SDRAM_c_mpmc_baseaddr
