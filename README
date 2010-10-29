@@ -1,0 +1,14 @@
+MTK - the Milkymist Toolkit
+===========================
+
+(c) Copyright 2010 Sebastien Bourdeauducq
+(c) Copyright 2002-2008 Norman Feske and other contributors
+
+Released under GNU GPL version 2 (see LICENSE file).
+
+Based on Genode FX (DOpE-embedded). See http://www.genode-labs.com for
+the original Genode FX.
+
+Contact devel AT lists dot milkymist dot org for questions and support.
+Web: http://www.milkymist.org
+
