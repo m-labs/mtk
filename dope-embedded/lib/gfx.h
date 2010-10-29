@@ -13,8 +13,6 @@
 #ifndef _DOPE_GFX_H_
 #define _DOPE_GFX_H_
 
-#include "thread.h"
-
 enum img_type {
 	GFX_IMG_TYPE_RGB16  = 1,
 	GFX_IMG_TYPE_RGBA32 = 2,
@@ -70,7 +68,6 @@ struct gfx_services {
 	void *(*map)        (GFX_CONTAINER *);
 	void  (*unmap)      (GFX_CONTAINER *);
 	void  (*update)     (GFX_CONTAINER *, int x, int y, int w, int h);
-	int   (*share)      (GFX_CONTAINER *, THREAD *dst_thread);
 	int   (*get_ident)  (GFX_CONTAINER *, char *dst);
 	int   (*get_upcnt)  (GFX_CONTAINER *);
 

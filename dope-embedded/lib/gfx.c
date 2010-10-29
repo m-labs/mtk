@@ -49,7 +49,6 @@ static void set_handler_defaults(struct gfx_ds_handler *handler)
 	handler->map              = (void *)dummy;
 	handler->unmap            = (void *)dummy;
 	handler->update           = (void *)dummy;
-	handler->share            = (void *)dummy;
 	handler->get_ident        = (void *)dummy;
 	handler->draw_hline       = (void *)dummy;
 	handler->draw_vline       = (void *)dummy;
@@ -182,11 +181,6 @@ static int get_upcnt(struct gfx_ds *ds)
 	return ds->update_cnt;
 }
 
-static int share(struct gfx_ds *ds, THREAD *dst_thread)
-{
-	return ds->handler->share(ds->data, dst_thread);
-}
-
 static int get_ident(struct gfx_ds *ds, char *dst_ident)
 {
 	return ds->handler->get_ident(ds->data, dst_ident);
@@ -278,7 +272,7 @@ static struct gfx_services services = {
 	get_width,     get_height, get_type,
 	inc_ref,       dec_ref,
 	map,           unmap,      update,
-	share,         get_ident,
+	get_ident,
 	get_upcnt,
 	draw_hline,    draw_vline, draw_fill,
 	draw_slice,    draw_img,   draw_string,

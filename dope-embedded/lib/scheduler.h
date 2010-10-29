@@ -14,7 +14,6 @@
 #define _DOPE_SCHEDULER_H_
 
 #include "widget.h"
-#include "thread.h"
 
 struct scheduler_services {
 
@@ -38,17 +37,6 @@ struct scheduler_services {
 	 * Stop real-time redraw of all widgets of specified application
 	 */
 	void (*release_app) (int app_id);
-
-
-	/**
-	 * Register synchronisation mutex
-	 *
-	 * After each periodic redraw, the scheduler unlocks
-	 * this semaphore. This mechanism can be used to provide
-	 * redraw-synchronisation with a client application.
-	 */
-	void (*set_sync_mutex) (WIDGET *w, MUTEX *);
-
 
 	/**
 	 * Mainloop of dope

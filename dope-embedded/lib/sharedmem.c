@@ -17,7 +17,6 @@
 
 #include "dopestd.h"
 #include "module.h"
-#include "thread.h"
 #include "sharedmem.h"
 
 
@@ -81,16 +80,6 @@ static void shm_get_ident(SHAREDMEM *sm, char *dst)
 	snprintf(dst, 32, "%x", (int)sm->addr);
 }
 
-
-/**
- * Share memory block to another thread
- */
-static s32 shm_share(SHAREDMEM *sm, THREAD *dst_thread)
-{
-	return 0;
-}
-
-
 /**************************************
  ** Service structure of this module **
  **************************************/
@@ -100,7 +89,6 @@ static struct sharedmem_services sharedmem = {
 	shm_destroy,
 	shm_get_adr,
 	shm_get_ident,
-	shm_share,
 };
 
 

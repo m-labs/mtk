@@ -16,14 +16,12 @@
 
 #include "dopestd.h"
 #include "scheduler.h"
-#include "server.h"
 #include "gfx.h"
 #include "userstate.h"
 #include "screen.h"
 
 static struct scheduler_services *sched;
 static struct gfx_services       *gfx;
-static struct server_services    *server;
 static struct screen_services    *screen;
 static struct userstate_services *userstate;
 
@@ -79,19 +77,13 @@ extern int init_frame            (struct dope_services *);
 extern int init_grid             (struct dope_services *);
 extern int init_redraw           (struct dope_services *);
 extern int init_simple_scheduler (struct dope_services *);
-extern int init_don_scheduler    (struct dope_services *);
 extern int init_hashtable        (struct dope_services *);
-extern int init_thread           (struct dope_services *);
 extern int init_tokenizer        (struct dope_services *);
 extern int init_scope            (struct dope_services *);
 extern int init_script           (struct dope_services *);
 extern int init_appman           (struct dope_services *);
-extern int init_server           (struct dope_services *);
 extern int init_winlayout        (struct dope_services *);
 extern int init_messenger        (struct dope_services *);
-extern int init_vscreen          (struct dope_services *);
-extern int init_vscr_server      (struct dope_services *);
-extern int init_vtextscreen      (struct dope_services *);
 extern int init_sharedmem        (struct dope_services *);
 extern int init_clipboard        (struct dope_services *);
 
@@ -105,28 +97,16 @@ struct dope_services dope = {
 	pool_add,
 };
 
-/**
- * We have to implement this somewhere
- */
-void *CORBA_alloc(long);
-void *CORBA_alloc(long size)
-{
-	return malloc(size);
-}
-
 int config_transparency  = 0;   /* use translucent effects                */
-int config_don_scheduler = 0;   /* use donation scheduler                 */
 int config_clackcommit   = 0;   /* deliver commit events on mouse release */
 int config_winborder     = 5;   /* size of window resize border           */
 int config_menubar       = 0;   /* menubar visibility                     */
 int config_dropshadows   = 0;   /* draw dropshadows behind windows        */
+int config_adapt_redraw  = 0;   /* adapt redraw to duration time          */
 
-extern int dope_main(int argc, char **argv);
-int dope_main(int argc,char **argv)
+int dope_main()
 {
 	INFO(char *dbg="Main(init): ");
-
-	native_startup(argc, argv);
 
 	/**
 	 * init modules
@@ -146,9 +126,6 @@ int dope_main(int argc,char **argv)
 
 	INFO(printf("%sKeymap\n",dbg));
 	init_keymap(&dope);
-
-	INFO(printf("%sThread\n",dbg));
-	init_thread(&dope);
 
 	INFO(printf("%sCache\n",dbg));
 	init_cache(&dope);
@@ -268,22 +245,7 @@ int dope_main(int argc,char **argv)
 	init_screen(&dope);
 
 	INFO(printf("%sScheduler\n",dbg));
-	if (config_don_scheduler)
-		init_don_scheduler(&dope);
-	else
-		init_simple_scheduler(&dope);
-
-	INFO(printf("%sVScreenServer\n",dbg));
-	init_vscr_server(&dope);
-
-	INFO(printf("%sVScreen\n",dbg));
-	init_vscreen(&dope);
-	
-	INFO(printf("%sVTextScreen\n",dbg));
-	init_vtextscreen(&dope);
-
-	INFO(printf("%sServer\n",dbg));
-	init_server(&dope);
+	init_simple_scheduler(&dope);
 
 	INFO(printf("%screate screen\n",dbg));
 	{
@@ -298,11 +260,7 @@ int dope_main(int argc,char **argv)
 		userstate->set_max_mx(gfx->get_width(scr_ds));
 		userstate->set_max_my(gfx->get_height(scr_ds));
 	}
-	
-	INFO(printf("%sstarting server\n",dbg));
-	if ((server = pool_get("Server 1.0")))
-		server->start();
-	
+
 	INFO(printf("%sstarting scheduler\n",dbg));
 	if ((sched  = pool_get("Scheduler 1.0")))
 		sched->process_mainloop();

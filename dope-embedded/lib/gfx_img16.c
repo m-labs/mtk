@@ -57,11 +57,6 @@ static void *img_map(struct gfx_ds_data *img)
 	return img->pixels;
 }
 
-static int img_share(struct gfx_ds_data *img, THREAD *dst_thread)
-{
-	return shmem->share(img->smb, dst_thread);
-}
-
 static int img_get_ident(struct gfx_ds_data *img, char *dst_ident)
 {
 	shmem->get_ident(img->smb, dst_ident);
@@ -96,7 +91,6 @@ static int register_gfx_handler(struct gfx_ds_handler *handler)
 	handler->get_type   = img_get_type;
 	handler->destroy    = img_destroy;
 	handler->map        = img_map;
-	handler->share      = img_share;
 	handler->get_ident  = img_get_ident;
 	return 0;
 }

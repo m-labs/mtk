@@ -14,7 +14,6 @@
 #define _DOPE_APPMAN_H_
 
 #include "hashtab.h"
-#include "thread.h"
 #include "scope.h"
 
 struct appman_services {
@@ -22,16 +21,8 @@ struct appman_services {
 	s32      (*unreg_app)        (u32 app_id);
 	void     (*set_rootscope)    (u32 app_id, SCOPE *rootscope);
 	SCOPE   *(*get_rootscope)    (u32 app_id);
-	void     (*reg_listener)     (s32 app_id, void *listener);
-	void     (*reg_list_thread)  (s32 app_id, THREAD *);
-	void    *(*get_listener)     (s32 app_id);
 	char    *(*get_app_name)     (s32 app_id);
-	void     (*reg_app_thread)   (s32 app_id, THREAD *app_thread);
-	THREAD  *(*get_app_thread)   (s32 app_id);
-	s32      (*app_id_of_thread) (THREAD *app_thread);
 	s32      (*app_id_of_name)   (char *app_name);
-	void     (*lock)             (s32 app_id);
-	void     (*unlock)           (s32 app_id);
 };
 
 

@@ -125,33 +125,6 @@ arguments are optional and therefore are expressed via the tag-value notation:
 Event concept
 =============
 
-
-IDL interface
-=============
-
-!long init_app ([in, string] char *appname,
-!               [in, string] char *listener);
-
-The 'init_app' call is used to start a new DOpE client session.
-An application name must be provided as the 'appname' argument.
-The 'listener' argument is an identifier string that contains
-the description of a thread for receiving events for this session.
-The actual syntax of the listener identifier depends on the
-underlying communication technique. If successful, 'init_app' returns
-a session-id that can be used with session specific calls.
-
-!void deinit_app ([in] long app_id);
-!
-
-!long exec_cmd ([in] long app_id,
-!               [in, string] char *cmd);
-
-!long exec_req ([in] long app_id,
-!               [in, string] char *cmd,
-!               [out, size_is(res_len), max_is(256)] char res[],
-!               [in, out] int *res_len);
-
-
 DOpElib
 #######
 
@@ -213,7 +186,7 @@ Requesting results of DOpE commands
 
 While 'dope_cmd' and 'dope_cmdf' allow the execution of DOpE commands
 the result of these commands is not returned (mostly the result is of no
-interest - therefore we can skip the transfer of the result in common case). 
+interest - therefore we can skip the transfer of the result in common case).
 When the result of a DOpE command is of importance, #dope_req# and #dope_reqf#
 must be utilized to request the result.
 ! int dope_req(long app_id, char *dst, int dst_size, char *cmd);
@@ -622,152 +595,6 @@ Variable
   value      | <string>  | r/w    | "<undefined>"
 
 [table variable_attributes] Variable attributes overview
-
-
-VScreen
-=======
-
-  Attribute      | Type      | Access |  Default
- ------------------------------------------------------------------------------
-  framerate      | <integer> | r/w    | 0
- ------------------------------------------------------------------------------
-  mousex, mousey | <integer> | r/w    | 0
- ------------------------------------------------------------------------------
-  grabmouse      | <boolean> | r/w    | off
-
-[table vscreen_attributes] VScreen attributes overview
-
-VScreen is a virtual screen buffer that contains raw pixel data. It is
-allocated by DOpE and mapped to the client's address space via shared
-memory. Thus, it provides a powerful way to display pixel-based data
-with a very low copying overhead.
-Table [vscreen_attributes] contains the VScreen specific attributes.
-
-After a VScreen is created, a video mode can be probed via the 'probemode'
-method. VScreen supports the pixel formats 'RGB16' and 'YUV420'.
-If 'probemode' returns '1', the specified videomode is supported by DOpE
-and can be set via the 'setmode' method.
-
-The virtual screen buffer can be exported to the client application
-via the 'map' method that returns an identifier for the corresponding
-shared memory block. The identifier depends on the underlying platform -
-a dataspace id on L4, or a mmap filename on Linux. The client application
-can use this identifier to map the shared memory block into its local
-address space. For a platform-independent way of handling this mapping,
-libVScreen can be used.
-
-
-Mouse grabbing
-~~~~~~~~~~~~~~
-
-For applications, which handle a custom mouse cursor, a VScreen widget can
-be configured to grab the mouse cursor via the 'grabmouse' attribute.
-When this attribute is enabled, the mouse gets trapped within the widget
-area as soon as the user clicks on the VScreen. The user can free the
-mouse at any time by pressing the _pause_ key. When the mouse is grabbed,
-its position within the VScreen widget can be requested and defined via
-the 'mousex' and 'mousey' attributes.
-
-
-Real-Time
-~~~~~~~~~
-
-For real-time applications, VScreen features an optional periodic screen
-refresh at a fixed framerate that can be enabled by setting the 'framerate'
-attribute.
-
-
-  Method       | Arguments
- ------------------------------------------------------------------------------
-  probemode    | <long> width,
-               | <long> height,
-               | <string> mode
- ------------------------------------------------------------------------------
-  setmode      | <long> width,
-               | <long> height,
-               | <string> mode
- ------------------------------------------------------------------------------
-  getserver    |
- ------------------------------------------------------------------------------
-  map          | -thread <string>
- ------------------------------------------------------------------------------
-  refresh      | -x <integer>
-               | -y <integer>
-               | -w <integer>
-               | -h <integer>
- ------------------------------------------------------------------------------
-  share        | <widget> from
-
-[table vscreen_methods] VScreen methods overview
-
-
-VTextScreen
-===========
-
-The VTextScreen is the counterpart of VScreen for textual data that can be
-represented by monospaced text. This is the case for Terminal-like applications.
-VTextScreen provides a virtual VGA text console featuring a character buffer
-(ASCII code) and a corresponding attribute buffer that contains foreground and
-background color information for each character.
-
-
-  Method       | Arguments
- ------------------------------------------------------------------------------
-  probemode    | <long> width,
-               | <long> height,
-               | <string> mode
- ------------------------------------------------------------------------------
-  setmode      | <long> width,
-               | <long> height,
-               | <string> mode
- ------------------------------------------------------------------------------
-  map          | -thread <string>
- ------------------------------------------------------------------------------
-  refresh      | -x <integer>
-               | -y <integer>
-               | -w <integer>
-               | -h <integer>
-
-[table vtextscreen_methods] VTextScreen methods overview
-
-
-As displayed in table [vtextscreen_methods], VTextScreen behaves very similar
-to VScreen. A virtual text mode can be probed and set via the 'probemode' and
-'setmode' methods. The currently supported mode is 'C8A8PLN'. This term describes a
-mode with 8 bit characters, 8 bit attributes, planar --- both buffers are stored
-in succession. The 'width' and 'height' arguments must be specified as number of
-character. The lower bits 0..2 of an attribute value describe the background color
-index and the bits 3..5 describe the foreground color index of the corresponding
-character. Table [vtextscreen_colors] displays the available colors.
-Bits 6..7 define the brightness level. There are 3 brightness levels available.
-
-
-  Color index | Color
- -------------------------
-       0      | black
-       1      | red
-       2      | green
-       3      | yellow
-       4      | blue
-       5      | purple
-       6      | cyan
-       7      | white
-
-[table vtextscreen_colors] Definitions of color indices
-
-
-After a successful initialization of a virtual text screen mode, the text and
-attribute buffer can be mapped to the client applications in the same way as
-for VScreen widgets. Each time, the client application modifies a portion
-of the shared buffer, the 'refresh' method must be called to inform DOpE to
-update the corresponding text area on screen.
-
-  Attribute        | Type      | Access | Default
- ------------------------------------------------------------------------------
-  cursorx, cursory | <integer> | w      | 0
-
-[table vtextscreen_attributes] VTextScreen attributes overview
-
 
 Window
 ======

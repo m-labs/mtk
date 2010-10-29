@@ -67,7 +67,6 @@ static int shadow_left, shadow_right;
 
 extern int config_dropshadows;
 extern int config_transparency;  /* support transparent windows */
-extern int config_oldresize;     /* old way of resizing windows */
 
 extern unsigned long config_bg_win_color;
 
@@ -272,53 +271,33 @@ static void win_resize_motion_callback(WIDGET *cw, int dx, int dy)
 	/* flag for left resizing */
 	if (size_flags & 1) {
 		nwx1 = owx1 + dx;
-		if (!config_oldresize) {
-			if (nwx1 + min_w - 1 > owx2)      nwx2 = nwx1 + min_w - 1;
-			else if (nwx1 + max_w - 1 < owx2) nwx2 = nwx1 + max_w - 1;
-			else nwx2 = owx2;
-		} else {
-			if (nwx1 + min_w - 1 > owx2) nwx1 = owx2 - min_w + 1;
-			if (nwx1 + max_w - 1 < owx2) nwx1 = owx2 - max_w + 1;
-		}
+		if (nwx1 + min_w - 1 > owx2)      nwx2 = nwx1 + min_w - 1;
+		else if (nwx1 + max_w - 1 < owx2) nwx2 = nwx1 + max_w - 1;
+		else nwx2 = owx2;
 	}
 
 	/* flag for right resizing */
 	if (size_flags & 4) {
 		nwx2 = owx2 + dx;
-		if (!config_oldresize) {
-			if (owx1 + min_w - 1 > nwx2)      nwx1 = nwx2 - min_w + 1;
-			else if (owx1 + max_w - 1 < nwx2) nwx1 = nwx2 - max_w + 1;
-			else nwx1 = owx1;
-		} else {
-			if (owx1 + min_w - 1 > nwx2) nwx2 = owx1 + min_w - 1;
-			if (owx1 + max_w - 1 < nwx2) nwx2 = owx1 + max_w - 1;
-		}
+		if (owx1 + min_w - 1 > nwx2)      nwx1 = nwx2 - min_w + 1;
+		else if (owx1 + max_w - 1 < nwx2) nwx1 = nwx2 - max_w + 1;
+		else nwx1 = owx1;
 	}
 
 	/* flag for top resizing */
 	if (size_flags & 2) {
 		nwy1 = owy1 + dy;
-		if (!config_oldresize) {
-			if (nwy1 + min_h - 1 > owy2) nwy2 = nwy1 + min_h - 1;
-			else if (nwy1 + max_h - 1 < owy2) nwy2 = nwy1 + max_h - 1;
-			else nwy2 = owy2;
-		} else {
-			if (nwy1 + min_h - 1 > owy2) nwy1 = owy2 - min_h + 1;
-			if (nwy1 + max_h - 1 < owy2) nwy1 = owy2 - max_h + 1;
-		}
+		if (nwy1 + min_h - 1 > owy2) nwy2 = nwy1 + min_h - 1;
+		else if (nwy1 + max_h - 1 < owy2) nwy2 = nwy1 + max_h - 1;
+		else nwy2 = owy2;
 	}
 
 	/* flag for bottom resizing */
 	if (size_flags & 8) {
 		nwy2 = owy2 + dy;
-		if (!config_oldresize) {
-			if (owy1 + min_h - 1 > nwy2) nwy1 = nwy2 - min_h + 1;
-			else if (owy1 + max_h - 1 <nwy2) nwy1 = nwy2 - max_h + 1;
-			else nwy1 = owy1;
-		} else {
-			if (owy1 + min_h - 1 > nwy2) nwy2 = owy1 + min_h - 1;
-			if (owy1 + max_h - 1 < nwy2) nwy2 = owy1 + max_h - 1;
-		}
+		if (owy1 + min_h - 1 > nwy2) nwy1 = nwy2 - min_h + 1;
+		else if (owy1 + max_h - 1 <nwy2) nwy1 = nwy2 - max_h + 1;
+		else nwy1 = owy1;
 	}
 
 	curr_screen->scr->place(curr_screen, curr_window, nwx1, nwy1, nwx2-nwx1+1, nwy2-nwy1+1);
@@ -512,7 +491,7 @@ static int win_draw(WINDOW *w, struct gfx_ds *ds, long x, long y, WIDGET *origin
 	if (config_dropshadows) {
 		if ((cx1 < w->wd->x + x + shadow_left) || (cx2 > w->wd->x + x + w->wd->w - 1 - shadow_right)
 		 || (cy1 < w->wd->y + y + shadow_top)  || (cy2 > w->wd->y + y + w->wd->h - 1 - shadow_bottom)) {
-			int sret = 0; 
+			int sret = 0;
 
 			/*
 			 * For drawing the background of the shadow,
@@ -612,7 +591,7 @@ static void win_update(WINDOW *w)
 			if (w->wind->uh != NOARG) w->wd->h = w->wind->uh;
 		}
 	}
-	
+
 	orig_update(w);
 }
 
@@ -685,13 +664,13 @@ static void win_handle_event(WIDGET *w, EVENT *ev, WIDGET *from)
 
 	curr_window = w;
 	if (!curr_window) return;
-	
+
 	nwx1 = owx1 = curr_window->gen->get_x((WIDGET *)w);
 	nwy1 = owy1 = curr_window->gen->get_y((WIDGET *)w);
-	
+
 	curr_screen = (SCREEN *)w->gen->get_parent(w);
 	if (!curr_screen) return;
-	
+
 	userstate->drag(w, win_move_motion_callback, NULL, win_move_leave_callback);
 }
 
@@ -980,7 +959,7 @@ static void win_handle_resize(WINDOW *w, WIDGET *cw)
 	/* determine the associated window and its current position */
 	curr_window = (WINDOW *)cw->gen->get_window(cw);
 	if (!curr_window) return;
-	
+
 	nwx1 = owx1 = curr_window->gen->get_x((WIDGET *)curr_window);
 	nwy1 = owy1 = curr_window->gen->get_y((WIDGET *)curr_window);
 	nwx2 = owx2 = owx1 + curr_window->gen->get_w((WIDGET *)curr_window) - 1;
@@ -1020,10 +999,10 @@ static void win_handle_move(WINDOW *w, WIDGET *cw)
 
 	nwx1 = owx1 = curr_window->gen->get_x((WIDGET *)curr_window);
 	nwy1 = owy1 = curr_window->gen->get_y((WIDGET *)curr_window);
-	
+
 	curr_screen = (SCREEN *)curr_window->gen->get_parent(curr_window);
 	if (!curr_screen) return;
-	
+
 	curr_window->win->top(curr_window);
 
 	userstate->drag(cw, win_move_motion_callback, NULL, win_move_leave_callback);

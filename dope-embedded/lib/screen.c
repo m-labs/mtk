@@ -377,7 +377,7 @@ static int scr_drawarea(SCREEN *scr, WIDGET *origin, long x, long y, long w, lon
 {
 	GFX_CONTAINER *ds = scr->sd->scr_ds;
 	WIDGET *parent;
-	
+
 	/* is scr child of another widget? we go on with propagating the request */
 	parent = scr->gen->get_parent(scr);
 	if (parent) return orig_drawarea(scr, origin, x, y, w, h);
@@ -421,13 +421,13 @@ static int scr_drawbehind(SCREEN *scr, WIDGET *win,
 static int scr_do_layout(SCREEN *s, WIDGET *child)
 {
 	int w, h;
-	
+
 	if (child->gen->get_parent(child) != s) return 0;
 
 	/* check if widget size must be changed to fit in its min/max range */
 	w = child->wd->w;
 	h = child->wd->h;
-	
+
 	if ((w >= child->wd->min_w) && (w <= child->wd->max_w)
 	 && (h >= child->wd->min_h) && (h <= child->wd->max_h))
 		return 0;
@@ -436,7 +436,7 @@ static int scr_do_layout(SCREEN *s, WIDGET *child)
 	if (w >= child->wd->max_w) w = child->wd->max_w;
 	if (h <= child->wd->min_h) h = child->wd->min_h;
 	if (h >= child->wd->max_h) h = child->wd->max_h;
-	
+
 	s->scr->place(s, child, NOARG, NOARG, w, h);
 	return 0;
 }
@@ -551,7 +551,7 @@ static void scr_place(SCREEN *scr, WIDGET *ww, long x, long y, long w, long h)
 	oy1 = ww->gen->get_y(ww);
 	ox2 = ww->gen->get_w(ww) + ox1 - 1;
 	oy2 = ww->gen->get_h(ww) + oy1 - 1;
-	
+
 	/* determine desired new position */
 	if (x == NOARG) x = ww->gen->get_x(ww);
 	if (y == NOARG) y = ww->gen->get_y(ww);
@@ -562,7 +562,7 @@ static void scr_place(SCREEN *scr, WIDGET *ww, long x, long y, long w, long h)
 	if (w > ww->gen->get_max_w(ww)) w = ww->gen->get_max_w(ww);
 	if (h < ww->gen->get_min_h(ww)) h = ww->gen->get_min_h(ww);
 	if (h > ww->gen->get_max_h(ww)) h = ww->gen->get_max_h(ww);
-	
+
 	ww->gen->set_x(ww, x);
 	ww->gen->set_y(ww, y);
 	ww->gen->set_w(ww, w);
@@ -792,8 +792,6 @@ static void forget_children(int app_id)
 		WIDGET *cw;
 		SCREEN *ns;
 
-		cs->gen->lock(cs);
-
 		/* check if active win belongs to the application */
 		if (cs->sd->active_win
 		 && (cs->sd->active_win->gen->get_app_id(cs->sd->active_win) == app_id))
@@ -807,7 +805,6 @@ static void forget_children(int app_id)
 		}
 
 		ns = cs->sd->next;
-		cs->gen->unlock(cs);
 		cs = ns;
 	}
 }

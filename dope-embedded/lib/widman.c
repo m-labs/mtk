@@ -26,7 +26,6 @@
 #include "script.h"
 #include "appman.h"
 #include "list_macros.h"
-#include "thread.h"
 #include "window.h"
 #include "keycodes.h"
 #include "userstate.h"
@@ -34,7 +33,6 @@
 static struct redraw_services    *redraw;
 static struct script_services    *script;
 static struct appman_services    *appman;
-static struct thread_services    *thread;
 static struct userstate_services *userstate;
 static struct messenger_services *msg;
 
@@ -497,7 +495,7 @@ static void wid_update(WIDGET *w)
 	if (w->wd->min_w != old_min_w || w->wd->max_w != old_max_w
 	 || w->wd->min_h != old_min_h || w->wd->max_h != old_max_h)
 		w->wd->update |= WID_UPDATE_MINMAX;
-	
+
 	if (w->wd->update & WID_UPDATE_MINMAX) {
 		WIDGET *parent = w->gen->get_parent((WIDGET *)w);
 		if (parent) parent->gen->do_layout(parent, w);
@@ -601,7 +599,7 @@ static int wid_do_layout(WIDGET *cw,WIDGET *child)
 	/* check if size of child is in its valid min/max range */
 	w = child->wd->w;
 	h = child->wd->h;
-	
+
 	if (w <= child->wd->min_w) w = child->wd->min_w;
 	if (w >= child->wd->max_w) w = child->wd->max_w;
 	if (h <= child->wd->min_h) h = child->wd->min_h;
@@ -641,7 +639,7 @@ static int wid_do_layout(WIDGET *cw,WIDGET *child)
 //	}
 //
 //	/* attach new binding */
-//	
+//
 //}
 
 
@@ -734,29 +732,6 @@ static int wid_is_root(WIDGET *cw)
 	return 0;
 }
 
-
-static MUTEX *global_lock;
-
-/**
- * Lock widget
- */
-static void wid_lock(WIDGET *w)
-{
-//	appman->lock(w->wd->app_id);
-	thread->mutex_down(global_lock);
-}
-
-
-/**
- * Unlock widget
- */
-static void wid_unlock(WIDGET *w)
-{
-//	appman->unlock(w->wd->app_id);
-	thread->mutex_up(global_lock);
-}
-
-
 /**
  * Remove child widget from widget
  */
@@ -780,7 +755,7 @@ static void wid_release(WIDGET *w)
 static int wid_related_to(WIDGET *w1, WIDGET *w2)
 {
 	WIDGET *cw;
-	
+
 	/* if both widgets are the same they are obviously related */
 	if (w1 == w2) return 1;
 
@@ -882,8 +857,6 @@ static void default_widget_methods(struct widget_methods *m)
 	m->draw_bg        = wid_draw_bg;
 	m->is_root        = wid_is_root;
 	m->calc_minmax    = wid_calc_minmax;
-	m->lock           = wid_lock;
-	m->unlock         = wid_unlock;
 	m->remove_child   = wid_remove_child;
 	m->release        = wid_release;
 	m->related_to     = wid_related_to;
@@ -922,10 +895,7 @@ int init_widman(struct dope_services *d)
 	msg       = d->get_module("Messenger 1.0");
 	script    = d->get_module("Script 1.0");
 	appman    = d->get_module("ApplicationManager 1.0");
-	thread    = d->get_module("Thread 1.0");
 	userstate = d->get_module("UserState 1.0");
-
-	global_lock = thread->create_mutex(0);
 
 	d->register_module("WidgetManager 1.0",&services);
 	return 1;

@@ -22,11 +22,9 @@ struct private_widget;
 #include "widget_data.h"
 #include "widget.h"
 #include "screen.h"
-#include "thread.h"
 #include "redraw.h"
 #include "timer.h"
 
-static struct thread_services   *thread;
 static struct timer_services    *timer;
 
 WIDGET {
@@ -301,9 +299,7 @@ static s32 process_pixels(s32 max_pixels)
 
 		/* process redraw */
 		if (cw && w > 0 && cut_h > 0) {
-			cw->gen->lock(cw);
 			cw->gen->drawarea(cw, cw, x, y, w, cut_h);
-			cw->gen->unlock(cw);
 			max_pixels       -= w * cut_h;
 			processed_pixels += w * cut_h;
 		}
@@ -436,7 +432,6 @@ static struct redraw_services services = {
 
 int init_redraw(struct dope_services *d)
 {
-	thread  =   d->get_module("Thread 1.0");
 	timer   =   d->get_module("Timer 1.0");
 
 	d->register_module("RedrawManager 1.0", &services);

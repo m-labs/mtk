@@ -1,10 +1,5 @@
 /*
- * \brief   DOpE simple scheduling module
- *
- * There are four time-slots where real-time opera-
- * tions can be  (interleaved) executed.  Given an
- * execution frequency  of 100Hz - this rt-manager
- * module displays the rt-widgets at 25fps.
+ * \brief   DOpE scheduling module and DOpElib interface emulation
  */
 
 /*
@@ -15,38 +10,40 @@
  * under the terms of the GNU General Public License version 2.
  */
 
+/* general includes */
+#include <stdarg.h>
+#include <stdio.h>
+
+/* DOpE server includes */
 #include "dopestd.h"
-#include "widget.h"
-#include "widget_data.h"
-#include "thread.h"
-#include "window.h"
-#include "screen.h"
 #include "userstate.h"
 #include "redraw.h"
-#include "timer.h"
 #include "scheduler.h"
-#include "grid.h"
-#include "loaddisplay.h"
+#include "appman.h"
+#include "script.h"
+#include "scope.h"
+#include "screen.h"
+#include "timer.h"
 
-static struct thread_services      *thread;
-static struct timer_services       *timer;
-static struct grid_services        *grid;
-static struct window_services      *win;
-static struct redraw_services      *redraw;
-static struct userstate_services   *userstate;
-static struct screen_services      *screen;
-static struct loaddisplay_services *loaddisplay;
+/* DOpE client includes */
+#include "dopelib.h"
 
-#define NUM_SLOTS 4
-struct timeslot {
-	WIDGET *w;
-	MUTEX  *sync_mutex;
-} ts[NUM_SLOTS];
 
-extern SCREEN *curr_scr;
+static struct scope_services     *scope;
+static struct appman_services    *appman;
+static struct script_services    *script;
+static struct screen_services    *screen;
+static struct redraw_services    *redraw;
+static struct timer_services     *timer;
+static struct userstate_services *userstate;
 
 int init_simple_scheduler(struct dope_services *d);
 
+extern int dope_client_main(int argc, char **argv);
+
+int config_redraw_granularity = 350*1000;
+
+struct dope_services *dope_services;
 
 /***********************
  ** Service functions **
@@ -54,25 +51,9 @@ int init_simple_scheduler(struct dope_services *d);
 
 /**
  * Register new real-time widget
- *
- * The period argument is ignored as we only support 40ms.
  */
 static s32 rt_add_widget(WIDGET *w, u32 period)
 {
-	s32 free_slot = -1;
-	s32 i;
-
-	/* search free slot */
-	for (i=0;i<NUM_SLOTS;i++) {
-		if (!ts[i].w) free_slot = i;
-	}
-
-	if (free_slot == -1) return -1;
-
-	/* settle down at time slot */
-	ts[free_slot].w = w;
-	w->gen->inc_ref(w);
-
 	return 0;
 }
 
@@ -82,159 +63,174 @@ static s32 rt_add_widget(WIDGET *w, u32 period)
  */
 static void rt_remove_widget(WIDGET *w)
 {
-	s32 i;
-
-	/* search slot of the given widget */
-	for (i=0;i<NUM_SLOTS;i++) {
-
-		/* free the widget's time slot */
-		if (ts[i].w == w) {
-			ts[i].w = NULL;
-			ts[i].sync_mutex = NULL;
-			w->gen->dec_ref(w);
-			return;
-		}
-	}
 }
 
 
 /**
- * Set mutex that should be unlocked after drawing operations
+ * Unregister all real-time widgets of specified application
  */
-static void rt_set_sync_mutex(WIDGET *w,MUTEX *m)
+static void rt_release_app(int app_id)
 {
-	s32 i;
+}
 
-	/* search slot of the given widget */
-	for (i=0;i<NUM_SLOTS;i++) {
-		if (ts[i].w == w) {
-			ts[i].sync_mutex = m;
-			return;
-		}
-	}
+/*******************************
+ ** Dope client lib emulation **
+ *******************************/
+
+static char cmdstr[32768];
+extern int dope_main();
+
+
+long dope_init(void)
+{
+	dope_main();
+	return 0;
 }
 
 
-/**
- * Mainloop of dope
- *
- * Within the mainloop we must do the following things:
- *
- * * Perform the redraw of real-time and non-real-time widgets.
- * * Call the userstate manager periodically.
- */
+void dope_deinit(void)
+{
+	INFO(printf("dope_deinit called\n"));
+
+}
+
+
+long dope_init_app(const char *appname)
+{
+	s32 app_id = appman->reg_app(appname);
+	SCOPE *rootscope = scope->create();
+	INFO(printf("dope_init_app called\n"));
+	appman->set_rootscope(app_id, rootscope);
+	INFO(printf("dope_init_app returns app_id=%d\n", (int)app_id));
+	return app_id;
+}
+
+
+long dope_deinit_app(long app_id)
+{
+	INFO(printf("Server(deinit_app): application (id=%lu) deinit requested\n", app_id);)
+	screen->forget_children(app_id);
+	appman->unreg_app(app_id);
+	return 0;
+}
+
+
+int dope_cmd(long app_id, const char *cmd)
+{
+	INFO(printf("app %d requests dope_cmd \"%s\"\n", (int)app_id, cmd));
+	return script->exec_command(app_id, (char *)cmd, NULL, 0);
+}
+
+
+int dope_cmdf(long app_id, const char *format, ...)
+{
+	int ret;
+	va_list list;
+
+	va_start(list, format);
+	vsnprintf(cmdstr, sizeof(cmdstr), format, list);
+	va_end(list);
+	ret = dope_cmd(app_id, cmdstr);
+
+	return ret;
+}
+
+
+int dope_cmd_seq(int app_id, ...)
+{
+	int ret = 0;
+	const char *cmd = NULL;
+	va_list list;
+	va_start(list, (const char *)app_id);
+
+	do {
+		cmd = va_arg(list, const char *);
+		if (cmd)
+			ret = dope_cmd(app_id, cmd);
+	} while (ret >= 0 && cmd);
+
+	return ret;
+}
+
+
+int dope_req(long app_id, char *dst, int dst_size, const char *cmd)
+{
+	int ret;
+
+	INFO(printf("dope_req \"%s\" requested by app_id=%lu\n", cmd, (u32)app_id);)
+	ret = script->exec_command(app_id, (char *)cmd, dst, dst_size);
+
+	return ret;
+}
+
+
+int dope_reqf(long app_id, char *dst, int dst_size, const char *format, ...)
+{
+	va_list list;
+
+	va_start(list, format);
+	vsnprintf(cmdstr, sizeof(cmdstr), format, list);
+	va_end(list);
+	return dope_req(app_id, dst, dst_size, cmdstr);
+}
+
+
+void dope_bind(long app_id,const char *var, const char *event_type,
+               void (*callback)(dope_event *,void *),void *arg) {
+	dope_cmdf(app_id, "%s.bind(%s, \"%08lx, %08lx\")",
+	          var, event_type, (long)callback, (long)arg);
+}
+
+
+void dope_bindf(long id, const char *varfmt, const char *event_type,
+                void (*callback)(dope_event *,void *), void *arg,...) {
+	static char varstr[1024];
+	va_list list;
+
+	va_start(list, arg);
+	vsnprintf(varstr, 1024, varfmt, list);
+	va_end(list);
+
+	snprintf(cmdstr, 256,"%s.bind(\"%s\", \"%08lx, %08lx\")",
+	         varstr, event_type, (long)callback, (long)arg);
+	dope_cmd(id, cmdstr);
+}
+
+
+void dope_process_event(long app_id)
+{
+	userstate->handle();
+	redraw->process_pixels(config_redraw_granularity);
+}
+
+
+void dope_eventloop(long app_id)
+{
+	while (1) dope_process_event(app_id);
+}
+
+
+int dope_events_pending(int app_id)
+{
+	return 1;
+}
+
+
+long dope_get_keystate(long app_id, long keycode)
+{
+	return userstate->get_keystate(keycode);
+}
+
+
+char dope_get_ascii(long app_id, long keycode)
+{
+	return userstate->get_ascii(keycode);
+}
+
 static void process_mainloop(void)
 {
-	static WINDOW *w1, *slotwin;
-	static GRID *g;
-	static LOADDISPLAY *ld[4];
-	static WIDGET *cw;
-	static s32 i,j;
-	static u32 start_time, rt_end_time, end_time, usr_end_time;
-	static s32 left_time;
-	static u32 curr_length;
-	s32 period_clock  = 10000;
-	s32 period_length = 8000;
-
-	static s32 slot_usr_time[4];
-	static s32 slot_rt_time[4];
-	static s32 slot_nrt_time[4];
-	static s32 curr_slot = 0;
-
-	/**
- * create slot display window
- */
-	slotwin = w1 = win->create();
-	g = grid->create();
-	for (i=0; i<4; i++) {
-		ld[i] = loaddisplay->create();
-		ld[i]->ldm->set_orient(ld[i], "vertical");
-		ld[i]->ldm->set_from(ld[i], 100.0);
-		ld[i]->ldm->set_to(ld[i], 0.0);
-		ld[i]->gen->update((WIDGET *)ld[i]);
-		ld[i]->ldm->barconfig(ld[i], "user", "0", "green");
-		ld[i]->ldm->barconfig(ld[i], "rt",   "0", "red"  );
-		ld[i]->ldm->barconfig(ld[i], "nrt",  "0", "blue" );
-
-		g->grid->add(g, (WIDGET *)ld[i]);
-		g->grid->set_row(g, (WIDGET *)ld[i], 1);
-		g->grid->set_col(g, (WIDGET *)ld[i], i);
-	}
-	g->gen->update((WIDGET *)g);
-	w1->win->set_content(w1,(WIDGET *)g);
-	w1->gen->update((WIDGET *)w1);
-	curr_scr->scr->place(curr_scr, (WIDGET *)w1, 10, 110, 74, 250);
-
-	redraw->exec_redraw(100*1000*1000);
-
-	/* entering mainloop */
-	INFO(printf("starting eventloop\n"));
-
-	while (1) {
-
-		/* pay some attentation to the user */
-		start_time = timer->get_time();
-		userstate->handle();
-		usr_end_time = timer->get_time();
-
-		/*
-		 * Process real-time widgets
-		 */
-
-		/* cycle trough time slots */
-		curr_slot = (curr_slot + 1) % NUM_SLOTS;
-
-		if ((cw = ts[curr_slot].w))
-			cw->gen->drawarea(cw, cw, 0, 0, cw->wd->w, cw->wd->h);
-	
-		if (ts[curr_slot].sync_mutex) thread->mutex_up(ts[curr_slot].sync_mutex);
-
-		rt_end_time = timer->get_time();
-
-		/*
-		 * Process non-real-time widgets
-		 */
-
-		left_time = (s32)period_length - (s32)timer->get_diff(start_time,timer->get_time());
-//		redraw->exec_redraw(left_time);
-		end_time = timer->get_time();
-
-		redraw->process_pixels(1000*1000);
-
-		curr_length = timer->get_diff(start_time,end_time);
-
-		if (curr_length < period_length)
-			timer->usleep(period_clock - curr_length);
-
-//		timer->usleep(1000*30);
-		
-		slot_usr_time[curr_slot] += usr_end_time - start_time;
-		slot_rt_time[curr_slot]  += rt_end_time - usr_end_time;
-		slot_nrt_time[curr_slot] += end_time - rt_end_time;
-
-		/*
-		 * Update load bars
-		 */
-
-		i--;
-		if (i <= 0) {
-			static char buf[32];
-			i += 20;
-			for (j=0; j<4; j++) {
-				snprintf(buf, 32, "%ld", (slot_usr_time[j])/((period_length*5)/100));
-				ld[j]->ldm->barconfig(ld[j], "user", buf, "<default>");
-				snprintf(buf, 32, "%ld", (slot_rt_time[j])/((period_length*5)/100));
-				ld[j]->ldm->barconfig(ld[j], "rt",   buf, "<default>");
-				snprintf(buf, 32, "%ld", (slot_nrt_time[j])/((period_length*5)/100));
-				ld[j]->ldm->barconfig(ld[j], "nrt",  buf, "<default>");
-				slot_rt_time[j] = 0;
-				slot_nrt_time[j] = 0;
-				slot_usr_time[j] = 0;
-			}
-		}
-	}
+	return;
 }
-
 
 /**************************************
  ** Service structure of this module **
@@ -243,7 +239,7 @@ static void process_mainloop(void)
 static struct scheduler_services services = {
 	rt_add_widget,
 	rt_remove_widget,
-	rt_set_sync_mutex,
+	rt_release_app,
 	process_mainloop,
 };
 
@@ -254,14 +250,15 @@ static struct scheduler_services services = {
 
 int init_simple_scheduler(struct dope_services *d)
 {
-	thread      = d->get_module("Thread 1.0");
-	win         = d->get_module("Window 1.0");
-	userstate   = d->get_module("UserState 1.0");
-	redraw      = d->get_module("RedrawManager 1.0");
-	timer       = d->get_module("Timer 1.0");
-	screen      = d->get_module("Screen 1.0");
-	grid        = d->get_module("Grid 1.0");
-	loaddisplay = d->get_module("LoadDisplay 1.0");
+	appman    = (struct appman_services    *)d->get_module("ApplicationManager 1.0");
+	script    = (struct script_services    *)d->get_module("Script 1.0");
+	userstate = (struct userstate_services *)d->get_module("UserState 1.0");
+	redraw    = (struct redraw_services    *)d->get_module("RedrawManager 1.0");
+	scope     = (struct scope_services     *)d->get_module("Scope 1.0");
+	screen    = (struct screen_services    *)d->get_module("Screen 1.0");
+	timer     = (struct timer_services     *)d->get_module("Timer 1.0");
+
+	dope_services = d;
 
 	d->register_module("Scheduler 1.0",&services);
 	return 1;

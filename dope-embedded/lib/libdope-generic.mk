@@ -24,13 +24,13 @@ SRC_C  += \
 	loaddisplay.c relax.c       pool.c      \
 	winlayout.c   redraw.c      scale.c     \
 	window.c      screen.c      script.c    \
-	scrollbar.c   vtextscreen.c tick.c      \
+	scrollbar.c   tick.c      \
 	tokenizer.c   userstate.c   variable.c  \
-	vscreen.c     scope.c       viewman.c   \
+	scope.c       viewman.c   \
 	bigmouse.c    default_fnt.c main.c      \
 	smallmouse.c  mono_fnt.c    title_fnt.c \
-	dummies.c     thread.c      eventmsg.c  \
-	sharedmem.c   gfx_scr16.c   sched.c     \
+	eventmsg.c  \
+	sharedmem.c   gfx_scr16.c   scheduler.c     \
 	vera16_tff.c  edit.c        separator.c \
 	list.c        clipboard.c
 

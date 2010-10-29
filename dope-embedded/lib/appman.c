@@ -16,7 +16,6 @@
 
 #include "dopestd.h"
 #include "hashtab.h"
-#include "thread.h"
 #include "appman.h"
 #include "screen.h"
 #include "scope.h"
@@ -25,15 +24,11 @@
 #define APP_NAMELEN       64    /* application identifier string length    */
 
 static struct hashtab_services *hashtab;
-static struct thread_services  *thread;
 //static struct scope_services   *scope;
 
 struct app {
 	char name[APP_NAMELEN];     /* identifier string of the application    */
-	THREAD  *app_thread;        /* application thread                      */
 	SCOPE   *rootscope;         /* root scope of the application           */
-	void    *listener;          /* associated result/event listener        */
-	THREAD  *list_thread;       /* listener thread (optional)              */
 };
 
 
@@ -80,7 +75,6 @@ static struct app *new_app(void)
 	/* create hash table to store the variables of the application */
 //	new->rootscope = (SCOPE *)scope->create();
 
-	new->app_thread = thread->alloc_thread();
 	return new;
 }
 
@@ -175,17 +169,8 @@ static s32 unregister_app(u32 app_id)
 	app = apps[app_id];
 	if (!app) return -1;
 
-	curr_scr->gen->lock((WIDGET *)curr_scr);
-
-	/* prevent any events to be delivered anymore */
-	app->listener = NULL;
-
 	/* delete root namespace */
 	if (app->rootscope) app->rootscope->gen->dec_ref((WIDGET *)app->rootscope);
-
-	/* deallocate thread ids */
-	if (app->list_thread) thread->free_thread(app->list_thread);
-	if (app->app_thread)  thread->free_thread(app->app_thread);
 
 	/* free the memory for the internal application representation */
 	free(app);
@@ -193,7 +178,6 @@ static s32 unregister_app(u32 app_id)
 	/* mark the corresponding app_id to be free */
 	apps[app_id] = NULL;
 
-	curr_scr->gen->unlock((WIDGET *)curr_scr);
 	return 0;
 }
 
@@ -219,78 +203,6 @@ static SCOPE *get_rootscope(u32 app_id)
 	return apps[app_id]->rootscope;
 }
 
-
-/**
- * Register event listener destination point of an application
- *
- * The listener is not necessarily a thread. It could be a socket descriptor
- * or something else. We never know what hides behind the listener pointer.
- */
-static void reg_listener(s32 app_id, void *listener)
-{
-	if (!app_id_valid(app_id)) return;
-	apps[app_id]->listener = listener;
-}
-
-
-/**
- * Register event listener thread of an application
- *
- * We only store this optional listener thread id for proper resource deallocation.
- */
-static void reg_list_thread(s32 app_id, THREAD *listener_thread)
-{
-	if (!app_id_valid(app_id)) return;
-	apps[app_id]->list_thread = listener_thread;
-}
-
-
-/**
- * Request event listener thread of an application
- */
-static void *get_listener(s32 app_id)
-{
-	if (!app_id_valid(app_id)) return NULL;
-	return apps[app_id]->listener;
-}
-
-
-/**
- * Register application thread
- */
-static void reg_app_thread(s32 app_id, THREAD *app_thread)
-{
-	if (!app_id_valid(app_id)) return;
-	thread->copy_thread(app_thread, apps[app_id]->app_thread);
-}
-
-
-/**
- * Request application thread
- */
-static THREAD *get_app_thread(s32 app_id)
-{
-	if (!app_id_valid(app_id)) return NULL;
-	return apps[app_id]->app_thread;
-}
-
-
-/**
- * Find application if of specified application thread
- */
-static s32 app_id_of_thread(THREAD *app_thread)
-{
-	u32 i;
-	for (i=1; i<MAX_APPS; i++) {
-		if (apps[i] && thread->thread_equal(apps[i]->listener, app_thread)) {
-			INFO(printf("Appman(app_id_of_thread): found app_id, return %d\n", (int)i));
-			return i;
-		}
-	}
-	return -1;
-}
-
-
 /**
  * Resolve application id by its name
  */
@@ -307,38 +219,6 @@ static s32 app_id_of_name(char *app_name)
 }
 
 
-/**
- * Lock application for mutual exclusive modifications
- */
-static void lock(s32 app_id)
-{
-//	SCOPE *s;
-//	if (!app_id_valid(app_id) || !apps[app_id]->rootscope) return;
-//	s = apps[app_id]->rootscope;
-//	s->gen->lock((WIDGET *)s);
-////	thread->mutex_down(global_lock);
-	if (curr_scr) {
-		curr_scr->gen->lock((WIDGET *)curr_scr);
-	} else {
-		printf("AppMan(lock): lock not possible because curr_scr is not defined.\n");
-	}
-}
-
-
-/**
- * Unlock application
- */
-static void unlock(s32 app_id)
-{
-//	SCOPE *s;
-//	if (!app_id_valid(app_id) || !apps[app_id]->rootscope) return;
-//	s = apps[app_id]->rootscope;
-//	s->gen->unlock((WIDGET *)s);
-////	thread->mutex_up(global_lock);
-	if (curr_scr) curr_scr->gen->unlock((WIDGET *)curr_scr);
-}
-
-
 /**************************************
  ** Service structure of this module **
  **************************************/
@@ -348,16 +228,8 @@ static struct appman_services services = {
 	unregister_app,
 	set_rootscope,
 	get_rootscope,
-	reg_listener,
-	reg_list_thread,
-	get_listener,
 	get_app_name,
-	reg_app_thread,
-	get_app_thread,
-	app_id_of_thread,
 	app_id_of_name,
-	lock,
-	unlock,
 };
 
 
@@ -368,10 +240,7 @@ static struct appman_services services = {
 int init_appman(struct dope_services *d)
 {
 	hashtab = d->get_module("HashTable 1.0");
-	thread  = d->get_module("Thread 1.0");
 //	scope   = d->get_module("Scope 1.0");
-
-//	global_lock = thread->create_mutex(0);
 
 	d->register_module("ApplicationManager 1.0", &services);
 	return 1;

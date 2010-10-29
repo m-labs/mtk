@@ -13,8 +13,6 @@
 #ifndef _DOPE_SHAREDMEM_H_
 #define _DOPE_SHAREDMEM_H_
 
-#include "thread.h"
-
 #define SHAREDMEM struct shared_memory
 struct shared_memory;
 
@@ -23,7 +21,6 @@ struct sharedmem_services {
 	void       (*destroy)     (SHAREDMEM *sm);
 	void      *(*get_address) (SHAREDMEM *sm);
 	void       (*get_ident)   (SHAREDMEM *sm, char *dst_ident_buf);
-	s32        (*share)       (SHAREDMEM *sm, THREAD *dst_thread);
 };
 
 

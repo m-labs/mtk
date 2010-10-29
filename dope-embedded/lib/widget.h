@@ -336,30 +336,6 @@ struct widget_methods {
 	 */
 	void (*calc_minmax) (WIDGETARG *);
 
-
-	/**
-	 * Lock widget
-	 *
-	 * Widgets must be locked during redraws or modifications via DOpE
-	 * commands. This function performs the locking.
-	 *
-	 * Currently there exists one global lock for all widgets.
-	 */
-	void (*lock) (WIDGETARG *);
-
-
-	/**
-	 * Unlock widget
-	 *
-	 * After modifying or drawing a widgets, this function must be
-	 * called to enable other threads to perform operations on the
-	 * widgets.
-	 *
-	 * Currently there exists one global lock for all widgets.
-	 */
-	void (*unlock) (WIDGETARG *);
-
-
 	/**
 	 * Remove child widget from widget
 	 *
