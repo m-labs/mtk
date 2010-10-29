@@ -334,8 +334,8 @@ static void update_mfocus(void)
 
 static void handle(EVENT *e)
 {
-	long old_mx, old_my, old_mb;
-	static long update_needed = 0;
+	int old_mx, old_my, old_mb;
+	static int update_needed = 0;
 	EVENT event;
 
 	WIDGET *new_mfocus = NULL;
@@ -346,46 +346,44 @@ static void handle(EVENT *e)
 
 	if(e != NULL) {
 		switch (e->type) {
+			case EVENT_MOTION:
+				set_pos(curr_mx + e->rel_x, curr_my + e->rel_y);
+				break;
 
-		case EVENT_MOTION:
-			set_pos(curr_mx + e->rel_x, curr_my + e->rel_y);
-			break;
+			case EVENT_ABSMOTION:
+				set_pos(e->abs_x, e->abs_y);
+				break;
 
-		case EVENT_ABSMOTION:
-			set_pos(e->abs_x, e->abs_y);
-			break;
+			case EVENT_PRESS:
+				press_cnt++;
 
-		case EVENT_PRESS:
-			press_cnt++;
+				if (e->code == MTK_BTN_LEFT)  curr_mb = curr_mb | 0x01;
+				if (e->code == MTK_BTN_RIGHT) curr_mb = curr_mb | 0x02;
+				keytab[e->code] = 1;
+				if (get_ascii(e->code)
+				 || (e->code >= MTK_KEY_UP && e->code <= MTK_KEY_DELETE)) {
+					curr_keystate = USERSTATE_KEY_PRESS;
+					curr_keycode  = e->code;
+					tick->add(key_repeat_delay, tick_handle_delay, (void *)curr_keycode);
+				} else {
+					curr_keystate = USERSTATE_KEY_IDLE;
+					curr_keycode  = 0;
+				}
+				break;
 
-			if (e->code == MTK_BTN_LEFT)  curr_mb = curr_mb | 0x01;
-			if (e->code == MTK_BTN_RIGHT) curr_mb = curr_mb | 0x02;
-			keytab[e->code] = 1;
-			if (get_ascii(e->code)
-			 || (e->code >= MTK_KEY_UP && e->code <= MTK_KEY_DELETE)) {
-				curr_keystate = USERSTATE_KEY_PRESS;
-				curr_keycode  = e->code;
-				tick->add(key_repeat_delay, tick_handle_delay, (void *)curr_keycode);
-			} else {
+			case EVENT_RELEASE:
+
+				press_cnt--;
+
+				if ((curr_state == USERSTATE_DRAG) && curr_motion_callback)
+					curr_motion_callback(curr_selected, curr_mx - omx, curr_my - omy);
+
+				if (e->code == MTK_BTN_LEFT)  curr_mb = curr_mb & 0x00fe;
+				if (e->code == MTK_BTN_RIGHT) curr_mb = curr_mb & 0x00fd;
+				keytab[e->code] = 0;
 				curr_keystate = USERSTATE_KEY_IDLE;
 				curr_keycode  = 0;
-			}
-			break;
-
-		case EVENT_RELEASE:
-
-			press_cnt--;
-
-			if ((curr_state == USERSTATE_DRAG) && curr_motion_callback) {
-				curr_motion_callback(curr_selected, curr_mx - omx, curr_my - omy);
-			}
-
-			if (e->code == MTK_BTN_LEFT)  curr_mb = curr_mb & 0x00fe;
-			if (e->code == MTK_BTN_RIGHT) curr_mb = curr_mb & 0x00fd;
-			keytab[e->code] = 0;
-			curr_keystate = USERSTATE_KEY_IDLE;
-			curr_keycode  = 0;
-			break;
+				break;
 		}
 
 		update_mfocus();
@@ -445,96 +443,95 @@ static void handle(EVENT *e)
 	tick->handle();
 
 	switch (curr_state) {
+		case USERSTATE_IDLE:
 
-	case USERSTATE_IDLE:
-
-		/* if mouse position changed -> deliver motion event */
-		if (old_mx != curr_mx || old_my != curr_my) {
-			if (curr_mfocus) {
-				event.type  = EVENT_MOTION;
-				event.abs_x = curr_mx - curr_mfocus->gen->get_abs_x(curr_mfocus);
-				event.abs_y = curr_my - curr_mfocus->gen->get_abs_y(curr_mfocus);
-				event.rel_x = curr_mx - old_mx;
-				event.rel_y = curr_my - old_my;
-				curr_mfocus->gen->handle_event(curr_mfocus, &event, NULL);
+			/* if mouse position changed -> deliver motion event */
+			if (old_mx != curr_mx || old_my != curr_my) {
+				if (curr_mfocus) {
+					event.type  = EVENT_MOTION;
+					event.abs_x = curr_mx - curr_mfocus->gen->get_abs_x(curr_mfocus);
+					event.abs_y = curr_my - curr_mfocus->gen->get_abs_y(curr_mfocus);
+					event.rel_x = curr_mx - old_mx;
+					event.rel_y = curr_my - old_my;
+					curr_mfocus->gen->handle_event(curr_mfocus, &event, NULL);
+				}
 			}
-		}
-		break;
-
-	case USERSTATE_TOUCH:
-
-		if (!curr_selected)
 			break;
 
-		if (curr_tick_callback)
-			curr_tick_callback(curr_selected, curr_mx - omx, curr_my - omy);
+		case USERSTATE_TOUCH:
 
-		if (press_cnt == 0) idle();
+			if (!curr_selected)
+				break;
 
-		new_mfocus = curr_scr->gen->find((WIDGET *)curr_scr, curr_mx, curr_my);
-		if (new_mfocus != curr_mfocus) {
-			if (new_mfocus == curr_selected) {
-				if (curr_selected) {
-					curr_selected->gen->set_state(curr_selected,1);
-					curr_selected->gen->update(curr_selected);
+			if (curr_tick_callback)
+				curr_tick_callback(curr_selected, curr_mx - omx, curr_my - omy);
+
+			if (press_cnt == 0) idle();
+
+			new_mfocus = curr_scr->gen->find((WIDGET *)curr_scr, curr_mx, curr_my);
+			if (new_mfocus != curr_mfocus) {
+				if (new_mfocus == curr_selected) {
+					if (curr_selected) {
+						curr_selected->gen->set_state(curr_selected,1);
+						curr_selected->gen->update(curr_selected);
+					}
+				} else {
+					if (curr_selected) {
+						curr_selected->gen->set_state(curr_selected,0);
+						curr_selected->gen->update(curr_selected);
+					}
 				}
-			} else {
-				if (curr_selected) {
-					curr_selected->gen->set_state(curr_selected,0);
-					curr_selected->gen->update(curr_selected);
+				if (curr_mfocus) curr_mfocus->gen->dec_ref(curr_mfocus);
+				curr_mfocus = new_mfocus;
+				if (curr_mfocus) curr_mfocus->gen->inc_ref(curr_mfocus);
+			}
+			break;
+
+		case USERSTATE_DRAG:
+
+			if (press_cnt == 0) idle();
+
+			if (curr_tick_callback) {
+				curr_tick_callback(curr_selected, curr_mx - omx, curr_my - omy);
+			}
+			if (old_mx != curr_mx || old_my != curr_my || update_needed) {
+				update_needed = 1;
+				if (curr_motion_callback && !redraw->is_queued((WIDGET *)curr_scr)) {
+					update_needed = 0;
+					curr_motion_callback(curr_selected, curr_mx - omx, curr_my - omy);
 				}
 			}
-			if (curr_mfocus) curr_mfocus->gen->dec_ref(curr_mfocus);
-			curr_mfocus = new_mfocus;
-			if (curr_mfocus) curr_mfocus->gen->inc_ref(curr_mfocus);
-		}
-		break;
+			break;
 
-	case USERSTATE_DRAG:
+		case USERSTATE_GRAB:
 
-		if (press_cnt == 0) idle();
+			/* if mouse position changed -> deliver motion event */
+			if (old_mx != curr_mx || old_my != curr_my) {
+				s32 min_x = curr_selected->gen->get_abs_x(curr_selected);
+				s32 min_y = curr_selected->gen->get_abs_y(curr_selected);
+				s32 max_x = min_x + curr_selected->gen->get_w(curr_selected) - 1;
+				s32 max_y = min_y + curr_selected->gen->get_h(curr_selected) - 1;
 
-		if (curr_tick_callback) {
-			curr_tick_callback(curr_selected, curr_mx - omx, curr_my - omy);
-		}
-		if (old_mx != curr_mx || old_my != curr_my || update_needed) {
-			update_needed = 1;
-			if (curr_motion_callback && !redraw->is_queued((WIDGET *)curr_scr)) {
-				update_needed = 0;
-				curr_motion_callback(curr_selected, curr_mx - omx, curr_my - omy);
+				if (curr_mx < min_x || curr_my < min_y ||
+				    curr_mx > max_x || curr_my > max_y) {
+					if (curr_mx < min_x) curr_mx = min_x;
+					if (curr_my < min_y) curr_my = min_y;
+					if (curr_mx > max_x) curr_mx = max_x;
+					if (curr_my > max_y) curr_my = max_y;
+					set_pos(curr_mx, curr_my);
+				}
+
+				event.type  = EVENT_MOTION;
+				event.abs_x = curr_mx - min_x;
+				event.abs_y = curr_my - min_y;
+				event.rel_x = curr_mx - old_mx;
+				event.rel_y = curr_my - old_my;
+				curr_selected->gen->handle_event(curr_selected, &event, NULL);
 			}
-		}
-		break;
-
-	case USERSTATE_GRAB:
-
-		/* if mouse position changed -> deliver motion event */
-		if (old_mx != curr_mx || old_my != curr_my) {
-			s32 min_x = curr_selected->gen->get_abs_x(curr_selected);
-			s32 min_y = curr_selected->gen->get_abs_y(curr_selected);
-			s32 max_x = min_x + curr_selected->gen->get_w(curr_selected) - 1;
-			s32 max_y = min_y + curr_selected->gen->get_h(curr_selected) - 1;
-
-			if (curr_mx < min_x || curr_my < min_y ||
-			    curr_mx > max_x || curr_my > max_y) {
-				if (curr_mx < min_x) curr_mx = min_x;
-				if (curr_my < min_y) curr_my = min_y;
-				if (curr_mx > max_x) curr_mx = max_x;
-				if (curr_my > max_y) curr_my = max_y;
-				set_pos(curr_mx, curr_my);
+			if (curr_tick_callback) {
+				curr_tick_callback(curr_selected, curr_mx - omx, curr_my - omy);
 			}
-
-			event.type  = EVENT_MOTION;
-			event.abs_x = curr_mx - min_x;
-			event.abs_y = curr_my - min_y;
-			event.rel_x = curr_mx - old_mx;
-			event.rel_y = curr_my - old_my;
-			curr_selected->gen->handle_event(curr_selected, &event, NULL);
-		}
-		if (curr_tick_callback) {
-			curr_tick_callback(curr_selected, curr_mx - omx, curr_my - omy);
-		}
-		break;
+			break;
 	}
 	scrdrv->set_mouse_pos(curr_mx, curr_my);
 }

@@ -161,15 +161,15 @@ void mtk_input(mtk_event *e)
 			return;
 		}
 		switch(internal_event.type) {
-			case EVENT_TYPE_MOTION:
+			case EVENT_MOTION:
 				internal_event.code = 0;
 				internal_event.abs_x = e->motion.abs_x;
 				internal_event.abs_y = e->motion.abs_y;
 				internal_event.rel_x = e->motion.rel_x;
 				internal_event.rel_y = e->motion.rel_y;
 				break;
-			case EVENT_TYPE_PRESS:
-			case EVENT_TYPE_RELEASE:
+			case EVENT_PRESS:
+			case EVENT_RELEASE:
 				internal_event.code = e->press.code;
 				internal_event.abs_x = 0;
 				internal_event.abs_y = 0;
