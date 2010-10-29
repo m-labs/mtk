@@ -217,9 +217,9 @@ static int but_draw(BUTTON *b, struct gfx_ds *ds, long x, long y, WIDGET *origin
 static void but_untouch_callback(BUTTON *b, int dx, int dy)
 {
 	char *clack_msg, *commit_msg = NULL;
-	
+
 	if (!b->gen->get_state(b)) return;
-	
+
 	clack_msg = b->gen->get_bind_msg(b, "clack");
 	if (clack_msg) msg->send_action_event(b->gen->get_app_id(b), "clack", clack_msg);
 
@@ -363,7 +363,10 @@ static void but_set_text(BUTTON *b, char *new_txt)
 	if (b->bd->text) {
 		free(b->bd->text);
 	}
-	b->bd->text = strdup(new_txt);
+	if (new_txt != NULL)
+		b->bd->text = strdup(new_txt);
+	else
+		b->bd->text = NULL;
 
 	/*
 	 * If a button's size is completely free, a change
