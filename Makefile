@@ -2,7 +2,7 @@ help:
 	@echo "Available targets"
 	@echo "================="
 	@echo "                  Build DOpE for..."
-	@echo "milkymist       - ... Milkymist (using RTEMS). RTEMS_MAKEFILE_PATH environment variable must be set."
+	@echo "milkymist       - ... Milkymist SoC (using RTEMS). RTEMS_MAKEFILE_PATH environment variable must be set."
 	@echo ""
 	@echo "clean           - clean generated files"
 	@echo "distclean       - clean generated files and backup files"
