@@ -32,14 +32,14 @@ struct userstate_services {
 	                              void (*release)(WIDGET *, int dx, int dy));
 	void    (*grab)    (WIDGET *, void (*tick)   (WIDGET *, int dx, int dy));
 	long    (*get)               (void);
-	void    (*handle)            (EVENT *);
+	void    (*handle)            (EVENT *, int);
 	WIDGET *(*get_mfocus)        (void);
 	void    (*set_active_window) (WINDOW *, int force);
 	WIDGET *(*get_selected)      (void);
 	long    (*get_mx)            (void);
 	long    (*get_my)            (void);
 	long    (*get_mb)            (void);
-	void    (*set_pos)           (long x,long y);
+	void    (*set_pos)           (long x, long y);
 	long    (*get_keystate)      (long keycode);
 	char    (*get_ascii)         (long keycode);
 	void    (*set_max_mx)        (long max_mx);

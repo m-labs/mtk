@@ -332,38 +332,38 @@ static void update_mfocus(void)
 }
 
 
-static void handle(EVENT *e)
+static void handle(EVENT *e, int count)
 {
 	int old_mx, old_my, old_mb;
+	int i;
 	static int update_needed = 0;
 	EVENT event;
-
 	WIDGET *new_mfocus = NULL;
 
 	old_mx = curr_mx;
 	old_my = curr_my;
 	old_mb = curr_mb;
 
-	if(e != NULL) {
-		switch (e->type) {
+	for(i=0;i<count;i++) {
+		switch (e[i].type) {
 			case EVENT_MOTION:
-				set_pos(curr_mx + e->rel_x, curr_my + e->rel_y);
+				set_pos(curr_mx + e[i].rel_x, curr_my + e[i].rel_y);
 				break;
 
 			case EVENT_ABSMOTION:
-				set_pos(e->abs_x, e->abs_y);
+				set_pos(e[i].abs_x, e[i].abs_y);
 				break;
 
 			case EVENT_PRESS:
 				press_cnt++;
 
-				if (e->code == MTK_BTN_LEFT)  curr_mb = curr_mb | 0x01;
-				if (e->code == MTK_BTN_RIGHT) curr_mb = curr_mb | 0x02;
-				keytab[e->code] = 1;
-				if (get_ascii(e->code)
-				 || (e->code >= MTK_KEY_UP && e->code <= MTK_KEY_DELETE)) {
+				if (e[i].code == MTK_BTN_LEFT)  curr_mb = curr_mb | 0x01;
+				if (e[i].code == MTK_BTN_RIGHT) curr_mb = curr_mb | 0x02;
+				keytab[e[i].code] = 1;
+				if (get_ascii(e[i].code)
+				 || (e[i].code >= MTK_KEY_UP && e[i].code <= MTK_KEY_DELETE)) {
 					curr_keystate = USERSTATE_KEY_PRESS;
-					curr_keycode  = e->code;
+					curr_keycode  = e[i].code;
 					tick->add(key_repeat_delay, tick_handle_delay, (void *)curr_keycode);
 				} else {
 					curr_keystate = USERSTATE_KEY_IDLE;
@@ -372,15 +372,14 @@ static void handle(EVENT *e)
 				break;
 
 			case EVENT_RELEASE:
-
 				press_cnt--;
 
 				if ((curr_state == USERSTATE_DRAG) && curr_motion_callback)
 					curr_motion_callback(curr_selected, curr_mx - omx, curr_my - omy);
 
-				if (e->code == MTK_BTN_LEFT)  curr_mb = curr_mb & 0x00fe;
-				if (e->code == MTK_BTN_RIGHT) curr_mb = curr_mb & 0x00fd;
-				keytab[e->code] = 0;
+				if (e[i].code == MTK_BTN_LEFT)  curr_mb = curr_mb & 0x00fe;
+				if (e[i].code == MTK_BTN_RIGHT) curr_mb = curr_mb & 0x00fd;
+				keytab[e[i].code] = 0;
 				curr_keystate = USERSTATE_KEY_IDLE;
 				curr_keycode  = 0;
 				break;
@@ -388,12 +387,11 @@ static void handle(EVENT *e)
 
 		update_mfocus();
 
-		if ((e->type == EVENT_PRESS) || (e->type == EVENT_RELEASE)) {
-
+		if ((e[i].type == EVENT_PRESS) || (e[i].type == EVENT_RELEASE)) {
 			WIDGET *win_kfocus = NULL;
 
 			/* make clicked window the active one */
-			if (curr_mfocus && key_sets_focus(e->code)) {
+			if (curr_mfocus && key_sets_focus(e[i].code)) {
 				WINDOW *w = (WINDOW *)curr_mfocus->gen->get_window(curr_mfocus);
 
 				/* ignore clicks on the desktop (last window of window stack) */
@@ -405,19 +403,18 @@ static void handle(EVENT *e)
 				win_kfocus = curr_window->win->get_kfocus(curr_window);
 
 				/* redefine keyboard focus */
-				if (curr_mfocus && key_sets_focus(e->code) && curr_mfocus != win_kfocus)
+				if (curr_mfocus && key_sets_focus(e[i].code) && curr_mfocus != win_kfocus)
 					curr_mfocus->gen->focus(curr_mfocus);
 
 				/* request new keyboard focus - just in case it denied the focus */
 				win_kfocus = curr_window->win->get_kfocus(curr_window);
 			}
 
-			if ((e->type == EVENT_PRESS) && (press_cnt == 1)) {
-
+			if ((e[i].type == EVENT_PRESS) && (press_cnt == 1)) {
 				WIDGET *old_receiver = curr_receiver;
 
 				/* send keyboard event to actually focused widget if set */
-				if (win_kfocus && !key_sets_focus(e->code)) {
+				if (win_kfocus && !key_sets_focus(e[i].code)) {
 					if (win_kfocus) win_kfocus->gen->inc_ref(win_kfocus);
 					curr_receiver = win_kfocus;
 				} else {
@@ -430,7 +427,7 @@ static void handle(EVENT *e)
 			}
 
 			if (curr_receiver)
-				curr_receiver->gen->handle_event(curr_receiver, e, NULL);
+				curr_receiver->gen->handle_event(curr_receiver, &e[i], NULL);
 		}
 	}
 

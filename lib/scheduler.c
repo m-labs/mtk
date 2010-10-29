@@ -148,37 +148,36 @@ static long convert_type(long t)
 	}
 }
 
-void mtk_input(mtk_event *e)
+void mtk_input(mtk_event *e, int count)
 {
-	if(e == NULL)
-		userstate->handle(NULL);
-	else {
-		EVENT internal_event;
+	EVENT internal_event[MAX_EVENTS];
+	int i;
 
-		internal_event.type = convert_type(e->type);
-		if(internal_event.type == -1) {
-			userstate->handle(NULL);
+	for(i=0;i<count;i++) {
+		internal_event[i].type = convert_type(e[i].type);
+		if(internal_event[i].type == -1) {
+			printf("Unexpected event type!\n");
 			return;
 		}
-		switch(internal_event.type) {
+		switch(internal_event[i].type) {
 			case EVENT_MOTION:
-				internal_event.code = 0;
-				internal_event.abs_x = e->motion.abs_x;
-				internal_event.abs_y = e->motion.abs_y;
-				internal_event.rel_x = e->motion.rel_x;
-				internal_event.rel_y = e->motion.rel_y;
+				internal_event[i].code = 0;
+				internal_event[i].abs_x = e[i].motion.abs_x;
+				internal_event[i].abs_y = e[i].motion.abs_y;
+				internal_event[i].rel_x = e[i].motion.rel_x;
+				internal_event[i].rel_y = e[i].motion.rel_y;
 				break;
 			case EVENT_PRESS:
 			case EVENT_RELEASE:
-				internal_event.code = e->press.code;
-				internal_event.abs_x = 0;
-				internal_event.abs_y = 0;
-				internal_event.rel_x = 0;
-				internal_event.rel_y = 0;
+				internal_event[i].code = e[i].press.code;
+				internal_event[i].abs_x = 0;
+				internal_event[i].abs_y = 0;
+				internal_event[i].rel_x = 0;
+				internal_event[i].rel_y = 0;
 				break;
 		}
-		userstate->handle(&internal_event);
 	}
+	userstate->handle(internal_event, count);
 	redraw->process_pixels(config_redraw_granularity);
 }
 

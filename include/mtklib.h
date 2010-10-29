@@ -54,6 +54,7 @@ typedef union mtklib_event_union {
 	keyrepeat_event keyrepeat;
 } mtk_event;
 
+#define MAX_EVENTS 48
 
 /**
  * Initialise mtk library
@@ -67,7 +68,7 @@ extern int mtk_init(void *fb, int width, int height);
  * \param appname  name of the MTK application
  * \return         MTK application id
  */
-extern long  mtk_init_app(const char *appname);
+extern long mtk_init_app(const char *appname);
 
 
 /**
@@ -76,7 +77,7 @@ extern long  mtk_init_app(const char *appname);
  * \param app_id  MTK application to unregister
  * \return        0 on success
  */
-extern long  mtk_deinit_app(long app_id);
+extern long mtk_deinit_app(long app_id);
 
 
 /**
@@ -163,7 +164,7 @@ extern void mtk_bindf(long id, const char *varfmt, const char *event_type,
                        void (*callback)(mtk_event *,void *), void *arg,...);
 
 
-extern void mtk_input(mtk_event *e);
+extern void mtk_input(mtk_event *e, int count);
 
 /**
  * Request key or button state
