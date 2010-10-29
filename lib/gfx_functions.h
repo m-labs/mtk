@@ -20,12 +20,12 @@
  * Genode Labs, Feske & Helmuth Systementwicklung GbR
  * Copyright (C) 2010 Sebastien Bourdeauducq <sebastien.bourdeauducq@lekernel.net>
  *
- * This file is part of the DOpE-embedded package, which is distributed
+ * This file is part of the MTK package, which is distributed
  * under the terms of the GNU General Public License version 2.
  */
 
-#ifndef _DOPE_GFX_FUNCTIONS_H_
-#define _DOPE_GFX_FUNCTIONS_H_
+#ifndef _MTK_GFX_FUNCTIONS_H_
+#define _MTK_GFX_FUNCTIONS_H_
 
 /**
  * Variables to be initialized before using the gfx functions
@@ -588,4 +588,4 @@ static int register_gfx_handler(struct gfx_ds_handler *handler)
 	return 0;
 }
 
-#endif /* _DOPE_GFX_FUNCTIONS_H_ */
+#endif /* _MTK_GFX_FUNCTIONS_H_ */

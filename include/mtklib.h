@@ -1,17 +1,17 @@
 /*
- * \brief   Interface of DOpE client library
+ * \brief   Interface of MTK client library
  */
 
 /*
  * Copyright (C) 2002-2008 Norman Feske <norman.feske@genode-labs.com>
  * Genode Labs, Feske & Helmuth Systementwicklung GbR
  *
- * This file is part of the DOpE-embedded package, which is distributed
+ * This file is part of the MTK package, which is distributed
  * under the terms of the GNU General Public License version 2.
  */
 
-#ifndef __DOPE_INCLUDE_DOPELIB_H_
-#define __DOPE_INCLUDE_DOPELIB_H_
+#ifndef __MTK_INCLUDE_MTKLIB_H_
+#define __MTK_INCLUDE_MTKLIB_H_
 
 #define EVENT_TYPE_UNDEFINED    0
 #define EVENT_TYPE_COMMAND      1
@@ -46,177 +46,177 @@ typedef struct keyrepeat_event {
 	long code;                      /* code of key/button that is pressed */
 } keyrepeat_event;
 
-typedef union dopelib_event_union {
+typedef union mtklib_event_union {
 	long type;
 	command_event   command;
 	motion_event    motion;
 	press_event     press;
 	release_event   release;
 	keyrepeat_event keyrepeat;
-} dope_event;
+} mtk_event;
 
 
 /**
- * Initialise dope library
+ * Initialise mtk library
  */
-extern long  dope_init(void);
+extern long  mtk_init(void);
 
 
 /**
- * Deinitialise dope library
+ * Deinitialise mtk library
  */
-extern void  dope_deinit(void);
+extern void  mtk_deinit(void);
 
 
 /**
- * Register dope client application
+ * Register mtk client application
  *
- * \param appname  name of the DOpE application
- * \return         DOpE application id
+ * \param appname  name of the MTK application
+ * \return         MTK application id
  */
-extern long  dope_init_app(const char *appname);
+extern long  mtk_init_app(const char *appname);
 
 
 /**
- * Unregister dope client application
+ * Unregister mtk client application
  *
- * \param app_id  DOpE application to unregister
+ * \param app_id  MTK application to unregister
  * \return        0 on success
  */
-extern long  dope_deinit_app(long app_id);
+extern long  mtk_deinit_app(long app_id);
 
 
 /**
- * Execute dope command
+ * Execute mtk command
  *
- * \param app_id  DOpE application id
+ * \param app_id  MTK application id
  * \param cmd     command to execute
  * \return        0 on success
  */
-extern int dope_cmd(long app_id, const char *cmd);
+extern int mtk_cmd(long app_id, const char *cmd);
 
 
 /**
- * Execute dope format string command
+ * Execute mtk format string command
  *
- * \param app_id  DOpE application id
+ * \param app_id  MTK application id
  * \param cmdf    command to execute specified as format string
  * \return        0 on success
  */
-extern int dope_cmdf(long app_id, const char *cmdf, ...);
+extern int mtk_cmdf(long app_id, const char *cmdf, ...);
 
 
 /**
- * Execute sequence of DOpE commands
+ * Execute sequence of MTK commands
  *
- * \param app_id  DOpE application id
+ * \param app_id  MTK application id
  * \param ...     command sequence
  * \return        0 on success
  *
  * The sequence is a series of NULL-terminated strings. Its end must be
  * marked by a NULL pointer.
  */
-extern int dope_cmd_seq(int app_id, ...);
+extern int mtk_cmd_seq(int app_id, ...);
 
 
 /**
- * Execute dope command and request result
+ * Execute mtk command and request result
  *
- * \param app_id    DOpE application id
+ * \param app_id    MTK application id
  * \param dst       destination buffer for storing the result string
  * \param dst_size  size of destination buffer in bytes
  * \param cmd       command to execute
  * \return          0 on success
  */
-extern int dope_req(long app_id, char *dst, int dst_size, const char *cmd);
+extern int mtk_req(long app_id, char *dst, int dst_size, const char *cmd);
 
 
 /**
- * Request result of a dope command specified as format string
+ * Request result of a mtk command specified as format string
  *
- * \param app_id    DOpE application id
+ * \param app_id    MTK application id
  * \param dst       destination buffer for storing the result string
  * \param dst_size  size of destination buffer in bytes
  * \param cmd       command to execute - specified as format string
  * \return          0 on success
  */
-extern int dope_reqf(long app_id, char *dst, int dst_size, const char *cmdf, ...);
+extern int mtk_reqf(long app_id, char *dst, int dst_size, const char *cmdf, ...);
 
 
 /**
- * Bind an event to a dope widget
+ * Bind an event to a mtk widget
  *
- * \param app_id      DOpE application id
+ * \param app_id      MTK application id
  * \param var         widget to bind an event to
  * \param event_type  identifier for the event type
  * \param callback    callback function to be called for incoming events
  * \param arg         additional argument for the callback function
  */
-extern void dope_bind(long app_id,const char *var, const char *event_type,
-                      void (*callback)(dope_event *,void *),void *arg);
+extern void mtk_bind(long app_id,const char *var, const char *event_type,
+                      void (*callback)(mtk_event *,void *),void *arg);
 
 
 /**
- * Bind an event to a dope widget specified as format string
+ * Bind an event to a mtk widget specified as format string
  *
- * \param app_id      DOpE application id
+ * \param app_id      MTK application id
  * \param varfmt      widget to bind an event to (format string)
  * \param event_type  identifier for the event type
  * \param callback    callback function to be called for incoming events
  * \param arg         additional argument for the callback function
  * \param ...         format string arguments
  */
-extern void dope_bindf(long id, const char *varfmt, const char *event_type,
-                       void (*callback)(dope_event *,void *), void *arg,...);
+extern void mtk_bindf(long id, const char *varfmt, const char *event_type,
+                       void (*callback)(mtk_event *,void *), void *arg,...);
 
 
 /**
- * Enter dope eventloop
+ * Enter mtk eventloop
  *
- * \param app_id  DOpE application id
+ * \param app_id  MTK application id
  */
-extern void dope_eventloop(long app_id);
+extern void mtk_eventloop(long app_id);
 
 
 /**
  * Return number of pending events
  *
- * \param app_id  DOpE application id
+ * \param app_id  MTK application id
  * \return        number of pending events
  */
-int dope_events_pending(int app_id);
+int mtk_events_pending(int app_id);
 
 
 /**
- * Process one single dope event
+ * Process one single mtk event
  *
- * This function processes exactly one DOpE event. If no event is pending, it
+ * This function processes exactly one MTK event. If no event is pending, it
  * blocks until an event is available. Thus, for non-blocking operation, this
- * function should be called only if dope_events_pending was consulted before.
+ * function should be called only if mtk_events_pending was consulted before.
  *
- * \param app_id  DOpE application id
+ * \param app_id  MTK application id
  */
-extern void dope_process_event(long app_id);
+extern void mtk_process_event(long app_id);
 
 
 /**
  * Request key or button state
  *
- * \param app_id   DOpE application id
+ * \param app_id   MTK application id
  * \param keycode  keycode of the requested key
  * \return         1 if key is currently pressed
  */
-extern long dope_get_keystate(long app_id, long keycode);
+extern long mtk_get_keystate(long app_id, long keycode);
 
 
 /**
  * Request current ascii keyboard state
  *
- * \param app_id   DOpE application id
+ * \param app_id   MTK application id
  * \param keycode  keycode of the requested key
  * \return         ASCII value of the currently pressed key combination
  */
-extern char dope_get_ascii(long app_id, long keycode);
+extern char mtk_get_ascii(long app_id, long keycode);
 
 
-#endif /* __DOPE_INCLUDE_DOPELIB_H_ */
+#endif /* __MTK_INCLUDE_MTKLIB_H_ */

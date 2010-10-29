@@ -1,17 +1,17 @@
 /*
- * \brief   Interface of DOpE application manager module
+ * \brief   Interface of MTK application manager module
  */
 
 /*
  * Copyright (C) 2002-2008 Norman Feske <norman.feske@genode-labs.com>
  * Genode Labs, Feske & Helmuth Systementwicklung GbR
  *
- * This file is part of the DOpE-embedded package, which is distributed
+ * This file is part of the MTK package, which is distributed
  * under the terms of the GNU General Public License version 2.
  */
 
-#ifndef _DOPE_APPMAN_H_
-#define _DOPE_APPMAN_H_
+#ifndef _MTK_APPMAN_H_
+#define _MTK_APPMAN_H_
 
 #include "hashtab.h"
 #include "scope.h"
@@ -26,4 +26,4 @@ struct appman_services {
 };
 
 
-#endif /* _DOPE_APPMAN_H_ */
+#endif /* _MTK_APPMAN_H_ */

@@ -1,5 +1,5 @@
 /*
- * \brief   DOpE dummy timer module
+ * \brief   MTK dummy timer module
  * \date    2004-05-19
  * \author  Norman Feske <norman.feske@genode-labs.com>
  */
@@ -8,17 +8,17 @@
  * Copyright (C) 2004-2008 Norman Feske <norman.feske@genode-labs.com>
  * Genode Labs, Feske & Helmuth Systementwicklung GbR
  *
- * This file is part of the DOpE-embedded package, which is distributed
+ * This file is part of the MTK-embedded package, which is distributed
  * under the terms of the GNU General Public License version 2.
  */
 
 #include <rtems.h>
 #include <unistd.h>
 
-#include "dopestd.h"
+#include "mtkstd.h"
 #include "timer.h"
 
-int init_timer(struct dope_services *d);
+int init_timer(struct mtk_services *d);
 
 
 /***********************
@@ -74,7 +74,7 @@ static struct timer_services services = {
  ** Module entry point **
  ************************/
 
-int init_timer(struct dope_services *d)
+int init_timer(struct mtk_services *d)
 {
 	d->register_module("Timer 1.0", &services);
 	return 1;

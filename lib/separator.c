@@ -1,5 +1,5 @@
 /*
- * \brief   DOpE Separator widget module
+ * \brief   MTK Separator widget module
  */
 
 /*
@@ -7,14 +7,15 @@
  * Genode Labs, Feske & Helmuth Systementwicklung GbR
  * Copyright (C) 2010 Sebastien Bourdeauducq <sebastien.bourdeauducq@lekernel.net>
  *
- * This file is part of the DOpE-embedded package, which is distributed
+ * This file is part of the MTK package, which is distributed
  * under the terms of the GNU General Public License version 2.
  */
 
 struct separator;
 #define WIDGET struct separator
 
-#include "dopestd.h"
+#include <stdio.h>
+#include "mtkstd.h"
 #include "gfx.h"
 #include "widget_data.h"
 #include "widget_help.h"
@@ -33,7 +34,7 @@ struct separator_data {
 	s32       vertical;
 };
 
-int init_separator(struct dope_services *d);
+int init_separator(struct mtk_services *d);
 
 
 static const color_t BLACK_SOLID = GFX_RGBA(0, 0, 0, 255);
@@ -182,7 +183,7 @@ static void build_script_lang(void)
 }
 
 
-int init_separator(struct dope_services *d)
+int init_separator(struct mtk_services *d)
 {
 	widman  = d->get_module("WidgetManager 1.0");
 	gfx     = d->get_module("Gfx 1.0");

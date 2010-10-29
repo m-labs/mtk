@@ -1,19 +1,22 @@
 /*
- * \brief   DOpE List widget module
+ * \brief   MTK List widget module
  */
 
 /*
  * Copyright (C) 2002-2008 Norman Feske <norman.feske@genode-labs.com>
  * Genode Labs, Feske & Helmuth Systementwicklung GbR
  *
- * This file is part of the DOpE-embedded package, which is distributed
+ * This file is part of the MTK package, which is distributed
  * under the terms of the GNU General Public License version 2.
  */
 
 struct list;
 #define WIDGET struct list
 
-#include "dopestd.h"
+#include <stdlib.h>
+#include <stdio.h>
+#include <string.h>
+#include "mtkstd.h"
 #include "gfx.h"
 #include "widget_data.h"
 #include "widget_help.h"
@@ -41,7 +44,7 @@ struct list_data {
 	VARIABLE *var;
 };
 
-int init_list(struct dope_services *d);
+int init_list(struct mtk_services *d);
 
 #define BLACK_SOLID GFX_RGBA(0, 0, 0, 255)
 #define BLACK_MIXED GFX_RGBA(0, 0, 0, 127)
@@ -158,7 +161,7 @@ static void lst_handle_event(LIST *l, EVENT *ev, WIDGET *from)
 	case EVENT_PRESS:
 	case EVENT_KEY_REPEAT:
 		switch (ev->code) {
-			case DOPE_BTN_MOUSE:
+			case MTK_BTN_MOUSE:
 				ypos -= 2 + 2;
 				s = ypos/l->ld->ch;
 				if(s < 0) s = 0;
@@ -171,32 +174,32 @@ static void lst_handle_event(LIST *l, EVENT *ev, WIDGET *from)
 				}
 				break;
 
-			case DOPE_KEY_ENTER:
+			case MTK_KEY_ENTER:
 				ev_done = 2;
 				break;
 
-			case DOPE_KEY_UP:
+			case MTK_KEY_UP:
 				if(l->ld->sel > 0)
 					l->ld->sel--;
 				ev_done = 1;
 				break;
-			case DOPE_KEY_DOWN:
+			case MTK_KEY_DOWN:
 				if(l->ld->sel < (l->ld->nsel-1))
 					l->ld->sel++;
 				ev_done = 1;
 				break;
 
-			case DOPE_KEY_HOME:
+			case MTK_KEY_HOME:
 				l->ld->sel = 0;
 				ev_done = 1;
 				break;
-			case DOPE_KEY_END: {
+			case MTK_KEY_END: {
 				l->ld->sel = l->ld->nsel-1;
 				ev_done = 1;
 				break;
 			}
 
-			case DOPE_KEY_TAB:
+			case MTK_KEY_TAB:
 				orig_handle_event(l, ev, from);
 				return;
 		}
@@ -270,7 +273,7 @@ static void lst_set_text(LIST *l, char *new_txt)
 {
 	if ((!l) || (!l->ld)) return;
 	if (l->ld->text) free(l->ld->text);
-	l->ld->text = dope_strdup(new_txt);
+	l->ld->text = strdup(new_txt);
 	l->wd->update |= WID_UPDATE_MINMAX;
 }
 
@@ -289,11 +292,11 @@ static char *lst_get_text(LIST *l)
  */
 static void lst_set_font(LIST *l, char *fontname)
 {
-	if (dope_streq(fontname, "default", 255)) {
+	if (mtk_streq(fontname, "default", 255)) {
 		l->ld->font_id = 0;
-	} else if (dope_streq(fontname, "monospaced", 255)) {
+	} else if (mtk_streq(fontname, "monospaced", 255)) {
 		l->ld->font_id = 1;
-	} else if (dope_streq(fontname, "title", 255)) {
+	} else if (mtk_streq(fontname, "title", 255)) {
 		l->ld->font_id = 2;
 	}
 	l->wd->update |= WID_UPDATE_MINMAX;
@@ -345,7 +348,7 @@ static LIST *create(void)
 	SET_WIDGET_DEFAULTS(new, struct list, &lst_methods);
 
 	/* set list specific attributes */
-	new->ld->text = dope_strdup("");
+	new->ld->text = strdup("");
 	new->ld->nsel = 0;
 	new->wd->flags |= WID_FLAGS_EDITABLE | WID_FLAGS_TAKEFOCUS;
 	update_pos(new);
@@ -381,7 +384,7 @@ static void build_script_lang(void)
 }
 
 
-int init_list(struct dope_services *d)
+int init_list(struct mtk_services *d)
 {
 	widman    = d->get_module("WidgetManager 1.0");
 	gfx       = d->get_module("Gfx 1.0");

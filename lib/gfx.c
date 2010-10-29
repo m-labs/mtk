@@ -1,5 +1,5 @@
 /*
- * \brief  DOpE gfx module
+ * \brief  MTK gfx module
  *
  * This module contains the implementation of the
  * graphics hardware abstraction interface. It
@@ -12,11 +12,12 @@
  * Copyright (C) 2003-2008 Norman Feske <norman.feske@genode-labs.com>
  * Genode Labs, Feske & Helmuth Systementwicklung GbR
  *
- * This file is part of the DOpE-embedded package, which is distributed
+ * This file is part of the MTK package, which is distributed
  * under the terms of the GNU General Public License version 2.
  */
 
-#include "dopestd.h"
+#include <stdlib.h>
+#include "mtkstd.h"
 #include "gfx_handler.h"
 #include "gfx.h"
 
@@ -28,7 +29,7 @@ static struct gfx_ds_handler gfxscr_rgb16_handler;
 static struct gfx_ds_handler gfximg_rgb16_handler;
 static struct gfx_ds_handler gfximg_rgba32_handler;
 
-int init_gfx(struct dope_services *d);
+int init_gfx(struct mtk_services *d);
 
 
 /***********************
@@ -288,7 +289,7 @@ static struct gfx_services services = {
  ** Module entry point **
  ************************/
 
-int init_gfx(struct dope_services *d)
+int init_gfx(struct mtk_services *d)
 {
 	gfxscr_rgb16  = d->get_module("GfxScreen16 1.0");
 	gfximg_rgb16  = d->get_module("GfxImage16 1.0");

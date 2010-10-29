@@ -1,19 +1,22 @@
 /*
- * \brief   DOpE Variable widget module
+ * \brief   MTK Variable widget module
  */
 
 /*
  * Copyright (C) 2002-2008 Norman Feske <norman.feske@genode-labs.com>
  * Genode Labs, Feske & Helmuth Systementwicklung GbR
  *
- * This file is part of the DOpE-embedded package, which is distributed
+ * This file is part of the MTK package, which is distributed
  * under the terms of the GNU General Public License version 2.
  */
 
 struct variable;
 #define WIDGET struct variable
 
-#include "dopestd.h"
+#include <stdlib.h>
+#include <stdio.h>
+#include <string.h>
+#include "mtkstd.h"
 #include "gfx.h"
 #include "widget_data.h"
 #include "widget_help.h"
@@ -47,7 +50,7 @@ struct variable_data {
 	struct variable_connection *connections;
 };
 
-int init_variable(struct dope_services *d);
+int init_variable(struct mtk_services *d);
 
 #define BLACK_SOLID GFX_RGBA(0, 0, 0, 255)
 
@@ -125,7 +128,7 @@ static void var_set_value(VARIABLE *v, char *new_txt)
 	struct variable_connection *cc;
 
 	if (v->vd->text) free(v->vd->text);
-	v->vd->text = dope_strdup(new_txt);
+	v->vd->text = strdup(new_txt);
 
 	/* notify all connected widgets */
 	cc = v->vd->connections;
@@ -213,7 +216,7 @@ static void build_script_lang(void)
 }
 
 
-int init_variable(struct dope_services *d)
+int init_variable(struct mtk_services *d)
 {
 	widman  = d->get_module("WidgetManager 1.0");
 	gfx     = d->get_module("Gfx 1.0");

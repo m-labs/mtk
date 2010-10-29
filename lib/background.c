@@ -1,19 +1,20 @@
 /*
- * \brief   DOpE Background widget module
+ * \brief   MTK Background widget module
  */
 
 /*
  * Copyright (C) 2002-2008 Norman Feske <norman.feske@genode-labs.com>
  * Genode Labs, Feske & Helmuth Systementwicklung GbR
  *
- * This file is part of the DOpE-embedded package, which is distributed
+ * This file is part of the MTK package, which is distributed
  * under the terms of the GNU General Public License version 2.
  */
 
 struct background;
 #define WIDGET struct background
 
-#include "dopestd.h"
+#include <stdio.h>
+#include "mtkstd.h"
 #include "background.h"
 #include "gfx.h"
 #include "widget_data.h"
@@ -33,7 +34,7 @@ struct background_data {
 	WIDGET *content;
 };
 
-int init_background(struct dope_services *d);
+int init_background(struct mtk_services *d);
 
 
 unsigned long config_bg_win_color = 0x8a8a85ff + 0x32322800;
@@ -257,7 +258,7 @@ static void build_script_lang(void)
 }
 
 
-int init_background(struct dope_services *d)
+int init_background(struct mtk_services *d)
 {
 	gfx       = d->get_module("Gfx 1.0");
 	widman    = d->get_module("WidgetManager 1.0");

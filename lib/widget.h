@@ -1,17 +1,17 @@
 /*
- * \brief   General DOpE widget structures
+ * \brief   General MTK widget structures
  */
 
 /*
  * Copyright (C) 2002-2008 Norman Feske <norman.feske@genode-labs.com>
  * Genode Labs, Feske & Helmuth Systementwicklung GbR
  *
- * This file is part of the DOpE-embedded package, which is distributed
+ * This file is part of the MTK package, which is distributed
  * under the terms of the GNU General Public License version 2.
  */
 
-#ifndef _DOPE_WIDGET_H_
-#define _DOPE_WIDGET_H_
+#ifndef _MTK_WIDGET_H_
+#define _MTK_WIDGET_H_
 
 #include "event.h"
 
@@ -188,7 +188,7 @@ struct widget_methods {
 	 * This function is called after a set of widget attributes changed to
 	 * update the internal state of the widget dependent on the new attribute
 	 * settings and to force a redraw of the widget on screen. Usually this is
-	 * the case when finishing a 'set' DOpE command.
+	 * the case when finishing a 'set' MTK command.
 	 *
 	 * This function should only be implemented by widgets that need to
 	 * react on attribute changes specifically to update their internal
@@ -367,4 +367,4 @@ struct widget_methods {
 	int (*related_to) (WIDGETARG *, WIDGETARG *);
 };
 
-#endif /* _DOPE_WIDGET_H_ */
+#endif /* _MTK_WIDGET_H_ */

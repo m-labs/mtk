@@ -1,5 +1,5 @@
 /*
- * \brief   DOpE Scrollbar widget module
+ * \brief   MTK Scrollbar widget module
  *
  * This widget type handles scrollbars. It uses
  * Buttons as child widgets.
@@ -9,14 +9,15 @@
  * Copyright (C) 2002-2008 Norman Feske <norman.feske@genode-labs.com>
  * Genode Labs, Feske & Helmuth Systementwicklung GbR
  *
- * This file is part of the DOpE-embedded package, which is distributed
+ * This file is part of the MTK package, which is distributed
  * under the terms of the GNU General Public License version 2.
  */
 
 struct scrollbar;
 #define WIDGET struct scrollbar
 
-#include "dopestd.h"
+#include <stdio.h>
+#include "mtkstd.h"
 #include "button.h"
 #include "widget_data.h"
 #include "widget_help.h"
@@ -54,7 +55,7 @@ struct scrollbar_data {
 };
 
 
-int init_scrollbar(struct dope_services *d);
+int init_scrollbar(struct mtk_services *d);
 
 
 /*******************************
@@ -573,7 +574,7 @@ static void build_script_lang(void)
  ** Module entry point **
  ************************/
 
-int init_scrollbar(struct dope_services *d)
+int init_scrollbar(struct mtk_services *d)
 {
 	but       = d->get_module("Button 1.0");
 	msg       = d->get_module("Messenger 1.0");

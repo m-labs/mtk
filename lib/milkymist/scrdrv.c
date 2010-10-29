@@ -3,7 +3,7 @@
  * Genode Labs, Feske & Helmuth Systementwicklung GbR
  * Copyright (C) 2010 Sebastien Bourdeauducq
  *
- * This file is part of the DOpE-embedded package, which is distributed
+ * This file is part of the MTK-embedded package, which is distributed
  * under the terms of the GNU General Public License version 2.
  */
 
@@ -22,7 +22,7 @@
 /**
  * Local includes
  */
-#include "dopestd.h"
+#include "mtkstd.h"
 #include "scrdrv.h"
 #include "clipping.h"
 
@@ -30,11 +30,11 @@ static long scr_width, scr_height, scr_depth;
 static long curr_mx = 100,curr_my = 100;
 static struct clipping_services *clip;
 
-int dope_rtems_framebuffer_fd;
+int mtk_rtems_framebuffer_fd;
 static short *scr;
 static short buf[1024*768] __attribute__((aligned(32)));
 
-int init_scrdrv(struct dope_services *d);
+int init_scrdrv(struct mtk_services *d);
 
 
 static void draw_cursor(short *data,long x,long y)
@@ -119,9 +119,9 @@ static long set_screen(long width, long height, long depth)
 	scr_height = 480;
 	scr_depth  = 16;
 
-	dope_rtems_framebuffer_fd = open("/dev/fb", O_RDWR);
-	assert(dope_rtems_framebuffer_fd != -1);
-	ioctl(dope_rtems_framebuffer_fd, FBIOGET_FSCREENINFO, &fb_fix);
+	mtk_rtems_framebuffer_fd = open("/dev/fb", O_RDWR);
+	assert(mtk_rtems_framebuffer_fd != -1);
+	ioctl(mtk_rtems_framebuffer_fd, FBIOGET_FSCREENINFO, &fb_fix);
 	scr = (short int *)fb_fix.smem_start;
 
 	for(i=0;i<640*480;i++) {
@@ -138,7 +138,7 @@ static long set_screen(long width, long height, long depth)
  */
 static void restore_screen(void)
 {
-	close(dope_rtems_framebuffer_fd);
+	close(mtk_rtems_framebuffer_fd);
 }
 
 
@@ -255,7 +255,7 @@ static struct scrdrv_services services = {
  ** Module entry point **
  ************************/
 
-int init_scrdrv(struct dope_services *d)
+int init_scrdrv(struct mtk_services *d)
 {
 	/* define frame buffer address */
 

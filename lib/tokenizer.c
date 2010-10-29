@@ -1,7 +1,7 @@
 /*
- * \brief   DOpE tokenizer module
+ * \brief   MTK tokenizer module
  *
- * This module splits a given DOpE command string
+ * This module splits a given MTK command string
  * into its tokens. It returns a table of offsets
  * and lengths of the tokens.
  */
@@ -10,14 +10,14 @@
  * Copyright (C) 2002-2008 Norman Feske <norman.feske@genode-labs.com>
  * Genode Labs, Feske & Helmuth Systementwicklung GbR
  *
- * This file is part of the DOpE-embedded package, which is distributed
+ * This file is part of the MTK package, which is distributed
  * under the terms of the GNU General Public License version 2.
  */
 
-#include "dopestd.h"
+#include "mtkstd.h"
 #include "tokenizer.h"
 
-int init_tokenizer(struct dope_services *d);
+int init_tokenizer(struct mtk_services *d);
 
 /********************************
  ** Functions for internal use **
@@ -177,7 +177,7 @@ static struct tokenizer_services services = {
  ** Module entry point **
  ************************/
 
-int init_tokenizer(struct dope_services *d)
+int init_tokenizer(struct mtk_services *d)
 {
 	d->register_module("Tokenizer 1.0",&services);
 	return 1;

@@ -1,17 +1,17 @@
 /*
- * \brief   Interface of the real-time scheduler of DOpE
+ * \brief   Interface of the real-time scheduler of MTK
  */
 
 /*
  * Copyright (C) 2004-2008 Norman Feske <norman.feske@genode-labs.com>
  * Genode Labs, Feske & Helmuth Systementwicklung GbR
  *
- * This file is part of the DOpE-embedded package, which is distributed
+ * This file is part of the MTK package, which is distributed
  * under the terms of the GNU General Public License version 2.
  */
 
-#ifndef _DOPE_SCHEDULER_H_
-#define _DOPE_SCHEDULER_H_
+#ifndef _MTK_SCHEDULER_H_
+#define _MTK_SCHEDULER_H_
 
 #include "widget.h"
 
@@ -39,7 +39,7 @@ struct scheduler_services {
 	void (*release_app) (int app_id);
 
 	/**
-	 * Mainloop of dope
+	 * Mainloop of mtk
 	 *
 	 * Within the mainloop we must update real-time widgets,
 	 * handle non-realtime redraw operations and pay some
@@ -49,4 +49,4 @@ struct scheduler_services {
 };
 
 
-#endif /* _DOPE_SCHEDULER_H_ */
+#endif /* _MTK_SCHEDULER_H_ */

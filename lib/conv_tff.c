@@ -3,18 +3,18 @@
  *
  * This module converts tff data to a generic font
  * structure that can be  used by other components
- * of DOpE such as the font manager module.
+ * of MTK such as the font manager module.
  */
 
 /*
  * Copyright (C) 2002-2009 Norman Feske <norman.feske@genode-labs.com>
  * Genode Labs, Feske & Helmuth Systementwicklung GbR
  *
- * This file is part of the DOpE-embedded package, which is distributed
+ * This file is part of the MTK package, which is distributed
  * under the terms of the GNU General Public License version 2.
  */
 
-#include "dopestd.h"
+#include "mtkstd.h"
 #include "fontconv.h"
 
 /**
@@ -27,7 +27,7 @@ struct tff_file_hdr {
 	u32   img_h;       /* height of font image */
 };
 
-int init_conv_tff(struct dope_services *d);
+int init_conv_tff(struct mtk_services *d);
 
 
 /********************************
@@ -179,7 +179,7 @@ static struct fontconv_services services = {
  ** Module entry point **
  ************************/
 
-int init_conv_tff(struct dope_services *d)
+int init_conv_tff(struct mtk_services *d)
 {
 	d->register_module("ConvertTFF 1.0", &services);
 	return 1;

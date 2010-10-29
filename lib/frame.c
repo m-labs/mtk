@@ -1,19 +1,20 @@
 /*
- * \brief  DOpE Frame widget module
+ * \brief  MTK Frame widget module
  */
 
 /*
  * Copyright (C) 2002-2008 Norman Feske <norman.feske@genode-labs.com>
  * Genode Labs, Feske & Helmuth Systementwicklung GbR
  *
- * This file is part of the DOpE-embedded package, which is distributed
+ * This file is part of the MTK package, which is distributed
  * under the terms of the GNU General Public License version 2.
  */
 
 struct frame;
 #define WIDGET struct frame
 
-#include "dopestd.h"
+#include <stdio.h>
+#include "mtkstd.h"
 #include "frame.h"
 #include "script.h"
 #include "widget_data.h"
@@ -51,7 +52,7 @@ struct frame_data {
 	BACKGROUND *corner;    /* corner between scrollbars  */
 };
 
-int init_frame(struct dope_services *d);
+int init_frame(struct mtk_services *d);
 
 static struct widget_methods gen_methods;
 
@@ -618,7 +619,7 @@ static void build_script_lang(void)
 }
 
 
-int init_frame(struct dope_services *d)
+int init_frame(struct mtk_services *d)
 {
 	widman  = d->get_module("WidgetManager 1.0");
 	scroll  = d->get_module("Scrollbar 1.0");

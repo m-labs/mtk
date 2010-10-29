@@ -1,5 +1,5 @@
 /*
- * \brief   DOpE redraw manager module
+ * \brief   MTK redraw manager module
  *
  * This module handles the redraw of non-realtime
  * widgets.  Redraw-actions are stored in a queue
@@ -11,14 +11,15 @@
  * Copyright (C) 2002-2008 Norman Feske <norman.feske@genode-labs.com>
  * Genode Labs, Feske & Helmuth Systementwicklung GbR
  *
- * This file is part of the DOpE-embedded package, which is distributed
+ * This file is part of the MTK package, which is distributed
  * under the terms of the GNU General Public License version 2.
  */
 
 struct private_widget;
 #define WIDGET struct private_widget
 
-#include "dopestd.h"
+#include <stdio.h>
+#include "mtkstd.h"
 #include "widget_data.h"
 #include "widget.h"
 #include "screen.h"
@@ -46,7 +47,7 @@ static s32 last  = 0;
 
 extern int config_adapt_redraw;  /* from startup.c */
 
-int init_redraw(struct dope_services *d);
+int init_redraw(struct mtk_services *d);
 
 
 /***********************
@@ -353,10 +354,10 @@ static s32 exec_redraw(s32 avail_time)
 	 * Clamp the pix/usec ratio to a lower border. In some situation
 	 * (for example if someone switches off interrupts for some time),
 	 * the measurement of drawing duration times may be messed up.
-	 * This could cause DOpE to adapt to these timing constrains in a
+	 * This could cause MTK to adapt to these timing constrains in a
 	 * way that only a few pixels are drawn for each period, which
 	 * raises the overhead of traversing widget structures and clipping
-	 * an never allows DOpE to recover from that situation. Thus,
+	 * an never allows MTK to recover from that situation. Thus,
 	 * limiting the adaption to a lower border is needed to preserve
 	 * robustness even in such bad situations.
 	 */
@@ -430,7 +431,7 @@ static struct redraw_services services = {
  ** Module entry point **
  ************************/
 
-int init_redraw(struct dope_services *d)
+int init_redraw(struct mtk_services *d)
 {
 	timer   =   d->get_module("Timer 1.0");
 

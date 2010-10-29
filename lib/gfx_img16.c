@@ -1,16 +1,17 @@
 /*
- * \brief   DOpE gfx 16bit image handler module
+ * \brief   MTK gfx 16bit image handler module
  */
 
 /*
  * Copyright (C) 2003-2008 Norman Feske <norman.feske@genode-labs.com>
  * Genode Labs, Feske & Helmuth Systementwicklung GbR
  *
- * This file is part of the DOpE-embedded package, which is distributed
+ * This file is part of the MTK package, which is distributed
  * under the terms of the GNU General Public License version 2.
  */
 
-#include "dopestd.h"
+#include <stdlib.h>
+#include "mtkstd.h"
 #include "sharedmem.h"
 #include "gfx_handler.h"
 #include "gfx.h"
@@ -25,7 +26,7 @@ struct gfx_ds_data {
 	pixel_t   *pixels;  /* 16bit color values of the pixels */
 };
 
-int init_gfximg16(struct dope_services *d);
+int init_gfximg16(struct mtk_services *d);
 
 /***************************
  ** Gfx handler functions **
@@ -110,7 +111,7 @@ static struct gfx_handler_services services = {
  ** Module entry point **
  ************************/
 
-int init_gfximg16(struct dope_services *d)
+int init_gfximg16(struct mtk_services *d)
 {
 	shmem = d->get_module("SharedMemory 1.0");
 	d->register_module("GfxImage16 1.0",&services);

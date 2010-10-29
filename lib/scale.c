@@ -1,5 +1,5 @@
 /*
- * \brief   DOpE Scale widget module
+ * \brief   MTK Scale widget module
  *
  * This widget type handles numeric scales.
  */
@@ -8,14 +8,16 @@
  * Copyright (C) 2002-2008 Norman Feske <norman.feske@genode-labs.com>
  * Genode Labs, Feske & Helmuth Systementwicklung GbR
  *
- * This file is part of the DOpE-embedded package, which is distributed
+ * This file is part of the MTK package, which is distributed
  * under the terms of the GNU General Public License version 2.
  */
 
 struct scale;
 #define WIDGET struct scale
 
-#include "dopestd.h"
+#include <stdlib.h>
+#include <stdio.h>
+#include "mtkstd.h"
 #include "scale.h"
 #include "button.h"
 #include "variable.h"
@@ -47,7 +49,7 @@ struct scale_data {
 };
 
 
-int init_scale(struct dope_services *d);
+int init_scale(struct mtk_services *d);
 
 
 /********************************
@@ -335,7 +337,7 @@ static void scale_set_value(SCALE *s,float new_value)
 	char *m;
 
 	s->sd->value = check_value(s->sd->from, s->sd->to, new_value);
-	dope_ftoa(s->sd->value, 2, strbuf, 24);
+	mtk_ftoa(s->sd->value, 2, strbuf, 24);
 	if (s->sd->var) s->sd->var->var->set_string(s->sd->var, &strbuf[0]);
 	
 	/* notify client that bound an "change"-event */
@@ -585,7 +587,7 @@ static void build_script_lang(void)
  ** Module entry point **
  ************************/
 
-int init_scale(struct dope_services *d)
+int init_scale(struct mtk_services *d)
 {
 	gfx       = d->get_module("Gfx 1.0");
 	but       = d->get_module("Button 1.0");

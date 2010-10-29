@@ -1,17 +1,17 @@
 /*
- * \brief   Interface of the DOpE command interpreter
+ * \brief   Interface of the MTK command interpreter
  */
 
 /*
  * Copyright (C) 2002-2008 Norman Feske <norman.feske@genode-labs.com>
  * Genode Labs, Feske & Helmuth Systementwicklung GbR
  *
- * This file is part of the DOpE-embedded package, which is distributed
+ * This file is part of the MTK package, which is distributed
  * under the terms of the GNU General Public License version 2.
  */
 
-#ifndef _DOPE_SCRIPT_H_
-#define _DOPE_SCRIPT_H_
+#ifndef _MTK_SCRIPT_H_
+#define _MTK_SCRIPT_H_
 
 struct widtype;
 struct script_services {
@@ -22,4 +22,4 @@ struct script_services {
 };
 
 
-#endif /* _DOPE_SCRIPT_H_ */
+#endif /* _MTK_SCRIPT_H_ */

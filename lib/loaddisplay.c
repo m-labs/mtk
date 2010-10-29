@@ -1,19 +1,22 @@
 /*
- * \brief   DOpE LoadDisplay widget module
+ * \brief   MTK LoadDisplay widget module
  */
 
 /*
  * Copyright (C) 2004-2008 Norman Feske <norman.feske@genode-labs.com>
  * Genode Labs, Feske & Helmuth Systementwicklung GbR
  *
- * This file is part of the DOpE-embedded package, which is distributed
+ * This file is part of the MTK package, which is distributed
  * under the terms of the GNU General Public License version 2.
  */
 
 struct loaddisplay;
 #define WIDGET struct loaddisplay
 
-#include "dopestd.h"
+#include <stdlib.h>
+#include <stdio.h>
+#include <string.h>
+#include "mtkstd.h"
 #include "loaddisplay.h"
 #include "gfx_macros.h"
 #include "widget_data.h"
@@ -66,7 +69,7 @@ static color_t default_colors[NUM_DEFAULT_COLORS] = {
 
 enum { NUM_COLORS = sizeof(default_colors)/sizeof(color_t) };
 
-int init_loaddisplay(struct dope_services *d);
+int init_loaddisplay(struct mtk_services *d);
 
 
 /********************************
@@ -175,7 +178,7 @@ static struct loadbar *get_loadbar(struct loaddisplay *ld, char *ident)
 	
 	/* search identifier in existing bars */
 	while (curr) {
-		if (dope_streq(ident, curr->ident, 256)) break;
+		if (mtk_streq(ident, curr->ident, 256)) break;
 		curr = curr->next;
 	}
 	
@@ -190,7 +193,7 @@ static struct loadbar *get_loadbar(struct loaddisplay *ld, char *ident)
 			ERROR(printf("LoadDisplay(get_loadbar): out of memory!\n"));
 			return NULL;
 		}
-		res->ident = dope_strdup(ident);
+		res->ident = strdup(ident);
 		res->color = default_colors[(ld->ldd->colcnt++) % NUM_COLORS];
 
 		/* append new bar to list */ 
@@ -242,8 +245,8 @@ struct {
  * Return 32bit color value of a color with the given name
  *
  * Currently the syntax #rrggbb is supported only. If this
- * functionality is needed also by other DOpE components,
- * we could put it into a separate DOpE component.
+ * functionality is needed also by other MTK components,
+ * we could put it into a separate MTK component.
  */
 static color_t get_color_by_name(const char *colname)
 {
@@ -255,7 +258,7 @@ static color_t get_color_by_name(const char *colname)
 	
 	/* check for predefined color names */
 	for (i = 0; i < COLMAP_SIZE; i++) {
-		if (dope_streq(colmap[i].name, colname, 255)) return colmap[i].value;
+		if (mtk_streq(colmap[i].name, colname, 255)) return colmap[i].value;
 	}
 
 	/* color is unknown */
@@ -409,11 +412,11 @@ static void ld_barconfig(LOADDISPLAY *ld, char *ident, char *value, char *color)
 	if (!ident || !value) return;
 	if (!(lb = get_loadbar(ld, ident))) return;
 
-	if (!dope_streq("<none>", value, 7)) {
+	if (!mtk_streq("<none>", value, 7)) {
 		lb->value = atof(value);
 	}
 
-	if (!dope_streq("<default>", color, 9)) {
+	if (!mtk_streq("<default>", color, 9)) {
 		u32 c = get_color_by_name(color);
 
 		/* set alpha to 50% */
@@ -489,7 +492,7 @@ static void build_script_lang(void)
  ** Module entry point **
  ************************/
 
-int init_loaddisplay(struct dope_services *d)
+int init_loaddisplay(struct mtk_services *d)
 {
 	widman = d->get_module("WidgetManager 1.0");
 	gfx    = d->get_module("Gfx 1.0");

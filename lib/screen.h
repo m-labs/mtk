@@ -1,17 +1,17 @@
 /*
- * \brief   Interface of DOpE Screen widget module
+ * \brief   Interface of MTK Screen widget module
  */
 
 /*
  * Copyright (C) 2003-2008 Norman Feske <norman.feske@genode-labs.com>
  * Genode Labs, Feske & Helmuth Systementwicklung GbR
  *
- * This file is part of the DOpE-embedded package, which is distributed
+ * This file is part of the MTK package, which is distributed
  * under the terms of the GNU General Public License version 2.
  */
 
-#ifndef _DOPE_SCREEN_H_
-#define _DOPE_SCREEN_H_
+#ifndef _MTK_SCREEN_H_
+#define _MTK_SCREEN_H_
 
 #include "widget.h"
 #include "gfx.h"
@@ -53,4 +53,4 @@ struct screen_services {
 
 #define NOARG -2147483646   /* magic value to indicate the use of a default value */
 
-#endif /* _DOPE_SCREEN_H_ */
+#endif /* _MTK_SCREEN_H_ */

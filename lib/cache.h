@@ -1,17 +1,17 @@
 /*
- * \brief   Interface of the cache module of DOpE
+ * \brief   Interface of the cache module of MTK
  */
 
 /*
  * Copyright (C) 2002-2008 Norman Feske <norman.feske@genode-labs.com>
  * Genode Labs, Feske & Helmuth Systementwicklung GbR
  *
- * This file is part of the DOpE-embedded package, which is distributed
+ * This file is part of the MTK package, which is distributed
  * under the terms of the GNU General Public License version 2.
  */
 
-#ifndef _DOPE_CACHE_H_
-#define _DOPE_CACHE_H_
+#ifndef _MTK_CACHE_H_
+#define _MTK_CACHE_H_
 
 #define CACHE struct cache
 struct cache;
@@ -25,4 +25,4 @@ struct cache_services {
 };
 
 
-#endif /* _DOPE_CACHE_H_ */
+#endif /* _MTK_CACHE_H_ */

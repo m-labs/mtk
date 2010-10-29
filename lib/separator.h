@@ -1,5 +1,5 @@
 /*
- * \brief   Interface of DOpE Separator widget module
+ * \brief   Interface of MTK Separator widget module
  */
 
 /*
@@ -7,12 +7,12 @@
  * Genode Labs, Feske & Helmuth Systementwicklung GbR
  * Copyright (C) 2010 Sebastien Bourdeauducq <sebastien.bourdeauducq@lekernel.net>
  *
- * This file is part of the DOpE-embedded package, which is distributed
+ * This file is part of the MTK package, which is distributed
  * under the terms of the GNU General Public License version 2.
  */
 
-#ifndef _DOPE_SEPARATOR_H_
-#define _DOPE_SEPARATOR_H_
+#ifndef _MTK_SEPARATOR_H_
+#define _MTK_SEPARATOR_H_
 
 #include "widget.h"
 #include "variable.h"
@@ -39,4 +39,4 @@ struct separator_services {
 };
 
 
-#endif /* _DOPE_SEPARATOR_H_ */
+#endif /* _MTK_SEPARATOR_H_ */

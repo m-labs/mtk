@@ -1,5 +1,5 @@
 /*
- * \brief   DOpE font manager module
+ * \brief   MTK font manager module
  *
  * This component provides a general interface for
  * the usage of fonts.
@@ -9,11 +9,11 @@
  * Copyright (C) 2002-2008 Norman Feske <norman.feske@genode-labs.com>
  * Genode Labs, Feske & Helmuth Systementwicklung GbR
  *
- * This file is part of the DOpE-embedded package, which is distributed
+ * This file is part of the MTK package, which is distributed
  * under the terms of the GNU General Public License version 2.
  */
 
-#include "dopestd.h"
+#include "mtkstd.h"
 #include "fontman.h"
 #include "fontconv.h"
 
@@ -29,7 +29,7 @@ extern unsigned char title_fnt[];
 
 extern unsigned char vera16_tff[];
 
-int init_fontman(struct dope_services *d);
+int init_fontman(struct mtk_services *d);
 
 
 /********************************
@@ -187,7 +187,7 @@ static void add_font(struct fontconv_services *conv,void *fontdata,u32 font_id,s
 }
 
 
-int init_fontman(struct dope_services *d)
+int init_fontman(struct mtk_services *d)
 {
 	conv_fnt=d->get_module("ConvertFNT 1.0");
 	conv_tff=d->get_module("ConvertTFF 1.0");

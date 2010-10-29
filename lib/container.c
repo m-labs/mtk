@@ -1,5 +1,5 @@
 /*
- * \brief   DOpE Container widget module
+ * \brief   MTK Container widget module
  *
  * Container widgets are layout widgets that allow
  * the placement of subwidgets by specifying pixel.
@@ -9,14 +9,15 @@
  * Copyright (C) 2002-2008 Norman Feske <norman.feske@genode-labs.com>
  * Genode Labs, Feske & Helmuth Systementwicklung GbR
  *
- * This file is part of the DOpE-embedded package, which is distributed
+ * This file is part of the MTK package, which is distributed
  * under the terms of the GNU General Public License version 2.
  */
 
 struct container;
 #define WIDGET struct container
 
-#include "dopestd.h"
+#include <stdio.h>
+#include "mtkstd.h"
 #include "widget_data.h"
 #include "widget_help.h"
 #include "gfx.h"
@@ -34,7 +35,7 @@ struct container_data {
 	WIDGET      *last_elem;
 };
 
-int init_container(struct dope_services *d);
+int init_container(struct mtk_services *d);
 
 
 /****************************
@@ -190,7 +191,7 @@ static struct container_services services = {
  ** Module entry point **
  ************************/
 
-int init_container(struct dope_services *d)
+int init_container(struct mtk_services *d)
 {
 	widman = d->get_module("WidgetManager 1.0");
 	gfx    = d->get_module("Gfx 1.0");

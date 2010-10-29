@@ -1,20 +1,20 @@
 /*
- * \brief   DOpE Button widget module
+ * \brief   MTK Button widget module
  *
  * This module converts fnt data to a generic font
  * structure that can be  used by other components
- * of DOpE such as the font manager module.
+ * of MTK such as the font manager module.
  */
 
 /*
  * Copyright (C) 2002-2008 Norman Feske <norman.feske@genode-labs.com>
  * Genode Labs, Feske & Helmuth Systementwicklung GbR
  *
- * This file is part of the DOpE-embedded package, which is distributed
+ * This file is part of the MTK package, which is distributed
  * under the terms of the GNU General Public License version 2.
  */
 
-#include "dopestd.h"
+#include "mtkstd.h"
 #include "fontconv.h"
 
 /**
@@ -48,7 +48,7 @@ struct fntfile_hdr {
 	u32   next_font;      /* unused                            */
 };
 
-int init_conv_fnt(struct dope_services *d);
+int init_conv_fnt(struct mtk_services *d);
 
 
 /********************************
@@ -362,7 +362,7 @@ static struct fontconv_services services = {
  ** Module entry point **
  ************************/
 
-int init_conv_fnt(struct dope_services *d)
+int init_conv_fnt(struct mtk_services *d)
 {
 	d->register_module("ConvertFNT 1.0", &services);
 	return 1;

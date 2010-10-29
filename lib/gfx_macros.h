@@ -6,12 +6,12 @@
  * Copyright (C) 2005-2008 Norman Feske <norman.feske@genode-labs.com>
  * Genode Labs, Feske & Helmuth Systementwicklung GbR
  *
- * This file is part of the DOpE-embedded package, which is distributed
+ * This file is part of the MTK package, which is distributed
  * under the terms of the GNU General Public License version 2.
  */
 
-#ifndef _DOPE_GFX_MACROS_H_
-#define _DOPE_GFX_MACROS_H_
+#ifndef _MTK_GFX_MACROS_H_
+#define _MTK_GFX_MACROS_H_
 
 #include "gfx.h"
 
@@ -44,4 +44,4 @@ static inline GFX_CONTAINER *gen_range_img(struct gfx_services *gfx,
 }
 
 
-#endif /* _DOPE_GFX_MACROS_H_ */
+#endif /* _MTK_GFX_MACROS_H_ */

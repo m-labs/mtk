@@ -1,16 +1,17 @@
 /*
- * \brief   DOpE gfx 8bit indexed image handler module
+ * \brief   MTK gfx 8bit indexed image handler module
  */
 
 /*
  * Copyright (C) 2003-2008 Norman Feske <norman.feske@genode-labs.com>
  * Genode Labs, Feske & Helmuth Systementwicklung GbR
  *
- * This file is part of the DOpE-embedded package, which is distributed
+ * This file is part of the MTK package, which is distributed
  * under the terms of the GNU General Public License version 2.
  */
 
-#include "dopestd.h"
+#include <stdlib.h>
+#include "mtkstd.h"
 #include "gfx_handler.h"
 #include "gfx.h"
 
@@ -21,7 +22,7 @@ struct gfx_ds_data {
 	pixel_t *pixels;  /* 8bit indices of the pixels */
 };
 
-int init_gfximg8i(struct dope_services *d);
+int init_gfximg8i(struct mtk_services *d);
 
 /***************************
  ** Gfx handler functions **
@@ -94,7 +95,7 @@ static struct gfx_handler_services services = {
  ** Module entry point **
  ************************/
 
-int init_gfximg8i(struct dope_services *d)
+int init_gfximg8i(struct mtk_services *d)
 {
 	d->register_module("GfxImage8i 1.0",&services);
 	return 1;

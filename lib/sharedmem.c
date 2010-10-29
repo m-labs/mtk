@@ -1,7 +1,7 @@
 /*
- * \brief   DOpE shared memory management module
+ * \brief   MTK shared memory management module
  *
- * This implementation is meant be used if DOpE and its client
+ * This implementation is meant be used if MTK and its client
  * reside in the same address space. Here, shared memory is
  * just allocated via malloc and the textual identifier contains
  * the start address.
@@ -11,11 +11,13 @@
  * Copyright (C) 2002-2008 Norman Feske <norman.feske@genode-labs.com>
  * Genode Labs, Feske & Helmuth Systementwicklung GbR
  *
- * This file is part of the DOpE-embedded package, which is distributed
+ * This file is part of the MTK package, which is distributed
  * under the terms of the GNU General Public License version 2.
  */
 
-#include "dopestd.h"
+#include <stdlib.h>
+#include <stdio.h>
+#include "mtkstd.h"
 #include "module.h"
 #include "sharedmem.h"
 
@@ -27,7 +29,7 @@ struct shared_memory {
 	void *addr;
 };
 
-int init_sharedmem(struct dope_services *d);
+int init_sharedmem(struct mtk_services *d);
 
 
 /***********************
@@ -96,7 +98,7 @@ static struct sharedmem_services sharedmem = {
  ** Module entry point **
  ************************/
 
-int init_sharedmem(struct dope_services *d)
+int init_sharedmem(struct mtk_services *d)
 {
 	d->register_module("SharedMemory 1.0",&sharedmem);
 	return 1;

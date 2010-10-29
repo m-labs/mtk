@@ -1,19 +1,22 @@
 /*
- * \brief   DOpE Button widget module
+ * \brief   MTK Button widget module
  */
 
 /*
  * Copyright (C) 2002-2008 Norman Feske <norman.feske@genode-labs.com>
  * Genode Labs, Feske & Helmuth Systementwicklung GbR
  *
- * This file is part of the DOpE-embedded package, which is distributed
+ * This file is part of the MTK package, which is distributed
  * under the terms of the GNU General Public License version 2.
  */
 
 struct button;
 #define WIDGET struct button
 
-#include "dopestd.h"
+#include <stdlib.h>
+#include <stdio.h>
+#include <string.h>
+#include "mtkstd.h"
 #include "button.h"
 #include "gfx_macros.h"
 #include "widget_data.h"
@@ -52,7 +55,7 @@ static GFX_CONTAINER *actwin_img;
 
 extern int config_clackcommit;
 
-int init_button(struct dope_services *d);
+int init_button(struct mtk_services *d);
 
 static const color_t BLACK_SOLID = GFX_RGBA(0, 0, 0, 255);
 static const color_t BLACK_MIXED = GFX_RGBA(0, 0, 0, 127);
@@ -235,7 +238,7 @@ static void but_handle_event(BUTTON *b, EVENT *e, WIDGET *from)
 	case EVENT_PRESS:
 
 		/* check for mouse button event */
-		if ((e->code  != DOPE_BTN_MOUSE) && (e->code != DOPE_KEY_SPACE)) break;
+		if ((e->code  != MTK_BTN_MOUSE) && (e->code != MTK_KEY_SPACE)) break;
 
 		if (b->bd->click) b->bd->click(b);
 
@@ -257,7 +260,7 @@ static void but_handle_event(BUTTON *b, EVENT *e, WIDGET *from)
 
 	case EVENT_RELEASE:
 		/* check for mouse button event */
-		if (e->code  == DOPE_BTN_MOUSE) {
+		if (e->code  == MTK_BTN_MOUSE) {
 			if (b->bd->release) b->bd->release(b);
 		}
 		break;
@@ -272,7 +275,7 @@ static void but_handle_event(BUTTON *b, EVENT *e, WIDGET *from)
  * Determine min/max size of a button
  *
  * The height and the min width of a Button depend on the used font and
- * the Button text. For the DOpE-internal use of Buttons for the window
+ * the Button text. For the MTK-internal use of Buttons for the window
  * controls there exist the FREE_W and FREE_H flags. When set, the size
  * of a Button is completely free.
  */
@@ -360,7 +363,7 @@ static void but_set_text(BUTTON *b, char *new_txt)
 	if (b->bd->text) {
 		free(b->bd->text);
 	}
-	b->bd->text = dope_strdup(new_txt);
+	b->bd->text = strdup(new_txt);
 
 	/*
 	 * If a button's size is completely free, a change
@@ -526,7 +529,7 @@ static void build_script_lang(void)
 }
 
 
-int init_button(struct dope_services *d)
+int init_button(struct mtk_services *d)
 {
 	widman    = d->get_module("WidgetManager 1.0");
 	gfx       = d->get_module("Gfx 1.0");

@@ -1,12 +1,12 @@
 /*
- * \brief   DOpE Window widget module
+ * \brief   MTK Window widget module
  */
 
 /*
  * Copyright (C) 2002-2008 Norman Feske <norman.feske@genode-labs.com>
  * Genode Labs, Feske & Helmuth Systementwicklung GbR
  *
- * This file is part of the DOpE-embedded package, which is distributed
+ * This file is part of the MTK package, which is distributed
  * under the terms of the GNU General Public License version 2.
  */
 
@@ -14,7 +14,8 @@
 struct window;
 #define WIDGET struct window
 
-#include "dopestd.h"
+#include <stdio.h>
+#include "mtkstd.h"
 #include "window.h"
 #include "script.h"
 #include "gfx.h"
@@ -72,7 +73,7 @@ extern unsigned long config_bg_win_color;
 
 extern SCREEN *curr_scr;
 
-int init_window(struct dope_services *d);
+int init_window(struct mtk_services *d);
 
 
 /**********************
@@ -649,7 +650,7 @@ static void win_handle_event(WIDGET *w, EVENT *ev, WIDGET *from)
 	 * and we need to wrap it.
 	 */
 	if (from && (ev->type == EVENT_PRESS) && w->wind->content
-	 && (ev->code == DOPE_KEY_TAB)) {
+	 && (ev->code == MTK_KEY_TAB)) {
 		WIDGET *nw = w->wind->content->gen->first_kfocus(w->wind->content);
 		if (nw) nw->gen->focus(nw);
 //		return;
@@ -660,7 +661,7 @@ static void win_handle_event(WIDGET *w, EVENT *ev, WIDGET *from)
 		if (cb->ev_type == ev->type)
 			msg->send_input_event(w->wd->app_id, ev, cb->msg);
 
-	if ((ev->type != EVENT_PRESS) || (ev->code != DOPE_BTN_LEFT)) return;
+	if ((ev->type != EVENT_PRESS) || (ev->code != MTK_BTN_LEFT)) return;
 
 	curr_window = w;
 	if (!curr_window) return;
@@ -870,7 +871,7 @@ static char *win_get_title(WINDOW *w)
 static void win_set_bgcolor(WINDOW *w, char *new_bgcolor)
 {
 	if (!new_bgcolor) return;
-	if (dope_streq(new_bgcolor, "black", 255))
+	if (mtk_streq(new_bgcolor, "black", 255))
 		w->wind->bgcol = 0x000000ff;
 }
 
@@ -1183,7 +1184,7 @@ static void build_script_lang(void)
 }
 
 
-int init_window(struct dope_services *d)
+int init_window(struct mtk_services *d)
 {
 	gfx       = d->get_module("Gfx 1.0");
 	widman    = d->get_module("WidgetManager 1.0");

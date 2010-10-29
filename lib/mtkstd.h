@@ -1,17 +1,17 @@
 /*
- * \brief   Standard types and functions used by DOpE
+ * \brief   Standard types and functions used by MTK
  */
 
 /*
  * Copyright (C) 2003-2008 Norman Feske <norman.feske@genode-labs.com>
  * Genode Labs, Feske & Helmuth Systementwicklung GbR
  *
- * This file is part of the DOpE-embedded package, which is distributed
+ * This file is part of the MTK package, which is distributed
  * under the terms of the GNU General Public License version 2.
  */
 
-#ifndef _DOPE_DOPESTD_H_
-#define _DOPE_DOPESTD_H_
+#ifndef _MTK_MTKSTD_H_
+#define _MTK_MTKSTD_H_
 
 #define SHOW_INFOS     0
 #define SHOW_WARNINGS  1
@@ -21,7 +21,7 @@
 
 
 /************************
- ** Types used by dope **
+ ** Types used by mtk **
  ************************/
 
 #define u8  unsigned char
@@ -37,33 +37,8 @@
 #endif
 
 
-/*************************************
- ** Standard functions used by dope **
- *************************************/
-
-/*
- * Normally, these functions are provided by the underlying
- * libC but they can also be implemented in a dopestd.c file.
- * This way DOpE can easily be ported even to platforms with
- * no libC.
- */
-
-//#define malloc dope_malloc
-//#define free   dope_free
-
-void         *malloc(size_t size);
-void         *zalloc(unsigned long size);
-void          free(void *addr);
-int           snprintf(char *str, size_t size, const char *format, ...);
-long          strtol(const char *nptr, char **endptr, int base);
-unsigned long strtoul(const char *nptr, char **endptr, int base);
-int           printf( const char *format, ...);
-long          atol(const char *nptr);
-double        atof(const char *nptr);
-
-
 /******************************
- ** Implemented in dopestd.c **
+ ** Implemented in mtkstd.c **
  ******************************/
 
 /**
@@ -76,7 +51,7 @@ double        atof(const char *nptr);
  * \param dst     destination buffer
  * \param max_len destination buffer size
  */
-extern int dope_ftoa(float v, int prec, char *dst, int max_len);
+extern int mtk_ftoa(float v, int prec, char *dst, int max_len);
 
 
 /**
@@ -92,21 +67,16 @@ extern int dope_ftoa(float v, int prec, char *dst, int max_len);
  * \param max_s1  max length of string s1
  * \return        1 if the two strings are equal.
  */
-extern int dope_streq(const char *s1, const char *s2, int max_len);
+extern int mtk_streq(const char *s1, const char *s2, int max_len);
 
-
-/**
- * Duplicate string
- */
-extern char *dope_strdup(char *s);
-
+void         *zalloc(unsigned long size);
 
 /*******************************
- ** Debug macros used in dope **
+ ** Debug macros used in mtk **
  *******************************/
 
 /*
- * Within the code of DOpE the following macros for filtering
+ * Within the code of MTK the following macros for filtering
  * debug output are used.
  *
  * INFO    - for presenting status information
@@ -144,19 +114,19 @@ extern char *dope_strdup(char *s);
 #endif
 
 /****************************
- ** Dope service structure **
+ ** MTK service structure **
  ****************************/
 
 /*
- * DOpE provides the following service structure to all
+ * MTK provides the following service structure to all
  * its components. Via this structure components can
  * access functionality of other components or make an
  * interface available to other components.
  */
 
-struct dope_services {
+struct mtk_services {
 	void *(*get_module)      (char *name);
 	long  (*register_module) (char *name,void *services);
 };
 
-#endif /* _DOPE_DOPESTD_H_ */
+#endif /* _MTK_MTKSTD_H_ */

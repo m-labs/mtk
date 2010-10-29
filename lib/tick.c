@@ -1,16 +1,16 @@
 /*
- * \brief   DOpE timer tick module
+ * \brief   MTK timer tick module
  */
 
 /*
  * Copyright (C) 2004-2008 Norman Feske <norman.feske@genode-labs.com>
  * Genode Labs, Feske & Helmuth Systementwicklung GbR
  *
- * This file is part of the DOpE-embedded package, which is distributed
+ * This file is part of the MTK package, which is distributed
  * under the terms of the GNU General Public License version 2.
  */
 
-#include "dopestd.h"
+#include "mtkstd.h"
 #include "timer.h"
 #include "tick.h"
 
@@ -30,7 +30,7 @@ static struct tick *head = NULL;     /* head of tick list */
 
 static struct timer_services *timer;
 
-int init_tick(struct dope_services *d);
+int init_tick(struct mtk_services *d);
 
 
 /***********************
@@ -147,10 +147,10 @@ static struct tick_services services = {
  ** Module entry point **
  ************************/
 
-int init_tick(struct dope_services *dope)
+int init_tick(struct mtk_services *mtk)
 {
-	timer     = dope->get_module("Timer 1.0");
+	timer     = mtk->get_module("Timer 1.0");
 	
-	dope->register_module("Tick 1.0",&services);
+	mtk->register_module("Tick 1.0",&services);
 	return 1;
 }

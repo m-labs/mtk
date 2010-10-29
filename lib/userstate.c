@@ -1,5 +1,5 @@
 /*
- * \brief   DOpE user state module
+ * \brief   MTK user state module
  *
  * This component manages the different states of,
  * the user interface. These states depend on the
@@ -13,11 +13,11 @@
  * Copyright (C) 2002-2008 Norman Feske <norman.feske@genode-labs.com>
  * Genode Labs, Feske & Helmuth Systementwicklung GbR
  *
- * This file is part of the DOpE-embedded package, which is distributed
+ * This file is part of the MTK package, which is distributed
  * under the terms of the GNU General Public License version 2.
  */
 
-#include "dopestd.h"
+#include "mtkstd.h"
 #include "event.h"
 #include "widget.h"
 #include "input.h"
@@ -51,7 +51,7 @@ static void  (*curr_motion_callback)  (WIDGET *,int,int);
 static void  (*curr_release_callback) (WIDGET *,int,int);
 static void  (*curr_tick_callback)    (WIDGET *,int,int);
 static int     press_cnt;                   /* number of pressed keys     */
-static char    keytab[DOPE_KEY_MAX];
+static char    keytab[MTK_KEY_MAX];
 static s32     curr_keystate;               /* current key state          */
 static long    curr_keycode;                /* code of curr. pressed key  */
 static s32     key_repeat_delay = 250;      /* delay until key repeat     */
@@ -63,7 +63,7 @@ static s32     key_repeat_rate = 30;        /* key repeat rate            */
 
 extern SCREEN *curr_scr;
 
-int init_userstate(struct dope_services *d);
+int init_userstate(struct mtk_services *d);
 
 
 /********************************
@@ -79,7 +79,7 @@ int init_userstate(struct dope_services *d);
  */
 static inline int key_sets_focus(long keycode)
 {
-	return (keycode >= DOPE_BTN_LEFT && keycode <= DOPE_BTN_MIDDLE);
+	return (keycode >= MTK_BTN_LEFT && keycode <= MTK_BTN_MIDDLE);
 }
 
 
@@ -93,7 +93,7 @@ static inline int key_sets_focus(long keycode)
 static char get_ascii(long keycode)
 {
 	long switches=0;
-	if (keycode>=DOPE_KEY_MAX) return 0;
+	if (keycode>=MTK_KEY_MAX) return 0;
 	if (keytab[42] ) switches = switches | KEYMAP_SWITCH_LSHIFT;
 	if (keytab[54] ) switches = switches | KEYMAP_SWITCH_RSHIFT;
 	if (keytab[29] ) switches = switches | KEYMAP_SWITCH_LCONTROL;
@@ -360,11 +360,11 @@ static void handle(void)
 		case EVENT_PRESS:
 			press_cnt++;
 
-			if (event.code == DOPE_BTN_LEFT)  curr_mb = curr_mb | 0x01;
-			if (event.code == DOPE_BTN_RIGHT) curr_mb = curr_mb | 0x02;
+			if (event.code == MTK_BTN_LEFT)  curr_mb = curr_mb | 0x01;
+			if (event.code == MTK_BTN_RIGHT) curr_mb = curr_mb | 0x02;
 			keytab[event.code] = 1;
 			if (get_ascii(event.code)
-			 || (event.code >= DOPE_KEY_UP && event.code <= DOPE_KEY_DELETE)) {
+			 || (event.code >= MTK_KEY_UP && event.code <= MTK_KEY_DELETE)) {
 				curr_keystate = USERSTATE_KEY_PRESS;
 				curr_keycode  = event.code;
 				tick->add(key_repeat_delay, tick_handle_delay, (void *)curr_keycode);
@@ -382,8 +382,8 @@ static void handle(void)
 				curr_motion_callback(curr_selected, curr_mx - omx, curr_my - omy);
 			}
 
-			if (event.code == DOPE_BTN_LEFT)  curr_mb = curr_mb & 0x00fe;
-			if (event.code == DOPE_BTN_RIGHT) curr_mb = curr_mb & 0x00fd;
+			if (event.code == MTK_BTN_LEFT)  curr_mb = curr_mb & 0x00fe;
+			if (event.code == MTK_BTN_RIGHT) curr_mb = curr_mb & 0x00fd;
 			keytab[event.code] = 0;
 			curr_keystate = USERSTATE_KEY_IDLE;
 			curr_keycode  = 0;
@@ -579,7 +579,7 @@ static void set_max_my(long new_max_my)
  */
 static long get_keystate(long keycode)
 {
-	if (keycode>=DOPE_KEY_MAX) return 0;
+	if (keycode>=MTK_KEY_MAX) return 0;
 	return keytab[keycode];
 }
 
@@ -673,7 +673,7 @@ static struct userstate_services services = {
  ** Module entry point **
  ************************/
 
-int init_userstate(struct dope_services *d)
+int init_userstate(struct mtk_services *d)
 {
 	input   = d->get_module("Input 1.0");
 	scrdrv  = d->get_module("ScreenDriver 1.0");

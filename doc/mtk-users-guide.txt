@@ -1,5 +1,5 @@
 
-                          DOpE - user's guide
+                          MTK - user's guide
 
                              Norman Feske
 
@@ -8,21 +8,7 @@
   _The software, described in this document is at a preliminary stage of_
   _development. Features and Interfaces will change during the further_
   _development process. Please consider this fact if you intend to_
-  _implement software based on DOpE and its associated components._
-
-
-Running DOpE on L4
-##################
-
-For running DOpE on L4 you need to consider the following things:
-
-* DOpE does not run together with 'l4io' per default. If you need
-  to use 'l4io' together with DOpE, start DOpE with the argument
-  ! --l4io
-* Currently, DOpE uses the VESA frame buffer in 16bit colordepth with
-  the RGB565 pixel layout. The video mode must be configured via the
-  'vbeset' command in 'GRUB'. You can use the 'vbeprobe' command to
-  view a list of video modes supported by your hardware.
+  _implement software based on MTK and its associated components._
 
 
 Introduction to the basic concepts
@@ -31,11 +17,11 @@ Introduction to the basic concepts
 Command interface
 =================
 
-DOpE provides a command interface to create and configure server-side widgets and
+MTK provides a command interface to create and configure server-side widgets and
 their relationships. The text-command-based approach has the following advantages
 over a conventional API:
 
-* Interface extensions of DOpE are transparent to client applications. No
+* Interface extensions of MTK are transparent to client applications. No
   recompilation of client applications is needed.
 * The user interface can be described in very compact expressions.
 * Multiple attribute changes can be expressed as one atomar unit using
@@ -106,14 +92,14 @@ its content:
 Requesting attributes
 ~~~~~~~~~~~~~~~~~~~~~
 
-Attributes can be requested via the DOpE command:
+Attributes can be requested via the MTK command:
 ! <varname>.<attribute name>
 
 
 Invoking methods
 ~~~~~~~~~~~~~~~~
 
-Methods of widgets can be invoked via the DOpE command:
+Methods of widgets can be invoked via the MTK command:
 ! <varname>.<method name>(<mandatory args><optional args>)
 
 For example the following command sets the width of the row 5 of a *Grid*
@@ -125,12 +111,12 @@ arguments are optional and therefore are expressed via the tag-value notation:
 Event concept
 =============
 
-DOpElib
+MTKlib
 #######
 
-For the implementation of DOpE client applications DOpElib provides a
-simple-to-use interface to communicate to the DOpE window server and
-handle events. DOpElib is platform independent and should always be
+For the implementation of MTK client applications MTKlib provides a
+simple-to-use interface to communicate to the MTK window server and
+handle events. MTKlib is platform independent and should always be
 used to implement client applications instead of using the IDL interface
 directly.
 
@@ -138,93 +124,93 @@ directly.
 Initializing the library
 ========================
 
-Before using DOpElib it must be initialized by calling 'dope_init'.
-This function initially resolves the DOpE server.
-! long dope_init(void);
+Before using MTKlib it must be initialized by calling 'mtk_init'.
+This function initially resolves the MTK server.
+! long mtk_init(void);
 This function returns #0# on success.
 
-At the exit of DOpE clients, 'dope_deinit' should be called to release
+At the exit of MTK clients, 'mtk_deinit' should be called to release
 all used resources.
-! void dope_deinit(void);
+! void mtk_deinit(void);
 
 
-(Un-)Register a new DOpE client application
+(Un-)Register a new MTK client application
 ===========================================
 
-The 'dope_init_app' corresponds with the 'init_app' IDL call. It
+The 'mtk_init_app' corresponds with the 'init_app' IDL call. It
 starts a new client session and creates a fresh variable namespace
 for this session. The return value of this function is an identifier
 for later reference to the session. When registering a client session
 an application name must be specified. This name will be the default
 window title for all windows of this session.
-! long dope_init_app(char *appname);
+! long mtk_init_app(char *appname);
 
 Note that distinct variable name spaces can be established by
 creating multiple client sessions within one application.
 
-A client session can be closed via 'dope_deinit_app' taking the
-desired session identifier as argument. When called, DOpE destroys
+A client session can be closed via 'mtk_deinit_app' taking the
+desired session identifier as argument. When called, MTK destroys
 the associated variable name space and closes all windows of the
 session.
-! long dope_deinit_app(long app_id);
+! long mtk_deinit_app(long app_id);
 
 
-Executing DOpE commands
+Executing MTK commands
 =======================
 
-Once a client session is started via 'dope_init_app' a client application
-can send commands refering to such a session via the 'dope_cmd' function.
+Once a client session is started via 'mtk_init_app' a client application
+can send commands refering to such a session via the 'mtk_cmd' function.
 It takes a session identifier and an ASCII command string as arguments. On
-success 0 is returned. With 'dope_cmdf' there exists a simple way to use
-format strings as DOpE commands as well.
-! int dope_cmd(long app_id,char *cmd);
-! int dope_cmdf(long app_id, char *cmdf, ...);
+success 0 is returned. With 'mtk_cmdf' there exists a simple way to use
+format strings as MTK commands as well.
+! int mtk_cmd(long app_id,char *cmd);
+! int mtk_cmdf(long app_id, char *cmdf, ...);
 
 
-Requesting results of DOpE commands
+Requesting results of MTK commands
 ===================================
 
-While 'dope_cmd' and 'dope_cmdf' allow the execution of DOpE commands
+While 'mtk_cmd' and 'mtk_cmdf' allow the execution of MTK commands
 the result of these commands is not returned (mostly the result is of no
 interest - therefore we can skip the transfer of the result in common case).
-When the result of a DOpE command is of importance, #dope_req# and #dope_reqf#
+When the result of a MTK command is of importance, #mtk_req# and #mtk_reqf#
 must be utilized to request the result.
-! int dope_req(long app_id, char *dst, int dst_size, char *cmd);
-! int dope_reqf(long app_id, char *dst, int dst_size, char *cmdf, ...);
+! int mtk_req(long app_id, char *dst, int dst_size, char *cmd);
+! int mtk_reqf(long app_id, char *dst, int dst_size, char *cmdf, ...);
 This pair of functions takes the
 destination buffer 'dst' and its size for storing the result as argument.
 For example, to request the width of a window as an integer one can do:
 ! char req_buf[16];
 ! int width;
-! dope_req(app_id, req_buf, 16, "win.w");
+! mtk_req(app_id, req_buf, 16, "win.w");
 ! width = atoi(req_buf);
 
 
 Binding events to callback functions
 ====================================
 
-! void dope_bind(long app_id, char *var,
+! void mtk_bind(long app_id, char *var,
 !                char *event_type,
-!                void (*callback)(dope_event *,void *),
+!                void (*callback)(mtk_event *,void *),
 !                void *arg);
 
-! void dope_bindf(long app_id, char *var,
+! void mtk_bindf(long app_id, char *var,
 !                 char *event_type,
-!                 void (*callback)(dope_event *,void *),
+!                 void (*callback)(mtk_event *,void *),
 !                 void *arg,
 !                 ...);
 
-The two functions 'dope_bind' and 'dope_bindf' can be used to bind events
+The two functions 'mtk_bind' and 'mtk_bindf' can be used to bind events
 to widgets. Their common arguments are:
 
 :'app_id':
-  DOpE application id
+  MTK application id
 
 :'var':
-  Name of the DOpE widget to which the event should be attached.
+  Name of the MTK widget to which the event should be attached.
 
 :'event_type':
-  A DOpE event identifier. There are common identifiers for
+  A MTK event identifier. There are common identifiers for
   all widget types. Furthermore some widgets provide custom bindings.
 
 :'callback':
@@ -234,7 +220,7 @@ to widgets. Their common arguments are:
 :'arg':
   Argument that is passed to the registered callback function.
 
-The only difference between 'dope_bind' and 'dope_bindf' is that 'dope_bindf'
+The only difference between 'mtk_bind' and 'mtk_bindf' is that 'mtk_bindf'
 takes the widget name as format string. The format string arguments are passed
 via _varargs_ as the very last parameters of the function.
 
@@ -242,30 +228,30 @@ via _varargs_ as the very last parameters of the function.
 Start event processing
 ======================
 
-! void dope_eventloop(long app_id);
+! void mtk_eventloop(long app_id);
 
 
 Widget set
 ##########
 
-This section is an introduction into the widget layout concept of DOpE.
+This section is an introduction into the widget layout concept of MTK.
 Furthermore, it describes the properties, attributes and methods of the widget
-types implemented in DOpE.
+types implemented in MTK.
 
 
 Widget layout concept
 =====================
 
-DOpE provides two kinds of widgets, _leaf widgets_ representing data and
+MTK provides two kinds of widgets, _leaf widgets_ representing data and
 _layout widgets_, which contain other widgets. While the application specifies
 the information that should be represented on screen and the relationships of
-widgets, DOpE decides how to represent the information in the form of pixels.
+widgets, MTK decides how to represent the information in the form of pixels.
 For example, an application requests that a number should be represented
 on screen in the form of a Scale widget. It does not define the exact dimensions,
 the color and the used font. This way, the user who finally uses the application
-can choose his/her favorite way of representation by configuring DOpE.
+can choose his/her favorite way of representation by configuring MTK.
 
-_Note: at the current stage, the configuration options of DOpE are very limited._
+_Note: at the current stage, the configuration options of MTK are very limited._
 _But this approach enables us to be very flexible in the future._
 
 Every Leaf widget actually knows its way of representing its information and
@@ -390,7 +376,7 @@ table [button_bindings]. Normally, the 'commit' binding should be used for
 all buttons that trigger an action in the application. If the application
 needs to specifically react on the mouse press and release, the bindings 'click'
 and 'clack' can be used. In contrast to 'press' and 'release', these bindings
-make DOpE manage the visible behaviour of the Button when clicked.
+make MTK manage the visible behaviour of the Button when clicked.
 It is recommended to use the 'clack' binding for all critical actions that
 are not easily reversable. For such actions, we want to grant the user some
 more time to decide whether it applies the action (by releasing the mouse
@@ -410,7 +396,7 @@ Entry
 [table entry_attributes] Entry attributes overview
 
 
-The Entry widget is a single-line text edit field. DOpE handles all editing
+The Entry widget is a single-line text edit field. MTK handles all editing
 functions such as cursor movement, insertion and deletion of characters. The
 'text' attribute contains the current text.
 

@@ -1,7 +1,7 @@
 /*
- * \brief   DOpE application manager module
+ * \brief   MTK application manager module
  *
- * This module is used to manage DOpE-clients.
+ * This module is used to manage MTK-clients.
  * It handles all needed application specific
  * information such as its name, variables etc.
  */
@@ -10,17 +10,18 @@
  * Copyright (C) 2002-2008 Norman Feske <norman.feske@genode-labs.com>
  * Genode Labs, Feske & Helmuth Systementwicklung GbR
  *
- * This file is part of the DOpE-embedded package, which is distributed
+ * This file is part of the MTK package, which is distributed
  * under the terms of the GNU General Public License version 2.
  */
 
-#include "dopestd.h"
+#include <stdlib.h>
+#include "mtkstd.h"
 #include "hashtab.h"
 #include "appman.h"
 #include "screen.h"
 #include "scope.h"
 
-#define MAX_APPS          64    /* maximum amount of DOpE clients          */
+#define MAX_APPS          64    /* maximum amount of MTK clients          */
 #define APP_NAMELEN       64    /* application identifier string length    */
 
 static struct hashtab_services *hashtab;
@@ -36,7 +37,7 @@ extern SCREEN *curr_scr;
 
 static struct app *apps[MAX_APPS];
 
-int init_appman(struct dope_services *d);
+int init_appman(struct mtk_services *d);
 
 
 /********************************
@@ -53,7 +54,7 @@ static s32 get_free_app_id(void)
 	for (i=1; i<MAX_APPS; i++) {
 		if (!apps[i]) return i;
 	}
-	INFO(printf("AppMan(get_free_app_id): no free dope application id!\n");)
+	INFO(printf("AppMan(get_free_app_id): no free mtk application id!\n");)
 	return -1;
 }
 
@@ -134,7 +135,7 @@ static char *get_app_name(s32 app_id)
  * Register new application
  *
  * app_name: identifier string for the application
- * returns dope_client id
+ * returns mtk_client id
  */
 static s32 register_app(const char *app_name)
 {
@@ -146,7 +147,7 @@ static s32 register_app(const char *app_name)
 		return -1;
 	}
 
-	/* create data structures for the DOpE internal representation of the app */
+	/* create data structures for the MTK internal representation of the app */
 	apps[newapp_id] = new_app();
 	if (!apps[newapp_id]) {
 		INFO(printf("AppMan(register): application registering failed.\n");)
@@ -210,7 +211,7 @@ static s32 app_id_of_name(char *app_name)
 {
 	u32 i;
 	for (i=1; i<MAX_APPS; i++) {
-		if (apps[i] && dope_streq(app_name, apps[i]->name, 255)) {
+		if (apps[i] && mtk_streq(app_name, apps[i]->name, 255)) {
 			return i;
 		}
 	}
@@ -237,7 +238,7 @@ static struct appman_services services = {
  ** Module entry point **
  ************************/
 
-int init_appman(struct dope_services *d)
+int init_appman(struct mtk_services *d)
 {
 	hashtab = d->get_module("HashTable 1.0");
 //	scope   = d->get_module("Scope 1.0");

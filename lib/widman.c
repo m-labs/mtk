@@ -1,5 +1,5 @@
 /*
- * \brief   DOpE widget base class module
+ * \brief   MTK widget base class module
  *
  * This module implements common functionality of all widgets.
  *
@@ -11,12 +11,14 @@
  * Copyright (C) 2002-2008 Norman Feske <norman.feske@genode-labs.com>
  * Genode Labs, Feske & Helmuth Systementwicklung GbR
  *
- * This file is part of the DOpE-embedded package, which is distributed
+ * This file is part of the MTK package, which is distributed
  * under the terms of the GNU General Public License version 2.
  */
 
-
-#include "dopestd.h"
+#include <stdlib.h>
+#include <stdio.h>
+#include <string.h>
+#include "mtkstd.h"
 #include "widget.h"
 #include "widget_data.h"
 #include "widget_help.h"
@@ -36,7 +38,7 @@ static struct appman_services    *appman;
 static struct userstate_services *userstate;
 static struct messenger_services *msg;
 
-int init_widman(struct dope_services *d);
+int init_widman(struct mtk_services *d);
 
 
 /***********************************************************
@@ -566,7 +568,7 @@ static void wid_handle_event(WIDGET *cw,EVENT *e, WIDGET *from)
 
 	/* tell the parent to switch the keyboard focus */
 	if ((e->type == EVENT_PRESS)
-	 && (e->code == DOPE_KEY_TAB)
+	 && (e->code == MTK_KEY_TAB)
 	 && !(cw->wd->flags & WID_FLAGS_GRABFOCUS)) {
 		if (cw->wd->parent)
 			cw->wd->parent->gen->handle_event(cw->wd->parent, e, cw);
@@ -631,7 +633,7 @@ static int wid_do_layout(WIDGET *cw,WIDGET *child)
 //	/* check if there exists a binding with the same name */
 //	b = cw->wd->new_bindings;
 //	while (b) {
-//		if (dope_streq(b->name, new->name, 255)) {
+//		if (mtk_streq(b->name, new->name, 255)) {
 //			REMOVE_LIST_ELEMENT(struct new_binding, cw->wd->new_bindings, b, free_new_binding);
 //			break;
 //		}
@@ -657,17 +659,17 @@ static void wid_bind(WIDGET *cw,char *bind_ident,char *message)
 		return;
 	}
 
-	new->msg  = dope_strdup(message);
+	new->msg  = strdup(message);
 	new->next = cw->wd->bindings;
-	new->bind_ident  = dope_strdup(bind_ident);
+	new->bind_ident  = strdup(bind_ident);
 	cw->wd->bindings = new;
 
-	if (dope_streq(bind_ident, "press",     6)) {new->ev_type = EVENT_PRESS;       }
-	if (dope_streq(bind_ident, "release",   8)) {new->ev_type = EVENT_RELEASE;     }
-	if (dope_streq(bind_ident, "motion",    7)) {new->ev_type = EVENT_MOTION;      }
-	if (dope_streq(bind_ident, "leave",     6)) {new->ev_type = EVENT_MOUSE_LEAVE; }
-	if (dope_streq(bind_ident, "enter",     6)) {new->ev_type = EVENT_MOUSE_ENTER; }
-	if (dope_streq(bind_ident, "keyrepeat", 9)) {new->ev_type = EVENT_KEY_REPEAT;  }
+	if (mtk_streq(bind_ident, "press",     6)) {new->ev_type = EVENT_PRESS;       }
+	if (mtk_streq(bind_ident, "release",   8)) {new->ev_type = EVENT_RELEASE;     }
+	if (mtk_streq(bind_ident, "motion",    7)) {new->ev_type = EVENT_MOTION;      }
+	if (mtk_streq(bind_ident, "leave",     6)) {new->ev_type = EVENT_MOUSE_LEAVE; }
+	if (mtk_streq(bind_ident, "enter",     6)) {new->ev_type = EVENT_MOUSE_ENTER; }
+	if (mtk_streq(bind_ident, "keyrepeat", 9)) {new->ev_type = EVENT_KEY_REPEAT;  }
 
 	if (new->ev_type == 0)
 		new->ev_type = EVENT_ACTION;
@@ -701,7 +703,7 @@ static void wid_unbind(WIDGET *cw, char *bind_ident)
 	struct binding *b = cw->wd->bindings;
 
 	/* search for binding to remove */
-	for (; b && b->next && dope_streq(b->next->bind_ident, bind_ident, 16); b = b->next);
+	for (; b && b->next && mtk_streq(b->next->bind_ident, bind_ident, 16); b = b->next);
 
 	/* remove binding from binding list of the widget */
 	if (!b) return;
@@ -717,7 +719,7 @@ static char *wid_get_bind_msg(WIDGET *cw, char *bind_ident)
 	struct binding *cb;
 
 	for (cb = cw->wd->bindings; cb; cb = cb->next)
-		if (dope_streq(cb->bind_ident,bind_ident, 256))
+		if (mtk_streq(cb->bind_ident,bind_ident, 256))
 			return cb->msg;
 
 	return NULL;
@@ -889,7 +891,7 @@ static struct widman_services services = {
  ** Module entry point **
  ************************/
 
-int init_widman(struct dope_services *d)
+int init_widman(struct mtk_services *d)
 {
 	redraw    = d->get_module("RedrawManager 1.0");
 	msg       = d->get_module("Messenger 1.0");

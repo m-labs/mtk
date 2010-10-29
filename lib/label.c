@@ -1,19 +1,22 @@
 /*
- * \brief   DOpE Label widget module
+ * \brief   MTK Label widget module
  */
 
 /*
  * Copyright (C) 2002-2008 Norman Feske <norman.feske@genode-labs.com>
  * Genode Labs, Feske & Helmuth Systementwicklung GbR
  *
- * This file is part of the DOpE-embedded package, which is distributed
+ * This file is part of the MTK package, which is distributed
  * under the terms of the GNU General Public License version 2.
  */
 
 struct label;
 #define WIDGET struct label
 
-#include "dopestd.h"
+#include <stdlib.h>
+#include <stdio.h>
+#include <string.h>
+#include "mtkstd.h"
 #include "gfx.h"
 #include "widget_data.h"
 #include "widget_help.h"
@@ -35,7 +38,7 @@ struct label_data {
 	VARIABLE *var;
 };
 
-int init_label(struct dope_services *d);
+int init_label(struct mtk_services *d);
 
 #define BLACK_SOLID GFX_RGBA(0, 0, 0, 255)
 
@@ -125,7 +128,7 @@ static void lab_set_text(LABEL *l, char *new_txt)
 {
 	if ((!l) || (!l->ld)) return;
 	if (l->ld->text) free(l->ld->text);
-	l->ld->text = dope_strdup(new_txt);
+	l->ld->text = strdup(new_txt);
 	l->wd->update |= WID_UPDATE_MINMAX;
 }
 
@@ -144,11 +147,11 @@ static char *lab_get_text(LABEL *l)
  */
 static void lab_set_font(LABEL *l, char *fontname)
 {
-	if (dope_streq(fontname, "default", 255)) {
+	if (mtk_streq(fontname, "default", 255)) {
 		l->ld->font_id = 0;
-	} else if (dope_streq(fontname, "monospaced", 255)) {
+	} else if (mtk_streq(fontname, "monospaced", 255)) {
 		l->ld->font_id = 1;
-	} else if (dope_streq(fontname, "title", 255)) {
+	} else if (mtk_streq(fontname, "title", 255)) {
 		l->ld->font_id = 2;
 	}
 	l->wd->update |= WID_UPDATE_MINMAX;
@@ -230,7 +233,7 @@ static LABEL *create(void)
 	SET_WIDGET_DEFAULTS(new, struct label, &lab_methods);
 
 	/* set label specific attributes */
-	new->ld->text   = dope_strdup("");
+	new->ld->text = strdup("");
 	update_text_pos(new);
 	gen_methods.update(new);
 
@@ -265,7 +268,7 @@ static void build_script_lang(void)
 }
 
 
-int init_label(struct dope_services *d)
+int init_label(struct mtk_services *d)
 {
 	widman  = d->get_module("WidgetManager 1.0");
 	gfx     = d->get_module("Gfx 1.0");

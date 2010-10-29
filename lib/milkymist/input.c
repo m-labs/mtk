@@ -1,5 +1,5 @@
 /*
- * \brief   DOpE input driver module for Milkymist/RTEMS
+ * \brief   MTK input driver module for Milkymist/RTEMS
  */
 
 /*
@@ -7,7 +7,7 @@
  * Genode Labs, Feske & Helmuth Systementwicklung GbR
  * Copyright (C) 2010 Sebastien Bourdeauducq <sebastien.bourdeauducq@lekernel.net>
  *
- * This file is part of the DOpE-embedded package, which is distributed
+ * This file is part of the MTK-embedded package, which is distributed
  * under the terms of the GNU General Public License version 2.
  */
 
@@ -22,7 +22,7 @@
 #include <bsp/milkymist_usbinput.h>
 
 /* local includes */
-#include "dopestd.h"
+#include "mtkstd.h"
 #include "event.h"
 #include "input.h"
 #include "keycodes.h"
@@ -59,13 +59,13 @@ static int keyb_translation_table[256] = {
 };
 
 
-int init_input(struct dope_services *d);
+int init_input(struct mtk_services *d);
 
 /**********************
  ** System interface **
  **********************/
 
-int dope_rtems_input_fd;
+int mtk_rtems_input_fd;
 
 #define MOUSE_LEFT       0x01000000
 #define MOUSE_RIGHT      0x02000000
@@ -88,34 +88,34 @@ static u32 old_mstate;
 static u32 new_mstate;
 
 /**
- * Convert mouse event to dope event
+ * Convert mouse event to mtk event
  */
 static int handle_mouse_event(EVENT *e)
 {
 	/* left mouse button pressed */
 	if (!(old_mstate & MOUSE_LEFT) && (new_mstate & MOUSE_LEFT)) {
-		write_event(e, EVENT_PRESS, DOPE_BTN_LEFT, 0, 0);
+		write_event(e, EVENT_PRESS, MTK_BTN_LEFT, 0, 0);
 		old_mstate |= MOUSE_LEFT;
 		return 1;
 	}
 
 	/* left mouse button released */
 	if ((old_mstate & MOUSE_LEFT) && !(new_mstate & MOUSE_LEFT)) {
-		write_event(e, EVENT_RELEASE, DOPE_BTN_LEFT, 0, 0);
+		write_event(e, EVENT_RELEASE, MTK_BTN_LEFT, 0, 0);
 		old_mstate &= ~MOUSE_LEFT;
 		return 1;
 	}
 
 	/* right mouse button pressed */
 	if (!(old_mstate & MOUSE_RIGHT) && (new_mstate & MOUSE_RIGHT)) {
-		write_event(e, EVENT_PRESS, DOPE_BTN_RIGHT, 0, 0);
+		write_event(e, EVENT_PRESS, MTK_BTN_RIGHT, 0, 0);
 		old_mstate |= MOUSE_RIGHT;
 		return 1;
 	}
 
 	/* right mouse button released */
 	if ((old_mstate & MOUSE_RIGHT) && !(new_mstate & MOUSE_RIGHT)) {
-		write_event(e, EVENT_RELEASE, DOPE_BTN_RIGHT, 0, 0);
+		write_event(e, EVENT_RELEASE, MTK_BTN_RIGHT, 0, 0);
 		old_mstate &= ~MOUSE_RIGHT;
 		return 1;
 	}
@@ -136,7 +136,7 @@ static int handle_mouse_event(EVENT *e)
 }
 
 /**
- * Convert keyboard event to dope event
+ * Convert keyboard event to mtk event
  */
 
 int pending_scancode_state;
@@ -183,7 +183,7 @@ static int get_event(EVENT *e)
 	else {
 		int r;
 
-		r = read(dope_rtems_input_fd, &data, 4);
+		r = read(mtk_rtems_input_fd, &data, 4);
 		if(r <= 0)
 			return 0;
 		else if(r == 2)
@@ -208,11 +208,11 @@ static struct input_services input = {
  ** Module entry point **
  ************************/
 
-int init_input(struct dope_services *d)
+int init_input(struct mtk_services *d)
 {
-	dope_rtems_input_fd = open("/dev/usbinput", O_RDONLY);
-	assert(dope_rtems_input_fd != -1);
-	ioctl(dope_rtems_input_fd, USBINPUT_SETTIMEOUT, 1);
+	mtk_rtems_input_fd = open("/dev/usbinput", O_RDONLY);
+	assert(mtk_rtems_input_fd != -1);
+	ioctl(mtk_rtems_input_fd, USBINPUT_SETTIMEOUT, 1);
 	old_mstate = 0;
 	new_mstate = 0;
 	pending_scancode_state = 0;

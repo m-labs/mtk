@@ -1,20 +1,20 @@
 /*
- * \brief   DOpE entry function
+ * \brief   MTK entry function
  *
- * This file describes the startup of DOpE. It
+ * This file describes the startup of MTK. It
  * initialises all needed modules and calls the
- * eventloop (see eventloop.c) of DOpE.
+ * eventloop (see eventloop.c) of MTK.
  */
 
 /*
  * Copyright (C) 2002-2008 Norman Feske <norman.feske@genode-labs.com>
  * Genode Labs, Feske & Helmuth Systementwicklung GbR
  *
- * This file is part of the DOpE-embedded package, which is distributed
+ * This file is part of the MTK package, which is distributed
  * under the terms of the GNU General Public License version 2.
  */
 
-#include "dopestd.h"
+#include "mtkstd.h"
 #include "scheduler.h"
 #include "gfx.h"
 #include "userstate.h"
@@ -41,58 +41,58 @@ extern void *pool_get(char *name);
 /**
  * Prototypes from 'modules'
  */
-extern int init_keymap           (struct dope_services *);
-extern int init_clipping         (struct dope_services *);
-extern int init_scrdrv           (struct dope_services *);
-extern int init_input            (struct dope_services *);
-extern int init_viewman          (struct dope_services *);
-extern int init_widman           (struct dope_services *);
-extern int init_screen           (struct dope_services *);
-extern int init_timer            (struct dope_services *);
-extern int init_tick             (struct dope_services *);
-extern int init_relax            (struct dope_services *);
-extern int init_button           (struct dope_services *);
-extern int init_entry            (struct dope_services *);
-extern int init_edit             (struct dope_services *);
-extern int init_loaddisplay      (struct dope_services *);
-extern int init_variable         (struct dope_services *);
-extern int init_label            (struct dope_services *);
-extern int init_list             (struct dope_services *);
-extern int init_separator        (struct dope_services *);
-extern int init_background       (struct dope_services *);
-extern int init_container        (struct dope_services *);
-extern int init_window           (struct dope_services *);
-extern int init_userstate        (struct dope_services *);
-extern int init_conv_fnt         (struct dope_services *);
-extern int init_conv_tff         (struct dope_services *);
-extern int init_fontman          (struct dope_services *);
-extern int init_gfx              (struct dope_services *);
-extern int init_gfxscr16         (struct dope_services *);
-extern int init_gfximg16         (struct dope_services *);
-extern int init_gfximg32         (struct dope_services *);
-extern int init_cache            (struct dope_services *);
-extern int init_scale            (struct dope_services *);
-extern int init_scrollbar        (struct dope_services *);
-extern int init_frame            (struct dope_services *);
-extern int init_grid             (struct dope_services *);
-extern int init_redraw           (struct dope_services *);
-extern int init_simple_scheduler (struct dope_services *);
-extern int init_hashtable        (struct dope_services *);
-extern int init_tokenizer        (struct dope_services *);
-extern int init_scope            (struct dope_services *);
-extern int init_script           (struct dope_services *);
-extern int init_appman           (struct dope_services *);
-extern int init_winlayout        (struct dope_services *);
-extern int init_messenger        (struct dope_services *);
-extern int init_sharedmem        (struct dope_services *);
-extern int init_clipboard        (struct dope_services *);
+extern int init_keymap           (struct mtk_services *);
+extern int init_clipping         (struct mtk_services *);
+extern int init_scrdrv           (struct mtk_services *);
+extern int init_input            (struct mtk_services *);
+extern int init_viewman          (struct mtk_services *);
+extern int init_widman           (struct mtk_services *);
+extern int init_screen           (struct mtk_services *);
+extern int init_timer            (struct mtk_services *);
+extern int init_tick             (struct mtk_services *);
+extern int init_relax            (struct mtk_services *);
+extern int init_button           (struct mtk_services *);
+extern int init_entry            (struct mtk_services *);
+extern int init_edit             (struct mtk_services *);
+extern int init_loaddisplay      (struct mtk_services *);
+extern int init_variable         (struct mtk_services *);
+extern int init_label            (struct mtk_services *);
+extern int init_list             (struct mtk_services *);
+extern int init_separator        (struct mtk_services *);
+extern int init_background       (struct mtk_services *);
+extern int init_container        (struct mtk_services *);
+extern int init_window           (struct mtk_services *);
+extern int init_userstate        (struct mtk_services *);
+extern int init_conv_fnt         (struct mtk_services *);
+extern int init_conv_tff         (struct mtk_services *);
+extern int init_fontman          (struct mtk_services *);
+extern int init_gfx              (struct mtk_services *);
+extern int init_gfxscr16         (struct mtk_services *);
+extern int init_gfximg16         (struct mtk_services *);
+extern int init_gfximg32         (struct mtk_services *);
+extern int init_cache            (struct mtk_services *);
+extern int init_scale            (struct mtk_services *);
+extern int init_scrollbar        (struct mtk_services *);
+extern int init_frame            (struct mtk_services *);
+extern int init_grid             (struct mtk_services *);
+extern int init_redraw           (struct mtk_services *);
+extern int init_simple_scheduler (struct mtk_services *);
+extern int init_hashtable        (struct mtk_services *);
+extern int init_tokenizer        (struct mtk_services *);
+extern int init_scope            (struct mtk_services *);
+extern int init_script           (struct mtk_services *);
+extern int init_appman           (struct mtk_services *);
+extern int init_winlayout        (struct mtk_services *);
+extern int init_messenger        (struct mtk_services *);
+extern int init_sharedmem        (struct mtk_services *);
+extern int init_clipboard        (struct mtk_services *);
 
 /**
  * Prototypes from eventloop.c
  */
-extern void eventloop(struct dope_services *);
+extern void eventloop(struct mtk_services *);
 
-struct dope_services dope = {
+struct mtk_services mtk = {
 	pool_get,
 	pool_add,
 };
@@ -104,7 +104,7 @@ int config_menubar       = 0;   /* menubar visibility                     */
 int config_dropshadows   = 0;   /* draw dropshadows behind windows        */
 int config_adapt_redraw  = 0;   /* adapt redraw to duration time          */
 
-int dope_main()
+int mtk_main()
 {
 	INFO(char *dbg="Main(init): ");
 
@@ -113,139 +113,139 @@ int dope_main()
 	 */
 
 	INFO(printf("%sSharedMemory\n",dbg));
-	init_sharedmem(&dope);
+	init_sharedmem(&mtk);
 
 	INFO(printf("%sTimer\n",dbg));
-	init_timer(&dope);
+	init_timer(&mtk);
 
 	INFO(printf("%sTick\n",dbg));
-	init_tick(&dope);
+	init_tick(&mtk);
 
 	INFO(printf("%sRelax\n",dbg));
-	init_relax(&dope);
+	init_relax(&mtk);
 
 	INFO(printf("%sKeymap\n",dbg));
-	init_keymap(&dope);
+	init_keymap(&mtk);
 
 	INFO(printf("%sCache\n",dbg));
-	init_cache(&dope);
+	init_cache(&mtk);
 
 	INFO(printf("%sHashTable\n",dbg));
-	init_hashtable(&dope);
+	init_hashtable(&mtk);
 
 	INFO(printf("%sClipboard\n",dbg));
-	init_clipboard(&dope);
+	init_clipboard(&mtk);
 
 	INFO(printf("%sApplication Manager\n",dbg));
-	init_appman(&dope);
+	init_appman(&mtk);
 
 	INFO(printf("%sTokenizer\n",dbg));
-	init_tokenizer(&dope);
+	init_tokenizer(&mtk);
 
 	INFO(printf("%sMessenger\n",dbg));
-	init_messenger(&dope);
+	init_messenger(&mtk);
 
 	INFO(printf("%sScript\n",dbg));
-	init_script(&dope);
+	init_script(&mtk);
 
 	INFO(printf("%sClipping\n",dbg));
-	init_clipping(&dope);
+	init_clipping(&mtk);
 
 	INFO(printf("%sScreen Driver\n",dbg));
-	init_scrdrv(&dope);
+	init_scrdrv(&mtk);
 
 	INFO(printf("%sInput\n",dbg));
-	init_input(&dope);
+	init_input(&mtk);
 
 	INFO(printf("%sViewManager\n",dbg));
-	init_viewman(&dope);
+	init_viewman(&mtk);
 
 	INFO(printf("%sConvertFNT\n",dbg));
-	init_conv_fnt(&dope);
+	init_conv_fnt(&mtk);
 
 	INFO(printf("%sConvertTFF\n",dbg));
-	init_conv_tff(&dope);
+	init_conv_tff(&mtk);
 
 	INFO(printf("%sFontManager\n",dbg));
-	init_fontman(&dope);
+	init_fontman(&mtk);
 
 	INFO(printf("%sGfxScreen16\n",dbg));
-	init_gfxscr16(&dope);
+	init_gfxscr16(&mtk);
 
 	INFO(printf("%sGfxImage16\n",dbg));
-	init_gfximg16(&dope);
+	init_gfximg16(&mtk);
 
 	INFO(printf("%sGfxImage32\n",dbg));
-	init_gfximg32(&dope);
+	init_gfximg32(&mtk);
 
 	INFO(printf("%sGfx\n",dbg));
-	init_gfx(&dope);
+	init_gfx(&mtk);
 
 	INFO(printf("%sRedrawManager\n",dbg));
-	init_redraw(&dope);
+	init_redraw(&mtk);
 
 	INFO(printf("%sUserState\n",dbg));
-	init_userstate(&dope);
+	init_userstate(&mtk);
 
 	INFO(printf("%sWidgetManager\n",dbg));
-	init_widman(&dope);
+	init_widman(&mtk);
 
 	INFO(printf("%sScope\n",dbg));
-	init_scope(&dope);
+	init_scope(&mtk);
 
 	INFO(printf("%sButton\n",dbg));
-	init_button(&dope);
+	init_button(&mtk);
 
 	INFO(printf("%sEntry\n",dbg));
-	init_entry(&dope);
+	init_entry(&mtk);
 
 	INFO(printf("%sEdit\n",dbg));
-	init_edit(&dope);
+	init_edit(&mtk);
 
 	INFO(printf("%sVariable\n",dbg));
-	init_variable(&dope);
+	init_variable(&mtk);
 
 	INFO(printf("%sLabel\n",dbg));
-	init_label(&dope);
+	init_label(&mtk);
 
 	INFO(printf("%sLabel\n",dbg));
-	init_list(&dope);
+	init_list(&mtk);
 
 	INFO(printf("%sSeparator\n",dbg));
-	init_separator(&dope);
+	init_separator(&mtk);
 
 	INFO(printf("%sLoadDisplay\n",dbg));
-	init_loaddisplay(&dope);
+	init_loaddisplay(&mtk);
 
 	INFO(printf("%sBackground\n",dbg));
-	init_background(&dope);
+	init_background(&mtk);
 
 	INFO(printf("%sScrollbar\n",dbg));
-	init_scrollbar(&dope);
+	init_scrollbar(&mtk);
 
 	INFO(printf("%sScale\n",dbg));
-	init_scale(&dope);
+	init_scale(&mtk);
 
 	INFO(printf("%sFrame\n",dbg));
-	init_frame(&dope);
+	init_frame(&mtk);
 
 	INFO(printf("%sContainer\n",dbg));
-	init_container(&dope);
+	init_container(&mtk);
 
 	INFO(printf("%sGrid\n",dbg));
-	init_grid(&dope);
+	init_grid(&mtk);
 
 	INFO(printf("%sWinLayout\n",dbg));
-	init_winlayout(&dope);
+	init_winlayout(&mtk);
 
 	INFO(printf("%sWindow\n",dbg));
-	init_window(&dope);
+	init_window(&mtk);
 
 	INFO(printf("%sScreen\n",dbg));
-	init_screen(&dope);
+	init_screen(&mtk);
 
 	INFO(printf("%sScheduler\n",dbg));
-	init_simple_scheduler(&dope);
+	init_simple_scheduler(&mtk);
 
 	INFO(printf("%screate screen\n",dbg));
 	{

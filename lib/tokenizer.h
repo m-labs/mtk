@@ -6,12 +6,12 @@
  * Copyright (C) 2002-2008 Norman Feske <norman.feske@genode-labs.com>
  * Genode Labs, Feske & Helmuth Systementwicklung GbR
  *
- * This file is part of the DOpE-embedded package, which is distributed
+ * This file is part of the MTK package, which is distributed
  * under the terms of the GNU General Public License version 2.
  */
 
-#ifndef _DOPE_TOKENIZER_H_
-#define _DOPE_TOKENIZER_H_
+#ifndef _MTK_TOKENIZER_H_
+#define _MTK_TOKENIZER_H_
 
 #define TOKEN_EMPTY     0
 #define TOKEN_IDENT     1       /* identifier */
@@ -26,4 +26,4 @@ struct tokenizer_services {
 	int (*toktype)(const char *str, u32 offset);
 };
 
-#endif /* _DOPE_TOKENIZER_H_ */
+#endif /* _MTK_TOKENIZER_H_ */

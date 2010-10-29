@@ -1,17 +1,17 @@
 /*
- * \brief   Interface of the userstate handler module of DOpE
+ * \brief   Interface of the userstate handler module of MTK
  */
 
 /*
  * Copyright (C) 2002-2008 Norman Feske <norman.feske@genode-labs.com>
  * Genode Labs, Feske & Helmuth Systementwicklung GbR
  *
- * This file is part of the DOpE-embedded package, which is distributed
+ * This file is part of the MTK package, which is distributed
  * under the terms of the GNU General Public License version 2.
  */
 
-#ifndef _DOPE_USERSTATE_H_
-#define _DOPE_USERSTATE_H_
+#ifndef _MTK_USERSTATE_H_
+#define _MTK_USERSTATE_H_
 
 #include "widget.h"
 #include "window.h"
@@ -49,4 +49,4 @@ struct userstate_services {
 };
 
 
-#endif /* _DOPE_USERSTATE_H_ */
+#endif /* _MTK_USERSTATE_H_ */

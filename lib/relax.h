@@ -6,12 +6,12 @@
  * Copyright (C) 2004-2008 Norman Feske <norman.feske@genode-labs.com>
  * Genode Labs, Feske & Helmuth Systementwicklung GbR
  *
- * This file is part of the DOpE-embedded package, which is distributed
+ * This file is part of the MTK package, which is distributed
  * under the terms of the GNU General Public License version 2.
  */
 
-#ifndef _DOPE_RELAX_H_
-#define _DOPE_RELAX_H_
+#ifndef _MTK_RELAX_H_
+#define _MTK_RELAX_H_
 
 #define RELAX struct relax
 RELAX {
@@ -27,4 +27,4 @@ struct relax_services {
 };
 
 
-#endif /* _DOPE_RELAX_H_ */
+#endif /* _MTK_RELAX_H_ */

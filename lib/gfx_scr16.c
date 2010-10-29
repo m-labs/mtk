@@ -1,16 +1,16 @@
 /*
- * \brief  DOpE gfx 16bit screen handler module
+ * \brief  MTK gfx 16bit screen handler module
  */
 
 /*
  * Copyright (C) 2003-2008 Norman Feske <norman.feske@genode-labs.com>
  * Genode Labs, Feske & Helmuth Systementwicklung GbR
  *
- * This file is part of the DOpE-embedded package, which is distributed
+ * This file is part of the MTK package, which is distributed
  * under the terms of the GNU General Public License version 2.
  */
 
-#include "dopestd.h"
+#include "mtkstd.h"
 #include "scrdrv.h"
 #include "cache.h"
 #include "fontman.h"
@@ -57,7 +57,7 @@ static struct scrdrv_services   *scrdrv;
 static struct fontman_services  *fontman;
 static struct clipping_services *clip;
 
-int init_gfxscr16(struct dope_services *d);
+int init_gfxscr16(struct mtk_services *d);
 
 
 /*********************************************************************
@@ -105,7 +105,7 @@ static struct gfx_handler_services services = {
  ** Module entry point **
  ************************/
 
-int init_gfxscr16(struct dope_services *d)
+int init_gfxscr16(struct mtk_services *d)
 {
 	scrdrv  = d->get_module("ScreenDriver 1.0");
 	fontman = d->get_module("FontManager 1.0");

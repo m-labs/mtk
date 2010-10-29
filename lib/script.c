@@ -1,16 +1,18 @@
 /*
- * \brief   DOpE command interpreter module
+ * \brief   MTK command interpreter module
  */
 
 /*
  * Copyright (C) 2002-2008 Norman Feske <norman.feske@genode-labs.com>
  * Genode Labs, Feske & Helmuth Systementwicklung GbR
  *
- * This file is part of the DOpE-embedded package, which is distributed
+ * This file is part of the MTK package, which is distributed
  * under the terms of the GNU General Public License version 2.
  */
 
-#include "dopestd.h"
+#include <stdio.h>
+#include <stdlib.h>
+#include "mtkstd.h"
 #include "widget.h"
 #include "appman.h"
 #include "hashtab.h"
@@ -20,7 +22,7 @@
 #include "window.h"
 #include "widget_data.h"
 
-#include "dopedef.h"
+#include "mtkdef.h"
 
 #define WIDTYPE_HASHTAB_SIZE  32
 #define WIDTYPE_HASH_CHARS    5
@@ -33,7 +35,7 @@
 
 #define MAX_TOKENS    256   /* max number of command tokens             */
 #define MAX_ARGSTRING 32768 /* max length of string argument            */
-#define MAX_ARGS      16    /* max number of arguments per dope command */
+#define MAX_ARGS      16    /* max number of arguments per mtk command */
 #define MAX_ERRBUF    256   /* max size of error result substring       */
 
 static struct appman_services    *appman;
@@ -146,7 +148,7 @@ struct attrib {
 #define CMD_TYPE_REQUEST    3
 
 
-int init_script(struct dope_services *d);
+int init_script(struct mtk_services *d);
 
 
 /********************************
@@ -164,7 +166,7 @@ int init_script(struct dope_services *d);
 	if (ci->dst)                                                \
 		snprintf(ci->dst, ci->dst_len, "Error: " fmt, ## args); \
 	printf("Error: " fmt, ## args); printf("\n");               \
-	return DOPECMD_ERR_ ## errtype;                             \
+	return MTKCMD_ERR_ ## errtype;                             \
 }
 
 
@@ -173,7 +175,7 @@ int init_script(struct dope_services *d);
  */
 #define WARN(errtype, fmt, args...) {               \
 	printf("Warning: " fmt, ## args); printf("\n"); \
-	return DOPECMD_WARN_ ## errtype;                \
+	return MTKCMD_WARN_ ## errtype;                \
 }
 
 
@@ -289,11 +291,11 @@ static char *new_symbol(const char *s,u32 length)
 static u32 get_baseclass(char *vartype)
 {
 	if (!vartype) return 0;
-	if (dope_streq(vartype,"long",    5)) return VAR_BASECLASS_LONG;
-	if (dope_streq(vartype,"float",   6)) return VAR_BASECLASS_FLOAT;
-	if (dope_streq(vartype,"string",  7)) return VAR_BASECLASS_STRING;
-	if (dope_streq(vartype,"boolean", 8)) return VAR_BASECLASS_BOOLEAN;
-	if (dope_streq(vartype,"Widget",  7)) return VAR_BASECLASS_WIDGET;
+	if (mtk_streq(vartype,"long",    5)) return VAR_BASECLASS_LONG;
+	if (mtk_streq(vartype,"float",   6)) return VAR_BASECLASS_FLOAT;
+	if (mtk_streq(vartype,"string",  7)) return VAR_BASECLASS_STRING;
+	if (mtk_streq(vartype,"boolean", 8)) return VAR_BASECLASS_BOOLEAN;
+	if (mtk_streq(vartype,"Widget",  7)) return VAR_BASECLASS_WIDGET;
 	if (hashtab->get_elem(widtypes, vartype, 255)) return VAR_BASECLASS_WIDGET;
 	return VAR_BASECLASS_UNDEFINED;
 }
@@ -329,13 +331,13 @@ static int convert_value_arg(int baseclass, char *value, int len,
 			return 0;
 
 		case VAR_BASECLASS_BOOLEAN:
-			if (dope_streq(value,"yes", len) || dope_streq(value,"true", len) ||
-			    dope_streq(value,"on",  len) || dope_streq(value,"1",    len)) {
+			if (mtk_streq(value,"yes", len) || mtk_streq(value,"true", len) ||
+			    mtk_streq(value,"on",  len) || mtk_streq(value,"1",    len)) {
 				dst->boolean_value = 1;
 				return 0;
 			}
-			if (dope_streq(value,"no",  len) || dope_streq(value,"false", len) ||
-			    dope_streq(value,"off", len) || dope_streq(value,"0",     len)) {
+			if (mtk_streq(value,"no",  len) || mtk_streq(value,"false", len) ||
+			    mtk_streq(value,"off", len) || mtk_streq(value,"0",     len)) {
 				dst->boolean_value = 0;
 				return 0;
 			}
@@ -351,12 +353,12 @@ static int convert_value_arg(int baseclass, char *value, int len,
 			return 0;
 
 		case VAR_BASECLASS_WIDGET:
-			if (dope_streq(value, "none", len)) {
+			if (mtk_streq(value, "none", len)) {
 				dst->widget = NULL;
 				return 0;
 			}
 	}
-	return DOPECMD_ERR_INVALID_ARG;
+	return MTKCMD_ERR_INVALID_ARG;
 }
 
 
@@ -449,7 +451,7 @@ static int convert_result(int baseclass, union arg *value, char *dst, int dst_le
 			snprintf(dst, dst_len, "%ld", value->long_value);
 			return 0;
 		case VAR_BASECLASS_FLOAT:
-			dope_ftoa(value->float_value, 4, dst, dst_len);
+			mtk_ftoa(value->float_value, 4, dst, dst_len);
 			return 0;
 		case VAR_BASECLASS_STRING:
 			if (!value->string) return 0;
@@ -509,7 +511,7 @@ static void register_widget_method(struct widtype *widtype, char *desc, void *me
 	cl = (struct methodarg **)&method->args;
 
 	/* scan arguments and build argument list */
-	if (!dope_streq(tokens[3], "void", tok_len[3])) {
+	if (!mtk_streq(tokens[3], "void", tok_len[3])) {
 		for (i=3; i<num_tok;) {
 			m_arg = new_methodarg();
 
@@ -912,7 +914,7 @@ static int exec_function(INTERPRETER *ci, WIDGET *w, struct widtype *w_type,
 
 		CHECK(constraints_tag(ci, tok));
 		for (o_arg = m_arg, i = num_args; o_arg; o_arg = o_arg->next, i++)
-			if (dope_streq(tag+1, o_arg->arg_name, ci->tok_len[tok]-1))
+			if (mtk_streq(tag+1, o_arg->arg_name, ci->tok_len[tok]-1))
 				break;
 
 		if (!o_arg)
@@ -938,7 +940,7 @@ static int exec_attrib(INTERPRETER *ci, WIDGET *w, struct attrib *attrib, int to
 {
 	union arg res;
 
-	if (!ci->dst) return DOPE_ERR_PERM;
+	if (!ci->dst) return MTK_ERR_PERM;
 
 	if (!attrib)
 		ERR(NO_SUCH_MEMBER, "attribute '%s' does not exist", attrib->name);
@@ -946,7 +948,7 @@ static int exec_attrib(INTERPRETER *ci, WIDGET *w, struct attrib *attrib, int to
 	if (!attrib->get)
 		ERR(ATTR_R_PERM, "attribute '%s' is not readable", attrib->name);
 
-	if (dope_streq(attrib->type, "float", 6)) {
+	if (mtk_streq(attrib->type, "float", 6)) {
 		float (*float_get)(WIDGET *w) = (float (*)(WIDGET *))attrib->get;
 		res.float_value = float_get(w);
 	} else {
@@ -973,7 +975,7 @@ static int exec_command(u32 app_id, const char *cmd, char *dst, int dst_len)
 	ci->dst_len = dst_len;
 	ci->scope   = appman->get_rootscope(app_id);
 
-	if (!(s = ci->scope)) return DOPE_ERR_PERM;
+	if (!(s = ci->scope)) return MTK_ERR_PERM;
 
 	ci->num_tok = tokenizer->parse(cmd, MAX_TOKENS, &ci->tok_off[0], &ci->tok_len[0]);
 	for (i=0; i<ci->num_tok; i++) {
@@ -1006,7 +1008,7 @@ static int exec_command(u32 app_id, const char *cmd, char *dst, int dst_len)
 		if (ci->num_tok < tok + 4)
 			ERR(UNCOMPLETE, "unexpected end of command");
 
-		if (!dope_streq(ci->tokens[tok + 2], "new", ci->tok_len[tok + 2]))
+		if (!mtk_streq(ci->tokens[tok + 2], "new", ci->tok_len[tok + 2]))
 			ERR(ILLEGAL_CMD, "unknown keyword '%s'", err_token(ci, tok + 2));
 
 		w_type = hashtab->get_elem(widtypes, ci->tokens[tok + 3], ci->tok_len[tok + 3]);
@@ -1036,7 +1038,7 @@ static int exec_command(u32 app_id, const char *cmd, char *dst, int dst_len)
 
 		/* assign method result to variable */
 		if (res_type) {
-			if (dope_streq(res_type, "Widget", 7)) {
+			if (mtk_streq(res_type, "Widget", 7)) {
 				res_type = ((WIDGET *)res_value)->gen->get_type(res_value);
 			}
 			s->scope->set_var(s, res_type, ci->tokens[tok], ci->tok_len[tok], res_value);
@@ -1064,7 +1066,7 @@ static int exec_command(u32 app_id, const char *cmd, char *dst, int dst_len)
 
 			if (meth) {
 				return exec_function(ci, w, w_type, meth, tok + 1);
-			} else if (dope_streq(ci->tokens[tok], "set", ci->tok_len[tok])) {
+			} else if (mtk_streq(ci->tokens[tok], "set", ci->tok_len[tok])) {
 				return exec_set(ci, w, w_type, tok + 1);
 			}
 		}
@@ -1104,7 +1106,7 @@ static struct script_services services = {
  ** Module entry point **
  ************************/
 
-int init_script(struct dope_services *d)
+int init_script(struct mtk_services *d)
 {
 	hashtab     = d->get_module("HashTable 1.0");
 	appman      = d->get_module("ApplicationManager 1.0");

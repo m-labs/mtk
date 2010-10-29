@@ -1,5 +1,5 @@
 /*
- * \brief   DOpE cache handling module
+ * \brief   MTK cache handling module
  *
  * This module provides the needed functionality
  * to handle caches.  Although the caches can be
@@ -12,11 +12,12 @@
  * Copyright (C) 2002-2008 Norman Feske <norman.feske@genode-labs.com>
  * Genode Labs, Feske & Helmuth Systementwicklung GbR
  *
- * This file is part of the DOpE-embedded package, which is distributed
+ * This file is part of the MTK package, which is distributed
  * under the terms of the GNU General Public License version 2.
  */
 
-#include "dopestd.h"
+#include <stdlib.h>
+#include "mtkstd.h"
 #include "cache.h"
 
 struct cache_elem {
@@ -35,7 +36,7 @@ struct cache {
 	struct cache_elem *elem; /* pointer to ring buffer */
 };
 
-int init_cache(struct dope_services *d);
+int init_cache(struct mtk_services *d);
 
 
 /***********************
@@ -209,7 +210,7 @@ static struct cache_services services = {
  ** Module entry point **
  ************************/
 
-int init_cache(struct dope_services *d)
+int init_cache(struct mtk_services *d)
 {
 	d->register_module("Cache 1.0",&services);
 	return 1;

@@ -1,5 +1,5 @@
 /*
- * \brief   DOpE keymap module
+ * \brief   MTK keymap module
  *
  * Functions to map keycodes to its corresponding
  * ASCII values while taking modifier keys (e.g.
@@ -10,11 +10,11 @@
  * Copyright (C) 2002-2008 Norman Feske <norman.feske@genode-labs.com>
  * Genode Labs, Feske & Helmuth Systementwicklung GbR
  *
- * This file is part of the DOpE-embedded package, which is distributed
+ * This file is part of the MTK package, which is distributed
  * under the terms of the GNU General Public License version 2.
  */
 
-#include "dopestd.h"
+#include "mtkstd.h"
 #include "keymap.h"
 
 #define BS  8
@@ -44,7 +44,7 @@ static char shift[128] = {
 	 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 ,DEG, 0 ,
 };
 
-int init_keymap(struct dope_services *d);
+int init_keymap(struct mtk_services *d);
 
 /***********************
  ** Service functions **
@@ -81,7 +81,7 @@ static struct keymap_services services = {
  ** Module entry point **
  ************************/
 
-int init_keymap(struct dope_services *d)
+int init_keymap(struct mtk_services *d)
 {
 	d->register_module("Keymap 1.0",&services);
 	return 1;

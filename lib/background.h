@@ -1,17 +1,17 @@
 /*
- * \brief   Interface of DOpE Background widget module
+ * \brief   Interface of MTK Background widget module
  */
 
 /*
  * Copyright (C) 2002-2008 Norman Feske <norman.feske@genode-labs.com>
  * Genode Labs, Feske & Helmuth Systementwicklung GbR
  *
- * This file is part of the DOpE-embedded package, which is distributed
+ * This file is part of the MTK package, which is distributed
  * under the terms of the GNU General Public License version 2.
  */
 
-#ifndef _DOPE_BACKGROUND_H_
-#define _DOPE_BACKGROUND_H_
+#ifndef _MTK_BACKGROUND_H_
+#define _MTK_BACKGROUND_H_
 
 struct background_methods;
 struct background_data;
@@ -38,4 +38,4 @@ struct background_services {
 };
 
 
-#endif /* _DOPE_BACKGROUND_H_ */
+#endif /* _MTK_BACKGROUND_H_ */

@@ -1,7 +1,7 @@
 /*
- * \brief   DOpE messenger module
+ * \brief   MTK messenger module
  *
- * This module enables DOpE to tell its clients about
+ * This module enables MTK to tell its clients about
  * events. It uses DICE to communicate.
  */
 
@@ -9,12 +9,12 @@
  * Copyright (C) 2002-2008 Norman Feske <norman.feske@genode-labs.com>
  * Genode Labs, Feske & Helmuth Systementwicklung GbR
  *
- * This file is part of the DOpE-embedded package, which is distributed
+ * This file is part of the MTK package, which is distributed
  * under the terms of the GNU General Public License version 2.
  */
 
-#include "dopeapp-client.h"
-#include "dopestd.h"
+#include "mtkapp-client.h"
+#include "mtkstd.h"
 #include "event.h"
 #include "appman.h"
 #include "messenger.h"
@@ -22,7 +22,7 @@
 static struct appman_services *appman;
 static CORBA_Environment env = dice_default_environment;
 
-int init_messenger(struct dope_services *d);
+int init_messenger(struct mtk_services *d);
 
 
 /***********************
@@ -31,7 +31,7 @@ int init_messenger(struct dope_services *d);
 
 static void send_input_event(s32 app_id,EVENT *e,char *bindarg)
 {
-	dope_event_u de;
+	mtk_event_u de;
 	CORBA_Object listener = appman->get_listener(app_id);
 
 	INFO(printf("Messenger(send_input_event)\n");)
@@ -78,20 +78,20 @@ static void send_input_event(s32 app_id,EVENT *e,char *bindarg)
 
 	INFO(printf("Messenger(send_event): event type = %d\n",(int)de._d));
 	INFO(printf("Messenger(send_event): try to deliver event\n");)
-	dopeapp_listener_event_call(listener, &de, bindarg, &env);
+	mtkapp_listener_event_call(listener, &de, bindarg, &env);
 	INFO(printf("Messenger(send_event): oki\n");)
 }
 
 
 static void send_action_event(s32 app_id,char *action,char *bindarg)
 {
-	dope_event_u de;
+	mtk_event_u de;
 	CORBA_Object listener = appman->get_listener(app_id);
 
 	if (!listener || !action  || !bindarg) return;
 	de._d = 1;
 	de._u.command.cmd = action;
-	dopeapp_listener_event_call(listener,&de,bindarg,&env);
+	mtkapp_listener_event_call(listener,&de,bindarg,&env);
 }
 
 
@@ -109,7 +109,7 @@ static struct messenger_services services = {
  ** Module entry point **
  ************************/
 
-int init_messenger(struct dope_services *d)
+int init_messenger(struct mtk_services *d)
 {
 	appman = d->get_module("ApplicationManager 1.0");
 

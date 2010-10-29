@@ -1,5 +1,5 @@
 /*
- * \brief   DOpE Entry widget module
+ * \brief   MTK Entry widget module
  */
 
 /*
@@ -7,7 +7,7 @@
  * Genode Labs, Feske & Helmuth Systementwicklung GbR
  * Copyright (C) 2010 Romain P <rom1@netcourrier.com>
  *
-This file is part of the DOpE-embedded package, which is distributed
+This file is part of the MTK package, which is distributed
  * under the terms of the GNU General Public License version 2.
  */
 
@@ -16,7 +16,8 @@ struct entry;
 
 #include <string.h>
 #include <stdlib.h>
-#include "dopestd.h"
+#include <stdio.h>
+#include "mtkstd.h"
 #include "entry.h"
 #include "gfx_macros.h"
 #include "widget_data.h"
@@ -64,7 +65,7 @@ struct entry_data {
 static GFX_CONTAINER *normal_img;
 static GFX_CONTAINER *focus_img;
 
-int init_entry(struct dope_services *d);
+int init_entry(struct mtk_services *d);
 
 #define BLACK_SOLID GFX_RGBA(0, 0, 0, 255)
 #define BLACK_MIXED GFX_RGBA(0, 0, 0, 127)
@@ -432,7 +433,7 @@ static void entry_handle_event(ENTRY *e, EVENT *ev, WIDGET *from)
 
 	switch (ev->type) {
 	case EVENT_RELEASE:
-		if(ev->code == DOPE_KEY_LEFTCTRL){
+		if(ev->code == MTK_KEY_LEFTCTRL){
 			ctrl_pressed = 0;
 		}
 		break;
@@ -440,7 +441,7 @@ static void entry_handle_event(ENTRY *e, EVENT *ev, WIDGET *from)
 	case EVENT_KEY_REPEAT:
 		//e->ed->sel_beg = e->ed->sel_end = e->ed->sel_w = 0;
 		switch (ev->code) {
-			case DOPE_BTN_MOUSE:
+			case MTK_BTN_MOUSE:
 				xpos -= e->ed->tx.curr + 2 + 3;
 				e->ed->curpos = get_char_index(e, xpos);
 				e->ed->sel_beg = e->ed->sel_end = e->ed->curpos;
@@ -448,38 +449,38 @@ static void entry_handle_event(ENTRY *e, EVENT *ev, WIDGET *from)
 				userstate->drag(e, NULL, sel_tick, sel_release);
 				ev_done = 1;
 				break;
-			case DOPE_KEY_LEFT:
+			case MTK_KEY_LEFT:
 				if (e->ed->curpos > 0) e->ed->curpos--;
 				sel_reset(e);
 				ev_done = 2;
 				break;
 
-			case DOPE_KEY_RIGHT:
+			case MTK_KEY_RIGHT:
 				if (e->ed->curpos < strlen(e->ed->txtbuf)) e->ed->curpos++;
 				sel_reset(e);
 				ev_done = 2;
 				break;
 
-			case DOPE_KEY_HOME:
+			case MTK_KEY_HOME:
 				e->ed->curpos = 0;
 				sel_reset(e);
 				ev_done = 2;
 				break;
 
-			case DOPE_KEY_END:
+			case MTK_KEY_END:
 				e->ed->curpos = strlen(e->ed->txtbuf);
 				sel_reset(e);
 				ev_done = 2;
 				break;
 
-			case DOPE_KEY_DELETE:
+			case MTK_KEY_DELETE:
 				if (e->ed->curpos < strlen(e->ed->txtbuf))
 					delete_char(e, e->ed->curpos);
 				sel_reset(e);
 				ev_done = 2;
 				break;
 
-			case DOPE_KEY_BACKSPACE:
+			case MTK_KEY_BACKSPACE:
 				if (e->ed->curpos > 0) {
 					e->ed->curpos--;
 					delete_char(e, e->ed->curpos);
@@ -488,18 +489,18 @@ static void entry_handle_event(ENTRY *e, EVENT *ev, WIDGET *from)
 				ev_done = 2;
 				break;
 
-			case DOPE_KEY_LEFTCTRL:
+			case MTK_KEY_LEFTCTRL:
 				ctrl_pressed = 1;
 				break;
 
-			case DOPE_KEY_C:
+			case MTK_KEY_C:
 				if(ctrl_pressed){
 					sel_copy(e);
 					ev_done = 2;
 				}
 				break;
 
-			case DOPE_KEY_X:
+			case MTK_KEY_X:
 				if(ctrl_pressed){
 					sel_cut(e);
 					sel_reset(e);
@@ -507,7 +508,7 @@ static void entry_handle_event(ENTRY *e, EVENT *ev, WIDGET *from)
 				}
 				break;
 
-			case DOPE_KEY_V:
+			case MTK_KEY_V:
 				if(ctrl_pressed){
 					clipboard_paste(e);
 					sel_reset(e);
@@ -515,7 +516,7 @@ static void entry_handle_event(ENTRY *e, EVENT *ev, WIDGET *from)
 				}
 				break;
 
-			case DOPE_KEY_ENTER:
+			case MTK_KEY_ENTER:
 
 				/* send commit event to client application */
 				{
@@ -526,7 +527,7 @@ static void entry_handle_event(ENTRY *e, EVENT *ev, WIDGET *from)
 				ev_done = 1;
 				break;
 
-			case DOPE_KEY_TAB:
+			case MTK_KEY_TAB:
 				orig_handle_event(e, ev, from);
 				return;
 		}
@@ -707,7 +708,7 @@ static void build_script_lang(void)
 }
 
 
-int init_entry(struct dope_services *d)
+int init_entry(struct mtk_services *d)
 {
 	widman    = d->get_module("WidgetManager 1.0");
 	gfx       = d->get_module("Gfx 1.0");

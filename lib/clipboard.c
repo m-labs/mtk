@@ -1,14 +1,14 @@
 /*
- * \brief   DOpE clipboard module
+ * \brief   MTK clipboard module
  */
 
 /*
  * Copyright (C) 2010 Romain P <rom1@netcourrier.com>
  *
- * This file is part of the DOpE-embedded package, which is distributed
+ * This file is part of the MTK package, which is distributed
  * under the terms of the GNU General Public License version 2.
  */
-#include "dopestd.h"
+#include "mtkstd.h"
 #include "clipboard.h"
 
 #define CLIPBOARD_SIZE 32768
@@ -18,7 +18,7 @@ struct clipboard {
 	s32 length;
 } the_clipboard;
 
-int init_clipboard(struct dope_services *d);
+int init_clipboard(struct mtk_services *d);
 
 static void clipboard_set(char *dataIn, s32 length)
 {
@@ -49,7 +49,7 @@ static struct clipboard_services services = {
  ** Module entry point **
  ************************/
 
-int init_clipboard(struct dope_services *d)
+int init_clipboard(struct mtk_services *d)
 {
 	d->register_module("Clipboard 1.0", &services);
 	return 1;

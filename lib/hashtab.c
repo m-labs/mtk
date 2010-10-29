@@ -1,5 +1,5 @@
 /*
- * \brief   DOpE hash table module
+ * \brief   MTK hash table module
  *
  * This component provides a generic interface
  * to handle hash  tables. New elements can be
@@ -12,11 +12,14 @@
  * Copyright (C) 2002-2008 Norman Feske <norman.feske@genode-labs.com>
  * Genode Labs, Feske & Helmuth Systementwicklung GbR
  *
- * This file is part of the DOpE-embedded package, which is distributed
+ * This file is part of the MTK package, which is distributed
  * under the terms of the GNU General Public License version 2.
  */
 
-#include "dopestd.h"
+#include <stdlib.h>
+#include <stdio.h>
+#include <string.h>
+#include "mtkstd.h"
 #include "hashtab.h"
 #include "list_macros.h"
 
@@ -37,7 +40,7 @@ struct hashtab {
 	struct hashtab_entry **tab;     /* hash table itself                   */
 };
 
-int init_hashtable(struct dope_services *d);
+int init_hashtable(struct mtk_services *d);
 void hashtab_print_info(HASHTAB *h);
 
 
@@ -142,7 +145,7 @@ static void *hashtab_get_elem(HASHTAB *h, char *ident, int max_len)
 	INFO(printf("hashval for %s is %ld, max_len = %d\n", ident, hashval, max_len));
 	ce = h->tab[hashval];
 	if (!ce) return NULL;
-	while (!dope_streq(ident, ce->ident, max_len)) {
+	while (!mtk_streq(ident, ce->ident, max_len)) {
 		ce = ce->next;
 		if (!ce) return NULL;
 	}
@@ -162,14 +165,14 @@ static void hashtab_remove_elem(HASHTAB *h, char *ident)
 	ce = h->tab[hashval];
 
 	/* if element is first element of bucket */
-	if (dope_streq(ident, ce->ident, 255)) {
+	if (mtk_streq(ident, ce->ident, 255)) {
 		h->tab[hashval] = ce->next;
 		free_hashtab_entry(ce);
 		return;
 	}
 	
 	/* search for for element in bucket list */
-	while (ce->next && !dope_streq(ident, ce->next->ident, 255)) {
+	while (ce->next && !mtk_streq(ident, ce->next->ident, 255)) {
 		ce = ce->next;
 	}
 	
@@ -198,7 +201,7 @@ static void hashtab_add_elem(HASHTAB *h, char *ident, void *value)
 	if (hashtab_get_elem(h, ident, 255)) hashtab_remove_elem(h, ident);
 	hashval = hash_value(ident, h->max_hash_length) % (h->tab_size);
 	ne = (struct hashtab_entry *)zalloc(sizeof(struct hashtab_entry));
-	ne->ident = dope_strdup(ident);
+	ne->ident = strdup(ident);
 	ne->value = value;
 	ne->next  = h->tab[hashval];
 	h->tab[hashval] = ne;
@@ -294,7 +297,7 @@ static struct hashtab_services services = {
  ** Module entry point **
  ************************/
 
-int init_hashtable(struct dope_services *d)
+int init_hashtable(struct mtk_services *d)
 {
 	d->register_module("HashTable 1.0", &services);
 	return 1;

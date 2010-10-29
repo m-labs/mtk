@@ -1,17 +1,17 @@
 /*
- * \brief   DOpE module structure
+ * \brief   MTK module structure
  */
 
 /*
  * Copyright (C) 2002-2008 Norman Feske <norman.feske@genode-labs.com>
  * Genode Labs, Feske & Helmuth Systementwicklung GbR
  *
- * This file is part of the DOpE-embedded package, which is distributed
+ * This file is part of the MTK package, which is distributed
  * under the terms of the GNU General Public License version 2.
  */
 
-#ifndef _DOPE_MODULE_H_
-#define _DOPE_MODULE_H_
+#ifndef _MTK_MODULE_H_
+#define _MTK_MODULE_H_
 
 struct module_info {
 	char    *type;      /* kind of module */
@@ -28,4 +28,4 @@ struct module {
 };
 
 
-#endif /* _DOPE_MODULE_H_ */
+#endif /* _MTK_MODULE_H_ */

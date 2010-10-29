@@ -1,5 +1,5 @@
 /*
- * \brief   DOpE Grid widget module
+ * \brief   MTK Grid widget module
  *
  * The Grid  layout  widget  enables the  placement
  * of  multiple  child-widgets on a  grid.  Row and
@@ -12,7 +12,7 @@
  * Copyright (C) 2002-2008 Norman Feske <norman.feske@genode-labs.com>
  * Genode Labs, Feske & Helmuth Systementwicklung GbR
  *
- * This file is part of the DOpE-embedded package, which is distributed
+ * This file is part of the MTK package, which is distributed
  * under the terms of the GNU General Public License version 2.
  */
 
@@ -20,7 +20,9 @@
 struct grid;
 #define WIDGET struct grid
 
-#include "dopestd.h"
+#include <stdlib.h>
+#include <stdio.h>
+#include "mtkstd.h"
 #include "widget_data.h"
 #include "widget_help.h"
 #include "background.h"
@@ -84,7 +86,7 @@ struct grid_data {
 };
 
 
-int init_grid(struct dope_services *d);
+int init_grid(struct mtk_services *d);
 void print_grid_info(GRID *g);
 
 
@@ -1066,7 +1068,7 @@ static void grid_handle_event(GRID *g, EVENT *ev, WIDGET *from)
 
 	if (!from
 	 || (ev->type != EVENT_PRESS)
-	 || (ev->code != DOPE_KEY_TAB)) {
+	 || (ev->code != MTK_KEY_TAB)) {
 		orig_handle_event(g, ev, from);
 		return;
 	}
@@ -1450,7 +1452,7 @@ static void build_script_lang(void)
 }
 
 
-int init_grid(struct dope_services *d)
+int init_grid(struct mtk_services *d)
 {
 	widman = d->get_module("WidgetManager 1.0");
 	gfx    = d->get_module("Gfx 1.0");

@@ -1,5 +1,5 @@
 /*
- * \brief   DOpE clipping handling module
+ * \brief   MTK clipping handling module
  *
  * This component handles clipping stacks. A
  * clipping area can be successively shrinked
@@ -10,11 +10,11 @@
  * Copyright (C) 2002-2008 Norman Feske <norman.feske@genode-labs.com>
  * Genode Labs, Feske & Helmuth Systementwicklung GbR
  *
- * This file is part of the DOpE-embedded package, which is distributed
+ * This file is part of the MTK package, which is distributed
  * under the terms of the GNU General Public License version 2.
  */
 
-#include "dopestd.h"
+#include "mtkstd.h"
 #include "clipping.h"
 
 #define CLIPSTACK_SIZE 64
@@ -26,7 +26,7 @@ static long cstack_x2[CLIPSTACK_SIZE];
 static long cstack_y2[CLIPSTACK_SIZE];
 static long csp;
 
-int init_clipping(struct dope_services *d);
+int init_clipping(struct mtk_services *d);
 
 
 /***********************
@@ -118,7 +118,7 @@ static struct clipping_services services = {
  ** Module entry point **
  ************************/
 
-int init_clipping(struct dope_services *d)
+int init_clipping(struct mtk_services *d)
 {
 	d->register_module("Clipping 1.0",&services);
 	return 1;

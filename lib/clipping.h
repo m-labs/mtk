@@ -6,12 +6,12 @@
  * Copyright (C) 2002-2008 Norman Feske <norman.feske@genode-labs.com>
  * Genode Labs, Feske & Helmuth Systementwicklung GbR
  *
- * This file is part of the DOpE-embedded package, which is distributed
+ * This file is part of the MTK package, which is distributed
  * under the terms of the GNU General Public License version 2.
  */
 
-#ifndef _DOPE_CLIPPING_H_
-#define _DOPE_CLIPPING_H_
+#ifndef _MTK_CLIPPING_H_
+#define _MTK_CLIPPING_H_
 
 struct clipping_services {
 	void     (*push)        (long x1, long y1, long x2, long y2);
@@ -25,4 +25,4 @@ struct clipping_services {
 };
 
 
-#endif /* _DOPE_CLIPPING_H_ */
+#endif /* _MTK_CLIPPING_H_ */

@@ -1,17 +1,17 @@
 /*
- * \brief   Interface of the window layout module of DOpE
+ * \brief   Interface of the window layout module of MTK
  */
 
 /*
  * Copyright (C) 2002-2008 Norman Feske <norman.feske@genode-labs.com>
  * Genode Labs, Feske & Helmuth Systementwicklung GbR
  *
- * This file is part of the DOpE-embedded package, which is distributed
+ * This file is part of the MTK package, which is distributed
  * under the terms of the GNU General Public License version 2.
  */
 
-#ifndef _DOPE_WINLAYOUT_H_
-#define _DOPE_WINLAYOUT_H_
+#ifndef _MTK_WINLAYOUT_H_
+#define _MTK_WINLAYOUT_H_
 
 #include "widget.h"
 
@@ -28,4 +28,4 @@ struct winlayout_services {
 	s32     (*get_bottom_border)   (s32 elem_mask);
 };
 
-#endif /* _DOPE_WINLAYOUT_H_ */
+#endif /* _MTK_WINLAYOUT_H_ */

@@ -1,5 +1,5 @@
 /*
- * \brief   DOpE Screen widget module
+ * \brief   MTK Screen widget module
  *
  * NOTES:
  * - Get rid of window specific stuff. Maybe by making the staytop-bit
@@ -12,14 +12,15 @@
  * Copyright (C) 2003-2008 Norman Feske <norman.feske@genode-labs.com>
  * Genode Labs, Feske & Helmuth Systementwicklung GbR
  *
- * This file is part of the DOpE-embedded package, which is distributed
+ * This file is part of the MTK package, which is distributed
  * under the terms of the GNU General Public License version 2.
  */
 
 struct screen;
 #define WIDGET struct screen
 
-#include "dopestd.h"
+#include <stdio.h>
+#include "mtkstd.h"
 #include "widget_data.h"
 #include "widget_help.h"
 #include "screen.h"
@@ -57,7 +58,7 @@ struct screen_data {
 	SCREEN *next;            /* next screen in the screen list             */
 };
 
-int init_screen(struct dope_services *d);
+int init_screen(struct mtk_services *d);
 
 SCREEN *first_scr;
 SCREEN *curr_scr;
@@ -669,7 +670,7 @@ static void scr_back(SCREEN *scr, WIDGET *win)
 	/* put window to the begin of the window list */
 	unchain_window(scr, win);
 
-	/* search for window position before DOpE default background */
+	/* search for window position before MTK default background */
 	cw = scr->sd->first_win;
 	for (; cw && cw->wd->next && cw->wd->next->wd->next; cw = cw->wd->next);
 
@@ -835,7 +836,7 @@ static void build_script_lang(void)
 }
 
 
-int init_screen(struct dope_services *d)
+int init_screen(struct mtk_services *d)
 {
 	userstate = d->get_module("UserState 1.0");
 	viewman   = d->get_module("ViewManager 1.0");

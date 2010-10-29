@@ -1,5 +1,5 @@
 /*
- * \brief   Interface of DOpE Entry widget module
+ * \brief   Interface of MTK Entry widget module
  */
 
 /*
@@ -7,12 +7,12 @@
  * Genode Labs, Feske & Helmuth Systementwicklung GbR
  * Copyright (C) 2010 Sebastien Bourdeauducq <sebastien.bourdeauducq@lekernel.net>
  *
- * This file is part of the DOpE-embedded package, which is distributed
+ * This file is part of the MTK package, which is distributed
  * under the terms of the GNU General Public License version 2.
  */
 
-#ifndef _DOPE_EDIT_H_
-#define _DOPE_EDIT_H_
+#ifndef _MTK_EDIT_H_
+#define _MTK_EDIT_H_
 
 struct edit_methods;
 struct edit_data;
@@ -36,4 +36,4 @@ struct edit_services {
 };
 
 
-#endif /* _DOPE_EDIT_H_ */
+#endif /* _MTK_EDIT_H_ */

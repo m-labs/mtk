@@ -1,5 +1,5 @@
 /*
- * \brief   DOpE Window layout module
+ * \brief   MTK Window layout module
  *
  * This module defines the layout of the window's
  * control elements.
@@ -9,11 +9,11 @@
  * Copyright (C) 2002-2008 Norman Feske <norman.feske@genode-labs.com>
  * Genode Labs, Feske & Helmuth Systementwicklung GbR
  *
- * This file is part of the DOpE-embedded package, which is distributed
+ * This file is part of the MTK package, which is distributed
  * under the terms of the GNU General Public License version 2.
  */
 
-#include "dopestd.h"
+#include "mtkstd.h"
 #include "button.h"
 #include "winlayout.h"
 #include "window.h"
@@ -33,7 +33,7 @@ static struct userstate_services    *userstate;
 static s32 bsize = 5;     /* border size */
 static s32 tsize = 17;    /* title size */
 
-int init_winlayout(struct dope_services *d);
+int init_winlayout(struct mtk_services *d);
 
 /**********************
  ** Helper functions **
@@ -135,7 +135,7 @@ static WIDGET *create_win_elements(s32 elements, int x, int y, int width, int he
 	}
 
 	if ((elements & WIN_TITLE) | (elements & WIN_CLOSER) | (elements & WIN_FULLER)) {
-		first=new_button(first,dx,dy,dw,tsize,"DOpE WINDOW",move_callback,WE_TITLE);
+		first=new_button(first,dx,dy,dw,tsize,"MTK WINDOW",move_callback,WE_TITLE);
 		dy+=tsize;dh-=tsize;
 	}
 
@@ -294,7 +294,7 @@ static struct winlayout_services services = {
 
 extern int config_winborder;
 
-int init_winlayout(struct dope_services *d)
+int init_winlayout(struct mtk_services *d)
 {
 	but       = d->get_module("Button 1.0");
 	userstate = d->get_module("UserState 1.0");

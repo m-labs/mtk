@@ -1,5 +1,5 @@
 /*
- * \brief   DOpE utility functions
+ * \brief   MTK utility functions
  *
  * This file contains several utility functions used by
  * other components. This way inconsistencies between
@@ -11,17 +11,18 @@
  * Copyright (C) 2003-2008 Norman Feske <norman.feske@genode-labs.com>
  * Genode Labs, Feske & Helmuth Systementwicklung GbR
  *
- * This file is part of the DOpE-embedded package, which is distributed
+ * This file is part of the MTK package, which is distributed
  * under the terms of the GNU General Public License version 2.
  */
 
-#include "dopestd.h"
+#include <stdlib.h>
+#include "mtkstd.h"
 
 
 /**
  * Convert a float into a string
  */
-int dope_ftoa(float v, int prec, char *dst, int max_len)
+int mtk_ftoa(float v, int prec, char *dst, int max_len)
 {
 	int dig = 0, neg = 0, zero = 0;
 
@@ -65,7 +66,7 @@ int dope_ftoa(float v, int prec, char *dst, int max_len)
 /**
  * Determines if two strings are equal
  */
-int dope_streq(const char *s1, const char *s2, int max_s1)
+int mtk_streq(const char *s1, const char *s2, int max_s1)
 {
 	int i;
 	if (!s1 || !s2) return 0;
@@ -82,28 +83,6 @@ int dope_streq(const char *s1, const char *s2, int max_s1)
 
 
 /**
- * Duplicate string
- */
-char *dope_strdup(char *s)
-{
-	char *d;
-	char *result;
-	s32 strl;
-	if (!s) return NULL;
-	strl = strlen(s);
-	if (strl >= 0) {
-		result = malloc(strl+2);
-		if (!result) return NULL;
-		d = result;
-		while (*s) *(d++) = *(s++);
-		*d = 0;
-		return result;
-	}
-	return NULL;
-}
-
-
-/**
  * Allocate memory block and set to zero
  */
 void *zalloc(unsigned long size)
@@ -112,3 +91,4 @@ void *zalloc(unsigned long size)
 	if (ret) memset(ret, 0, size);
 	return ret;
 }
+

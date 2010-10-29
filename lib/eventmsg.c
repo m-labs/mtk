@@ -1,21 +1,21 @@
 /*
- * \brief   DOpE messenger module
+ * \brief   MTK messenger module
  */
 
 /*
  * Copyright (C) 2004-2008 Norman Feske <norman.feske@genode-labs.com>
  * Genode Labs, Feske & Helmuth Systementwicklung GbR
  *
- * This file is part of the DOpE-embedded package, which is distributed
+ * This file is part of the MTK package, which is distributed
  * under the terms of the GNU General Public License version 2.
  */
 
-#include "dopestd.h"
+#include "mtkstd.h"
 #include "event.h"
 #include "messenger.h"
-#include "dopelib.h"
+#include "mtklib.h"
 
-int init_messenger(struct dope_services *d);
+int init_messenger(struct mtk_services *d);
 
 
 /********************************
@@ -41,11 +41,11 @@ static unsigned long hex2u32(const char *s)
 
 static void send_input_event(s32 app_id, EVENT *e, char *bindarg)
 {
-	void (*callback) (dope_event *, void *);
+	void (*callback) (mtk_event *, void *);
 	void *arg;
-	dope_event de;
+	mtk_event de;
 
-	callback = (void (*)(dope_event *,void*))hex2u32(bindarg);
+	callback = (void (*)(mtk_event *,void*))hex2u32(bindarg);
 	arg = (void *)hex2u32(bindarg+10);
 
 	switch (e->type) {
@@ -92,11 +92,11 @@ static void send_input_event(s32 app_id, EVENT *e, char *bindarg)
 
 static void send_action_event(s32 app_id,char *action,char *bindarg)
 {
-	void (*callback) (dope_event *, void *);
+	void (*callback) (mtk_event *, void *);
 	void *arg;
-	dope_event de;
+	mtk_event de;
 
-	callback = (void (*)(dope_event *,void*))hex2u32(bindarg);
+	callback = (void (*)(mtk_event *,void*))hex2u32(bindarg);
 	arg = (void *)hex2u32(bindarg+10);
 
 	de.type = 1;
@@ -119,7 +119,7 @@ static struct messenger_services services = {
  ** Module entry point **
  ************************/
 
-int init_messenger(struct dope_services *d)
+int init_messenger(struct mtk_services *d)
 {
 	d->register_module("Messenger 1.0",&services);
 	return 1;

@@ -1,7 +1,7 @@
 /*
- * \brief   DOpE view manager
+ * \brief   MTK view manager
  *
- * This is just a dummy implementation that is used for DOpE
+ * This is just a dummy implementation that is used for MTK
  * as standalone window server.
  */
 
@@ -9,14 +9,14 @@
  * Copyright (C) 2004-2008 Norman Feske <norman.feske@genode-labs.com>
  * Genode Labs, Feske & Helmuth Systementwicklung GbR
  *
- * This file is part of the DOpE-embedded package, which is distributed
+ * This file is part of the MTK package, which is distributed
  * under the terms of the GNU General Public License version 2.
  */
 
-#include "dopestd.h"
+#include "mtkstd.h"
 #include "viewman.h"
 
-int init_viewman(struct dope_services *d);
+int init_viewman(struct mtk_services *d);
 
 
 /***********************
@@ -115,7 +115,7 @@ static struct viewman_services services = {
  ** Module entry point **
  ************************/
 
-int init_viewman(struct dope_services *d)
+int init_viewman(struct mtk_services *d)
 {
 	d->register_module("ViewManager 1.0", &services);
 	return 1;

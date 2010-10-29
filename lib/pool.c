@@ -1,7 +1,7 @@
 /*
- * \brief   DOpE pool module
+ * \brief   MTK pool module
  *
- * Pool is the component provider of DOpE.  Each
+ * Pool is the component provider of MTK.  Each
  * component can register at  Pool by specifying
  * an identifier string and a pointer to the its
  * service structure.
@@ -14,11 +14,12 @@
  * Copyright (C) 2002-2008 Norman Feske <norman.feske@genode-labs.com>
  * Genode Labs, Feske & Helmuth Systementwicklung GbR
  *
- * This file is part of the DOpE-embedded package, which is distributed
+ * This file is part of the MTK package, which is distributed
  * under the terms of the GNU General Public License version 2.
  */
 
-#include "dopestd.h"
+#include <stdio.h>
+#include "mtkstd.h"
 
 #define MAX_POOL_ENTRIES 100
 
@@ -69,7 +70,7 @@ void pool_remove(char *name)
 	for (i=0;i<100;i++) {
 		s=pool[i].name;
 		if (s!=NULL) {
-			if (dope_streq(name,pool[i].name,255)) {
+			if (mtk_streq(name,pool[i].name,255)) {
 			    pool[i].name=NULL;
 			    pool[i].structure=NULL;
 			    pool_size--;
@@ -90,7 +91,7 @@ void *pool_get(char *name)
 	for (i=0;i<MAX_POOL_ENTRIES;i++) {
 		s=pool[i].name;
 		if (s!=NULL) {
-			if (dope_streq(name,pool[i].name,255)) {
+			if (mtk_streq(name,pool[i].name,255)) {
 				INFO(printf("Pool(get): module matched: %s\n",name));
 			    return pool[i].structure;
 			}

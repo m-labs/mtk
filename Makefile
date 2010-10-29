@@ -1,7 +1,7 @@
 help:
 	@echo "Available targets"
 	@echo "================="
-	@echo "                  Build DOpE for..."
+	@echo "                  Build MTK for..."
 	@echo "milkymist       - ... Milkymist SoC (using RTEMS). RTEMS_MAKEFILE_PATH environment variable must be set."
 	@echo ""
 	@echo "clean           - clean generated files"

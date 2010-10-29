@@ -1,5 +1,5 @@
 /*
- * \brief   DOpE Scope widget module
+ * \brief   MTK Scope widget module
  *
  * A Scope is a namespace.
  */
@@ -8,14 +8,16 @@
  * Copyright (C) 2002-2008 Norman Feske <norman.feske@genode-labs.com>
  * Genode Labs, Feske & Helmuth Systementwicklung GbR
  *
- * This file is part of the DOpE-embedded package, which is distributed
+ * This file is part of the MTK package, which is distributed
  * under the terms of the GNU General Public License version 2.
  */
 
 struct scope;
 #define WIDGET struct scope
 
-#include "dopestd.h"
+#include <stdlib.h>
+#include <stdio.h>
+#include "mtkstd.h"
 #include "hashtab.h"
 #include "scope.h"
 #include "script.h"
@@ -42,7 +44,7 @@ struct variable {
 	WIDGET *value;  /* variable value */
 };
 
-int init_scope(struct dope_services *d);
+int init_scope(struct mtk_services *d);
 
 
 /****************************
@@ -146,7 +148,7 @@ static SCOPE *scope_get_subscope(SCOPE *s, char *name, int len)
 	struct variable *v = hashtab->get_elem(s->sd->vars, name, len);
 
 	if (!v || !v->type || !v->value) return NULL;
-	if (!dope_streq(v->type, "Scope", 256)) return NULL;
+	if (!mtk_streq(v->type, "Scope", 256)) return NULL;
 
 	return v->value;
 }
@@ -224,7 +226,7 @@ static void build_script_lang(void)
 }
 
 
-int init_scope(struct dope_services *d)
+int init_scope(struct mtk_services *d)
 {
 	widman  = d->get_module("WidgetManager 1.0");
 	script  = d->get_module("Script 1.0");

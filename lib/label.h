@@ -1,17 +1,17 @@
 /*
- * \brief   Interface of DOpE Label widget module
+ * \brief   Interface of MTK Label widget module
  */
 
 /*
  * Copyright (C) 2003-2008 Norman Feske <norman.feske@genode-labs.com>
  * Genode Labs, Feske & Helmuth Systementwicklung GbR
  *
- * This file is part of the DOpE-embedded package, which is distributed
+ * This file is part of the MTK package, which is distributed
  * under the terms of the GNU General Public License version 2.
  */
 
-#ifndef _DOPE_LABEL_H_
-#define _DOPE_LABEL_H_
+#ifndef _MTK_LABEL_H_
+#define _MTK_LABEL_H_
 
 #include "widget.h"
 #include "variable.h"
@@ -42,4 +42,4 @@ struct label_services {
 };
 
 
-#endif /* _DOPE_LABEL_H_ */
+#endif /* _MTK_LABEL_H_ */
