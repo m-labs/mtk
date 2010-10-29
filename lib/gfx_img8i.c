@@ -58,7 +58,7 @@ static void *img_map(struct gfx_ds_data *img)
  ***********************/
 
 
-static struct gfx_ds_data *create(int width, int height)
+static struct gfx_ds_data *create(void *fb, int width, int height)
 {
 	struct gfx_ds_data *new = malloc(sizeof(struct gfx_ds_data) + width*height);
 	if (!new) return NULL;

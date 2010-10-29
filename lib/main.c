@@ -15,22 +15,15 @@
  */
 
 #include "mtkstd.h"
-#include "scheduler.h"
 #include "gfx.h"
 #include "userstate.h"
 #include "screen.h"
 
-static struct scheduler_services *sched;
 static struct gfx_services       *gfx;
 static struct screen_services    *screen;
 static struct userstate_services *userstate;
 
 extern SCREEN *curr_scr;
-
-/**
- * Prototypes from startup.c (in system dependent directory)
- */
-extern void native_startup(int argc, char **argv);
 
 /**
  * Prototypes from pool.c
@@ -103,7 +96,7 @@ int config_menubar       = 0;   /* menubar visibility                     */
 int config_dropshadows   = 0;   /* draw dropshadows behind windows        */
 int config_adapt_redraw  = 0;   /* adapt redraw to duration time          */
 
-int mtk_main()
+int mtk_init(void *fb, int width, int height)
 {
 	INFO(char *dbg="Main(init): ");
 
@@ -250,16 +243,12 @@ int mtk_main()
 		screen    = pool_get("Screen 1.0");
 		userstate = pool_get("UserState 1.0");
 
-		scr_ds = gfx->alloc_scr("default");
+		scr_ds = gfx->alloc_scr(fb, width, height, 16);
 		curr_scr = screen->create();
 		curr_scr->scr->set_gfx(curr_scr, scr_ds);
 		userstate->set_max_mx(gfx->get_width(scr_ds));
 		userstate->set_max_my(gfx->get_height(scr_ds));
 	}
 
-	INFO(printf("%sstarting scheduler\n",dbg));
-	if ((sched  = pool_get("Scheduler 1.0")))
-		sched->process_mainloop();
-
-	return 0;
+	return 1;
 }

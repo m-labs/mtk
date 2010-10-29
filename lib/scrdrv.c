@@ -11,13 +11,7 @@
  * General includes
  */
 
-#include <sys/types.h>
-#include <sys/stat.h>
-#include <fcntl.h>
-#include <sys/ioctl.h>
-#include <unistd.h>
 #include <assert.h>
-#include <rtems/fb.h>
 
 /**
  * Local includes
@@ -30,12 +24,8 @@ static long scr_width, scr_height, scr_depth;
 static long curr_mx = 100,curr_my = 100;
 static struct clipping_services *clip;
 
-int mtk_rtems_framebuffer_fd;
 static short *scr;
-static short buf[1024*768] __attribute__((aligned(32)));
-
-int init_scrdrv(struct mtk_services *d);
-
+static short buf[1024*768];
 
 static void draw_cursor(short *data,long x,long y)
 {
@@ -80,7 +70,6 @@ static void save_background(long x, long y)
 	}
 }
 
-
 static void restore_background(long x, long y)
 {
 	short *src = (short *)&bg_buffer;
@@ -98,10 +87,7 @@ static void restore_background(long x, long y)
 	}
 }
 
-
-extern short smallmouse_trp;
 extern short bigmouse_trp;
-
 
 /***********************
  ** Service functions **
@@ -110,21 +96,16 @@ extern short bigmouse_trp;
 /**
  * Set up screen
  */
-static long set_screen(long width, long height, long depth)
+static long set_screen(void *fb, int width, int height, int depth)
 {
 	int i;
-	struct fb_fix_screeninfo fb_fix;
 
 	scr_width  = 640;
 	scr_height = 480;
 	scr_depth  = 16;
+	scr = (short int *)fb;
 
-	mtk_rtems_framebuffer_fd = open("/dev/fb", O_RDWR);
-	assert(mtk_rtems_framebuffer_fd != -1);
-	ioctl(mtk_rtems_framebuffer_fd, FBIOGET_FSCREENINFO, &fb_fix);
-	scr = (short int *)fb_fix.smem_start;
-
-	for(i=0;i<640*480;i++) {
+	for(i=0;i<scr_width*scr_height;i++) {
 		scr[i] = 0;
 		buf[i] = 0;
 	}
@@ -132,13 +113,11 @@ static long set_screen(long width, long height, long depth)
 	return 1;
 }
 
-
 /**
  * Deinitialisation
  */
 static void restore_screen(void)
 {
-	close(mtk_rtems_framebuffer_fd);
 }
 
 
@@ -156,12 +135,12 @@ static void *get_buf_adr    (void) {return &buf;}
  * Make changes on the screen visible (buffered output)
  */
 
-static void update_area(long x1, long y1, long x2, long y2)
+static void update_area(int x1, int y1, int x2, int y2)
 {
-	long dx;
-	long dy;
-	long v;
-	long i, j;
+	int dx;
+	int dy;
+	int v;
+	int i, j;
 	u16 *src, *dst;
 	u32 *s, *d;
 	int cursor_visible = 0;
@@ -206,11 +185,10 @@ static void update_area(long x1, long y1, long x2, long y2)
 		restore_background(curr_mx, curr_my);
 }
 
-
 /**
  * Set mouse cursor to the specified position
  */
-static void set_mouse_pos(long mx, long my)
+static void set_mouse_pos(int mx, int my)
 {
 	int old_mx = curr_mx, old_my = curr_my;
 
@@ -222,7 +200,6 @@ static void set_mouse_pos(long mx, long my)
 	update_area(curr_mx, curr_my, curr_mx + 16, curr_my + 16);
 	update_area(old_mx,  old_my,  old_mx  + 16, old_my  + 16);
 }
-
 
 /**
  * Set new mouse shape
@@ -249,7 +226,6 @@ static struct scrdrv_services services = {
 	set_mouse_pos,
 	set_mouse_shape,
 };
-
 
 /************************
  ** Module entry point **

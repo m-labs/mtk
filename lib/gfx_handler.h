@@ -19,7 +19,7 @@ struct gfx_ds_data;
 struct gfx_ds_handler;
 
 struct gfx_handler_services {
-	struct gfx_ds_data *(*create) (int width, int height, struct gfx_ds_handler **handler);
+	struct gfx_ds_data *(*create) (void *fb, int width, int height, struct gfx_ds_handler **handler);
 	int (*register_gfx_handler) (struct gfx_ds_handler *handler);
 };
 

@@ -70,7 +70,7 @@ static int img_get_ident(struct gfx_ds_data *img, char *dst_ident)
  ***********************/
 
 
-static struct gfx_ds_data *create(int width, int height, struct gfx_ds_handler **handler)
+static struct gfx_ds_data *create(void *fb, int width, int height, struct gfx_ds_handler **handler)
 {
 	struct gfx_ds_data *new;
 	new = zalloc(sizeof(struct gfx_ds_data) + width*height*4);

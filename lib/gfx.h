@@ -54,7 +54,7 @@ struct gfx_ds;
 
 struct gfx_services {
 
-	GFX_CONTAINER *(*alloc_scr) (char *scrmode);
+	GFX_CONTAINER *(*alloc_scr) (void *fb, int width, int height, int depth);
 	GFX_CONTAINER *(*alloc_img) (int w, int h, enum img_type img_type);
 
 	int (*load_fnt) (char *fntname);

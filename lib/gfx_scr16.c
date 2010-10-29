@@ -76,9 +76,9 @@ static enum img_type scr_get_type(struct gfx_ds_data *s)
  ** Service functions **
  ***********************/
 
-static struct gfx_ds_data *create(int width, int height, struct gfx_ds_handler **handler)
+static struct gfx_ds_data *create(void *fb, int width, int height, struct gfx_ds_handler **handler)
 {
-	scrdrv->set_screen(width, height, 16);
+	scrdrv->set_screen(fb, width, height, 16);
 	scr_adr    = (pixel_t *)scrdrv->get_buf_adr();
 	scr_width  = scrdrv->get_scr_width();
 	scr_height = scrdrv->get_scr_height();

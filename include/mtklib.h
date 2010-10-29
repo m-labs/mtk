@@ -58,13 +58,7 @@ typedef union mtklib_event_union {
 /**
  * Initialise mtk library
  */
-extern long  mtk_init(void);
-
-
-/**
- * Deinitialise mtk library
- */
-extern void  mtk_deinit(void);
+extern int mtk_init(void *fb, int width, int height);
 
 
 /**

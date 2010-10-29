@@ -29,7 +29,7 @@ SRC_C  += \
 	scope.c       viewman.c   \
 	bigmouse.c    default_fnt.c main.c      \
 	smallmouse.c  mono_fnt.c    title_fnt.c \
-	eventmsg.c  \
+	scrdrv.c      eventmsg.c  \
 	sharedmem.c   gfx_scr16.c   scheduler.c     \
 	vera16_tff.c  edit.c        separator.c \
 	list.c        clipboard.c

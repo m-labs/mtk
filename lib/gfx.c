@@ -76,7 +76,7 @@ static void set_handler_defaults(struct gfx_ds_handler *handler)
 /**
  * Allocate and initialise gfx dataspace for screen
  */
-static struct gfx_ds *alloc_scr(char *scrmode)
+static struct gfx_ds *alloc_scr(void *fb, int width, int height, int depth)
 {
 	struct gfx_ds *new;
 
@@ -85,7 +85,7 @@ static struct gfx_ds *alloc_scr(char *scrmode)
 
 	new->handler = &gfxscr_rgb16_handler;
 	new->ref_cnt = 1;
-	new->data = gfxscr_rgb16->create(640, 480, &(new->handler));
+	new->data = gfxscr_rgb16->create(fb, width, height, &(new->handler));
 	return new;
 }
 
@@ -105,12 +105,12 @@ static struct gfx_ds *alloc_img(int w, int h, enum img_type img_type)
 
 	case GFX_IMG_TYPE_RGBA32:
 		new->handler = &gfximg_rgba32_handler;
-		new->data = gfximg_rgba32->create(w, h, &new->handler);
+		new->data = gfximg_rgba32->create(NULL, w, h, &new->handler);
 		break;
 
 	case GFX_IMG_TYPE_RGB16:
 		new->handler = &gfximg_rgb16_handler;
-		new->data = gfximg_rgb16->create(w, h, &new->handler);
+		new->data = gfximg_rgb16->create(NULL, w, h, &new->handler);
 		break;
 
 	default:
