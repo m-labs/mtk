@@ -179,6 +179,7 @@ void mtk_input(mtk_event *e)
 		}
 		userstate->handle(&internal_event);
 	}
+	redraw->process_pixels(config_redraw_granularity);
 }
 
 long mtk_get_keystate(long app_id, long keycode)
