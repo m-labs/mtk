@@ -13,7 +13,6 @@
 #ifndef _MTK_EVENT_H_
 #define _MTK_EVENT_H_
 
-
 #define EVENT_PRESS         1
 #define EVENT_RELEASE       2
 #define EVENT_MOTION        3
@@ -21,7 +20,8 @@
 #define EVENT_MOUSE_LEAVE   5
 #define EVENT_KEY_REPEAT    6
 #define EVENT_ABSMOTION     7
-#define EVENT_ACTION       99
+#define EVENT_ACTION        99
+#define EVENT_USER          1000
 
 #define EVENT struct event
 struct event {

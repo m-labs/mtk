@@ -18,6 +18,7 @@
 #define EVENT_TYPE_MOTION       2
 #define EVENT_TYPE_PRESS        3
 #define EVENT_TYPE_RELEASE      4
+#define EVENT_TYPE_USER_BASE    1000
 
 typedef struct command_event {
 	long  type;                     /* must be EVENT_TYPE_COMMAND */

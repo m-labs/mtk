@@ -140,6 +140,8 @@ void mtk_bindf(long id, const char *varfmt, const char *event_type,
 
 static long convert_type(long t)
 {
+	if(t >= EVENT_TYPE_USER_BASE)
+		return EVENT_USER;
 	switch(t) {
 		case EVENT_TYPE_MOTION: return EVENT_MOTION;
 		case EVENT_TYPE_PRESS: return EVENT_PRESS;
