@@ -55,7 +55,7 @@ typedef union mtklib_event_union {
 	keyrepeat_event keyrepeat;
 } mtk_event;
 
-#define MAX_EVENTS 48
+#define MAX_EVENTS 64
 
 /**
  * Initialise mtk library
