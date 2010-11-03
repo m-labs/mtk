@@ -59,7 +59,7 @@ int init_variable(struct mtk_services *d);
  ** General widget methods **
  ****************************/
 
-static int var_draw(VARIABLE *v, struct gfx_ds *ds, long x, long y, WIDGET *origin)
+static int var_draw(VARIABLE *v, struct gfx_ds *ds, int x, int y, WIDGET *origin)
 {
 	int tx = x + v->wd->x + 2;
 	int ty = y + v->wd->y + 2;

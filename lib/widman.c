@@ -112,19 +112,19 @@ static void wid_set_app_id(WIDGET *w, s32 new_app_id)
 /**
  * Get/set widget position relative to its parent
  */
-static long wid_get_x(WIDGET *w)
+static int wid_get_x(WIDGET *w)
 {
 	return w->wd->x;
 }
-static void wid_set_x(WIDGET *w,long new)
+static void wid_set_x(WIDGET *w,int new)
 {
 	w->wd->x = new;
 }
-static long wid_get_y(WIDGET *w)
+static int wid_get_y(WIDGET *w)
 {
 	return w->wd->y;
 }
-static void wid_set_y(WIDGET *w,long new)
+static void wid_set_y(WIDGET *w,int new)
 {
 	w->wd->y = new;
 }
@@ -133,11 +133,11 @@ static void wid_set_y(WIDGET *w,long new)
 /**
  * Get/set widget size
  */
-static long wid_get_w(WIDGET *w)
+static int wid_get_w(WIDGET *w)
 {
 	return w->wd->w;
 }
-static void wid_set_w(WIDGET *w,long new)
+static void wid_set_w(WIDGET *w,int new)
 {
 	if (new < w->wd->min_w) new = w->wd->min_w;
 	if (new > w->wd->max_w) new = w->wd->max_w;
@@ -145,11 +145,11 @@ static void wid_set_w(WIDGET *w,long new)
 		w->wd->update |= WID_UPDATE_SIZE;
 	w->wd->w = new;
 }
-static long wid_get_h(WIDGET *w)
+static int wid_get_h(WIDGET *w)
 {
 	return w->wd->h;
 }
-static void wid_set_h(WIDGET *w,long new)
+static void wid_set_h(WIDGET *w,int new)
 {
 	if (new < w->wd->min_h) new = w->wd->min_h;
 	if (new > w->wd->max_h) new = w->wd->max_h;
@@ -162,19 +162,19 @@ static void wid_set_h(WIDGET *w,long new)
 /**
  * Get minimal/maximal size of a widget
  */
-static long wid_get_min_w(WIDGET *w)
+static int wid_get_min_w(WIDGET *w)
 {
 	return w->wd->min_w;
 }
-static long wid_get_min_h(WIDGET *w)
+static int wid_get_min_h(WIDGET *w)
 {
 	return w->wd->min_h;
 }
-static long wid_get_max_w(WIDGET *w)
+static int wid_get_max_w(WIDGET *w)
 {
 	return w->wd->max_w;
 }
-static long wid_get_max_h(WIDGET *w)
+static int wid_get_max_h(WIDGET *w)
 {
 	return w->wd->max_h;
 }
@@ -191,18 +191,18 @@ static void wid_calc_minmax(WIDGET *w)
 /**
  * Determine absolute position of the widget on the screen
  */
-static long wid_get_abs_x(WIDGET *w)
+static int wid_get_abs_x(WIDGET *w)
 {
-	long x=0;
+	int x=0;
 	while ((w!=NULL) && (w!=(WIDGET *)'#')) {
 		x+=w->wd->x;
 		w=w->wd->parent;
 	}
 	return x;
 }
-static long wid_get_abs_y(WIDGET *w)
+static int wid_get_abs_y(WIDGET *w)
 {
-	long y=0;
+	int y=0;
 	while ((w!=NULL) && (w!=(WIDGET *)'#')) {
 		y+=w->wd->y;
 		w=w->wd->parent;
@@ -379,7 +379,7 @@ static void wid_set_selectable(WIDGET *w,int new_sel)
 /**
  * Draw a widget (dummy - must be overwritten by something more useful
  */
-static int wid_draw(WIDGET *w, struct gfx_ds *ds, long x, long y, WIDGET *origin)
+static int wid_draw(WIDGET *w, struct gfx_ds *ds, int x, int y, WIDGET *origin)
 {
 	w = w; x = x; y = y;    /* just to avoid warnings */
 	return 0;
@@ -389,7 +389,7 @@ static int wid_draw(WIDGET *w, struct gfx_ds *ds, long x, long y, WIDGET *origin
 /**
  * Cause the redraw of a specified widget area
  */
-static int wid_drawarea(WIDGET *cw, WIDGET *origin, long x, long y, long w, long h)
+static int wid_drawarea(WIDGET *cw, WIDGET *origin, int x, int y, int w, int h)
 {
 	WIDGET *parent = cw->gen->get_parent(cw);
 	if (!parent) return 0;
@@ -412,7 +412,7 @@ static int wid_drawarea(WIDGET *cw, WIDGET *origin, long x, long y, long w, long
  * Cause the redraw of the window behind a specified widget area
  */
 static int wid_drawbehind(WIDGET *cw, WIDGET *child,
-                          long x, long y, long w, long h, WIDGET *origin) {
+                          int x, int y, int w, int h, WIDGET *origin) {
 	WIDGET *parent = cw->gen->get_parent(cw);
 	if (!parent) return 0;
 
@@ -433,8 +433,8 @@ static int wid_drawbehind(WIDGET *cw, WIDGET *child,
 /**
  * Draw background of widget
  */
-static int wid_draw_bg(WIDGET *cw, struct gfx_ds *ds, long x, long y,
-                       long w, long h, WIDGET *origin, int opaque ) {
+static int wid_draw_bg(WIDGET *cw, struct gfx_ds *ds, int x, int y,
+                       int w, int h, WIDGET *origin, int opaque ) {
 
 	/* sanity check */
 	if (w <= 0 || h <= 0 || !cw->wd->parent) return 0;
@@ -447,7 +447,7 @@ static int wid_draw_bg(WIDGET *cw, struct gfx_ds *ds, long x, long y,
 /**
  * Find widget inside a widget at the given position (relative to parent)
  */
-static WIDGET *wid_find(WIDGET *w,long x,long y)
+static WIDGET *wid_find(WIDGET *w,int x,int y)
 {
 	if (w) {
 		if ((x >= w->wd->x) && (y >= w->wd->y) &&

@@ -263,13 +263,13 @@ static inline void draw_kfocus_frame(GFX_CONTAINER *d, s32 x, s32 y, s32 w, s32 
  ** General widget methods **
  ****************************/
 
-static int entry_draw(ENTRY *e, struct gfx_ds *ds, long x, long y, WIDGET *origin)
+static int entry_draw(ENTRY *e, struct gfx_ds *ds, int x, int y, WIDGET *origin)
 {
-	long tx = e->ed->tx.curr, ty = e->ed->ty;
+	int tx = e->ed->tx.curr, ty = e->ed->ty;
 	u32  tc = GFX_RGB(32, 32, 32);
 	u32  cc = BLACK_MIXED;
 	s32  cx;
-	long w  = e->wd->w,  h  = e->wd->h;
+	int w  = e->wd->w,  h  = e->wd->h;
 
 	if (origin == e) return 1;
 	if (origin) return 0;
@@ -328,7 +328,7 @@ static int entry_draw(ENTRY *e, struct gfx_ds *ds, long x, long y, WIDGET *origi
 }
 
 
-static ENTRY *entry_find(ENTRY *e, long x, long y)
+static ENTRY *entry_find(ENTRY *e, int x, int y)
 {
 	x -= e->wd->x;
 	y -= e->wd->y;
@@ -634,7 +634,7 @@ static char *entry_get_text(ENTRY *e)
 }
 
 
-static void entry_set_blind(ENTRY *e, long blind_flag)
+static void entry_set_blind(ENTRY *e, int blind_flag)
 {
 	if (blind_flag)
 		e->ed->flags |= ENTRY_FLAGS_BLIND;

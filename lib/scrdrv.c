@@ -20,14 +20,14 @@
 #include "scrdrv.h"
 #include "clipping.h"
 
-static long scr_width, scr_height, scr_depth;
-static long curr_mx = 100,curr_my = 100;
+static int scr_width, scr_height, scr_depth;
+static int curr_mx = 100,curr_my = 100;
 static struct clipping_services *clip;
 
 static short *scr;
 static short buf[1024*768];
 
-static void draw_cursor(short *data,long x,long y)
+static void draw_cursor(short *data,int x,int y)
 {
 	static int i,j;
 	short *dst = (short *)buf + y*scr_width + x;
@@ -53,7 +53,7 @@ static void draw_cursor(short *data,long x,long y)
 
 static short bg_buffer[20][16];
 
-static void save_background(long x, long y)
+static void save_background(int x, int y)
 {
 	short *src = (short *)buf + y*scr_width + x;
 	short *dst = (short *)&bg_buffer;
@@ -70,7 +70,7 @@ static void save_background(long x, long y)
 	}
 }
 
-static void restore_background(long x, long y)
+static void restore_background(int x, int y)
 {
 	short *src = (short *)&bg_buffer;
 	short *dst = (short *)buf + y*scr_width + x;
@@ -96,7 +96,7 @@ extern short bigmouse_trp;
 /**
  * Set up screen
  */
-static long set_screen(void *fb, int width, int height, int depth)
+static int set_screen(void *fb, int width, int height, int depth)
 {
 	int i;
 
@@ -124,9 +124,9 @@ static void restore_screen(void)
 /**
  * Provide information about the screen
  */
-static long  get_scr_width  (void) {return scr_width;}
-static long  get_scr_height (void) {return scr_height;}
-static long  get_scr_depth  (void) {return scr_depth;}
+static int  get_scr_width  (void) {return scr_width;}
+static int  get_scr_height (void) {return scr_height;}
+static int  get_scr_depth  (void) {return scr_depth;}
 static void *get_scr_adr    (void) {return &scr;}
 static void *get_buf_adr    (void) {return &buf;}
 

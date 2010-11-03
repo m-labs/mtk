@@ -62,7 +62,7 @@ static inline void draw_pressed_frame(GFX_CONTAINER *d, s32 x, s32 y, s32 w, s32
 	gfx->draw_vline(d, x + w - 2, y + 1, h - 2, WHITE_SOLID);
 }
 
-static int sep_draw(SEPARATOR *s, struct gfx_ds *ds, long x, long y, WIDGET *origin)
+static int sep_draw(SEPARATOR *s, struct gfx_ds *ds, int x, int y, WIDGET *origin)
 {
 	int w, h;
 	

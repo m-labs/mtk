@@ -49,7 +49,7 @@ static HASHTAB *widtypes;
  * Union of possible method argument or attribute types
  */
 union arg {
-	long    long_value;
+	int    long_value;
 	float   float_value;
 	int     boolean_value;
 	WIDGET *widget;
@@ -291,7 +291,7 @@ static char *new_symbol(const char *s,u32 length)
 static u32 get_baseclass(char *vartype)
 {
 	if (!vartype) return 0;
-	if (mtk_streq(vartype,"long",    5)) return VAR_BASECLASS_LONG;
+	if (mtk_streq(vartype,"int",    5)) return VAR_BASECLASS_LONG;
 	if (mtk_streq(vartype,"float",   6)) return VAR_BASECLASS_FLOAT;
 	if (mtk_streq(vartype,"string",  7)) return VAR_BASECLASS_STRING;
 	if (mtk_streq(vartype,"boolean", 8)) return VAR_BASECLASS_BOOLEAN;
@@ -448,7 +448,7 @@ static int convert_result(int baseclass, union arg *value, char *dst, int dst_le
 	switch (baseclass) {
 		case VAR_BASECLASS_BOOLEAN:
 		case VAR_BASECLASS_LONG:
-			snprintf(dst, dst_len, "%ld", value->long_value);
+			snprintf(dst, dst_len, "%d", value->long_value);
 			return 0;
 		case VAR_BASECLASS_FLOAT:
 			mtk_ftoa(value->float_value, 4, dst, dst_len);
@@ -762,7 +762,7 @@ static void apply_assignment(WIDGET *w, struct assignment *a)
 			((void (*)(WIDGET*, WIDGET*))(a->set))(w, a->arg.widget);
 			break;
 		case VAR_BASECLASS_LONG:
-			((void (*)(WIDGET*, long))(a->set))(w, a->arg.long_value);
+			((void (*)(WIDGET*, int))(a->set))(w, a->arg.long_value);
 			break;
 		case VAR_BASECLASS_BOOLEAN:
 			((void (*)(WIDGET*, int))(a->set))(w, a->arg.boolean_value);

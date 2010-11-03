@@ -73,7 +73,7 @@ static inline int get_view_h(FRAME *f)
  ** General widget methods **
  ****************************/
 
-static int frame_draw(FRAME *f, struct gfx_ds *ds, long x, long y, WIDGET *origin)
+static int frame_draw(FRAME *f, struct gfx_ds *ds, int x, int y, WIDGET *origin)
 {
 	WIDGET *cw;
 	s32 vw = get_view_w(f);
@@ -109,7 +109,7 @@ static int frame_draw(FRAME *f, struct gfx_ds *ds, long x, long y, WIDGET *origi
 }
 
 
-static WIDGET *frame_find(FRAME *f, long x, long y)
+static WIDGET *frame_find(FRAME *f, int x, int y)
 {
 	WIDGET *result;
 	WIDGET *cw;
@@ -477,7 +477,7 @@ static s32 frame_get_yview(FRAME *f)
  *
  * It the specified child is not yet the content - adopt it.
  */
-static void frame_place(FRAME *f, WIDGET *child, long x, long y, long w, long h)
+static void frame_place(FRAME *f, WIDGET *child, int x, int y, int w, int h)
 {
 	if (!child) return;
 
@@ -498,7 +498,7 @@ static void frame_place(FRAME *f, WIDGET *child, long x, long y, long w, long h)
 /**
  * Request the width of the work area of a frame
  */
-static long frame_get_work_w(FRAME *f)
+static int frame_get_work_w(FRAME *f)
 {
 	int ret = f->wd->w;
 	if (f->fd->sb_y) ret -= f->fd->sb_y->scroll->get_arrow_size(f->fd->sb_y);
@@ -509,7 +509,7 @@ static long frame_get_work_w(FRAME *f)
 /**
  * Request the height of the work area of a frame
  */
-static long frame_get_work_h(FRAME *f)
+static int frame_get_work_h(FRAME *f)
 {
 	int ret = f->wd->h;
 	if (f->fd->sb_x) ret -= f->fd->sb_x->scroll->get_arrow_size(f->fd->sb_x);
@@ -608,12 +608,12 @@ static void build_script_lang(void)
 	script->reg_widget_attrib(widtype, "boolean background", frame_get_background, frame_set_background, gen_methods.update);
 	script->reg_widget_attrib(widtype, "boolean scrollx", frame_get_scrollx, frame_set_scrollx, gen_methods.update);
 	script->reg_widget_attrib(widtype, "boolean scrolly", frame_get_scrolly, frame_set_scrolly, gen_methods.update);
-	script->reg_widget_attrib(widtype, "long xview", frame_get_xview, frame_set_xview, gen_methods.update);
-	script->reg_widget_attrib(widtype, "long yview", frame_get_yview, frame_set_yview, gen_methods.update);
-	script->reg_widget_attrib(widtype, "long workw", frame_get_work_w, NULL, NULL);
-	script->reg_widget_attrib(widtype, "long workh", frame_get_work_h, NULL, NULL);
-	script->reg_widget_method(widtype, "void place(Widget child,long x=-999999,long y=-999999,long w=-999999,long h=-999999)", frame_place);
-	script->reg_widget_method(widtype, "void expose(long x, long y)", frame_expose);
+	script->reg_widget_attrib(widtype, "int xview", frame_get_xview, frame_set_xview, gen_methods.update);
+	script->reg_widget_attrib(widtype, "int yview", frame_get_yview, frame_set_yview, gen_methods.update);
+	script->reg_widget_attrib(widtype, "int workw", frame_get_work_w, NULL, NULL);
+	script->reg_widget_attrib(widtype, "int workh", frame_get_work_h, NULL, NULL);
+	script->reg_widget_method(widtype, "void place(Widget child,int x=-999999,int y=-999999,int w=-999999,int h=-999999)", frame_place);
+	script->reg_widget_method(widtype, "void expose(int x, int y)", frame_expose);
 
 	widman->build_script_lang(widtype, &gen_methods);
 }

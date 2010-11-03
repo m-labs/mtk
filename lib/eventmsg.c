@@ -22,10 +22,10 @@ int init_messenger(struct mtk_services *d);
  ** Functions for internal use **
  ********************************/
 
-static unsigned long hex2u32(const char *s)
+static unsigned int hex2u32(const char *s)
 {
 	int i;
-	unsigned long result=0;
+	unsigned int result=0;
 	for (i=0;i<8;i++,s++) {
 		if (!(*s)) return result;
 		result = result*16 + (*s & 0xf);

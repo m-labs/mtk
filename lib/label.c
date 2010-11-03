@@ -59,7 +59,7 @@ static void update_text_pos(LABEL *l)
  ** General widget methods **
  ****************************/
 
-static int lab_draw(LABEL *l, struct gfx_ds *ds, long x, long y, WIDGET *origin)
+static int lab_draw(LABEL *l, struct gfx_ds *ds, int x, int y, WIDGET *origin)
 {
 	int tx = x + l->wd->x + l->ld->tx;
 	int ty = y + l->wd->y + l->ld->ty;

@@ -35,7 +35,7 @@ typedef u32 color_t;
 #define GFX_RGBA(r, g, b, a) (((r)<<24) | ((g)<<16) | ((b)<<8) | (a))
 #define GFX_RGB(r, g, b)     (((r)<<24) | ((g)<<16) | ((b)<<8) | 255)
 
-static inline u16 rgba_to_rgb565(unsigned long rgba) {
+static inline u16 rgba_to_rgb565(unsigned int rgba) {
 	return (((rgba & 0xf8000000)>>16)
 	       |((rgba & 0x00fc0000)>>13)
 	       |((rgba & 0x0000f800)>>11)); }

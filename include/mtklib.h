@@ -21,33 +21,33 @@
 #define EVENT_TYPE_USER_BASE    1000
 
 typedef struct command_event {
-	long  type;                     /* must be EVENT_TYPE_COMMAND */
+	int  type;                     /* must be EVENT_TYPE_COMMAND */
 	char *cmd;                      /* command string */
 } command_event;
 
 typedef struct motion_event {
-	long type;                      /* must be EVENT_TYPE_MOTION */
-	long rel_x,rel_y;               /* relative movement in x and y direction */
-	long abs_x,abs_y;               /* current position inside the widget */
+	int type;                      /* must be EVENT_TYPE_MOTION */
+	int rel_x,rel_y;               /* relative movement in x and y direction */
+	int abs_x,abs_y;               /* current position inside the widget */
 } motion_event;
 
 typedef struct press_event {
-	long type;                      /* must be EVENT_TYPE_PRESS */
-	long code;                      /* code of key/button that is pressed */
+	int type;                      /* must be EVENT_TYPE_PRESS */
+	int code;                      /* code of key/button that is pressed */
 } press_event;
 
 typedef struct release_event {
-	long type;                      /* must be EVENT_TYPE_RELEASE */
-	long code;                      /* code of key/button that is released */
+	int type;                      /* must be EVENT_TYPE_RELEASE */
+	int code;                      /* code of key/button that is released */
 } release_event;
 
 typedef struct keyrepeat_event {
-	long type;                      /* must be EVENT_TYPE_KEYREPEAT */
-	long code;                      /* code of key/button that is pressed */
+	int type;                      /* must be EVENT_TYPE_KEYREPEAT */
+	int code;                      /* code of key/button that is pressed */
 } keyrepeat_event;
 
 typedef union mtklib_event_union {
-	long type;
+	int type;
 	command_event   command;
 	motion_event    motion;
 	press_event     press;
@@ -69,7 +69,7 @@ extern int mtk_init(void *fb, int width, int height);
  * \param appname  name of the MTK application
  * \return         MTK application id
  */
-extern long mtk_init_app(const char *appname);
+extern int mtk_init_app(const char *appname);
 
 
 /**
@@ -78,7 +78,7 @@ extern long mtk_init_app(const char *appname);
  * \param app_id  MTK application to unregister
  * \return        0 on success
  */
-extern long mtk_deinit_app(long app_id);
+extern int mtk_deinit_app(int app_id);
 
 
 /**
@@ -88,7 +88,7 @@ extern long mtk_deinit_app(long app_id);
  * \param cmd     command to execute
  * \return        0 on success
  */
-extern int mtk_cmd(long app_id, const char *cmd);
+extern int mtk_cmd(int app_id, const char *cmd);
 
 
 /**
@@ -98,7 +98,7 @@ extern int mtk_cmd(long app_id, const char *cmd);
  * \param cmdf    command to execute specified as format string
  * \return        0 on success
  */
-extern int mtk_cmdf(long app_id, const char *cmdf, ...);
+extern int mtk_cmdf(int app_id, const char *cmdf, ...);
 
 
 /**
@@ -123,7 +123,7 @@ extern int mtk_cmd_seq(int app_id, ...);
  * \param cmd       command to execute
  * \return          0 on success
  */
-extern int mtk_req(long app_id, char *dst, int dst_size, const char *cmd);
+extern int mtk_req(int app_id, char *dst, int dst_size, const char *cmd);
 
 
 /**
@@ -135,7 +135,7 @@ extern int mtk_req(long app_id, char *dst, int dst_size, const char *cmd);
  * \param cmd       command to execute - specified as format string
  * \return          0 on success
  */
-extern int mtk_reqf(long app_id, char *dst, int dst_size, const char *cmdf, ...);
+extern int mtk_reqf(int app_id, char *dst, int dst_size, const char *cmdf, ...);
 
 
 /**
@@ -147,7 +147,7 @@ extern int mtk_reqf(long app_id, char *dst, int dst_size, const char *cmdf, ...)
  * \param callback    callback function to be called for incoming events
  * \param arg         additional argument for the callback function
  */
-extern void mtk_bind(long app_id,const char *var, const char *event_type,
+extern void mtk_bind(int app_id,const char *var, const char *event_type,
                       void (*callback)(mtk_event *,void *),void *arg);
 
 
@@ -161,7 +161,7 @@ extern void mtk_bind(long app_id,const char *var, const char *event_type,
  * \param arg         additional argument for the callback function
  * \param ...         format string arguments
  */
-extern void mtk_bindf(long id, const char *varfmt, const char *event_type,
+extern void mtk_bindf(int id, const char *varfmt, const char *event_type,
                        void (*callback)(mtk_event *,void *), void *arg,...);
 
 
@@ -174,7 +174,7 @@ extern void mtk_input(mtk_event *e, int count);
  * \param keycode  keycode of the requested key
  * \return         1 if key is currently pressed
  */
-extern long mtk_get_keystate(long app_id, long keycode);
+extern int mtk_get_keystate(int app_id, int keycode);
 
 
 /**
@@ -184,7 +184,7 @@ extern long mtk_get_keystate(long app_id, long keycode);
  * \param keycode  keycode of the requested key
  * \return         ASCII value of the currently pressed key combination
  */
-extern char mtk_get_ascii(long app_id, long keycode);
+extern char mtk_get_ascii(int app_id, int keycode);
 
 
 #endif /* __MTK_INCLUDE_MTKLIB_H_ */

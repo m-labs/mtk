@@ -105,7 +105,7 @@ static inline void draw_kfocus_frame(GFX_CONTAINER *d, s32 x, s32 y, s32 w, s32 
 	gfx->draw_vline(d, x + w - 1, y,         h,     BLACK_SOLID);
 }
 
-static int lst_draw(LIST *l, struct gfx_ds *ds, long x, long y, WIDGET *origin)
+static int lst_draw(LIST *l, struct gfx_ds *ds, int x, int y, WIDGET *origin)
 {
 	int tx, ty;
 	int w, h;
@@ -378,7 +378,7 @@ static void build_script_lang(void)
 
 	script->reg_widget_attrib(widtype, "string text", lst_get_text, lst_set_text, gen_methods.update);
 	script->reg_widget_attrib(widtype, "string font", lst_get_font, lst_set_font, gen_methods.update);
-	script->reg_widget_attrib(widtype, "long selection", lst_get_selection, lst_set_selection, gen_methods.update);
+	script->reg_widget_attrib(widtype, "int selection", lst_get_selection, lst_set_selection, gen_methods.update);
 
 	widman->build_script_lang(widtype, &gen_methods);
 }

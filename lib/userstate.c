@@ -51,7 +51,7 @@ static void  (*curr_tick_callback)    (WIDGET *,int,int);
 static int     press_cnt;                   /* number of pressed keys     */
 static char    keytab[MTK_KEY_MAX];
 static s32     curr_keystate;               /* current key state          */
-static long    curr_keycode;                /* code of curr. pressed key  */
+static int    curr_keycode;                /* code of curr. pressed key  */
 static s32     key_repeat_delay = 250;      /* delay until key repeat     */
 static s32     key_repeat_rate = 30;        /* key repeat rate            */
 
@@ -75,7 +75,7 @@ int init_userstate(struct mtk_services *d);
  * mouse buttons while plain keys will be forwarded to
  * the currently active keyboard focused widget
  */
-static inline int key_sets_focus(long keycode)
+static inline int key_sets_focus(int keycode)
 {
 	return (keycode >= MTK_BTN_LEFT && keycode <= MTK_BTN_MIDDLE);
 }
@@ -88,9 +88,9 @@ static inline int key_sets_focus(long keycode)
 /**
  * Determine ascii value of a key while taking modifier keys into account
  */
-static char get_ascii(long keycode)
+static char get_ascii(int keycode)
 {
-	long switches=0;
+	int switches=0;
 	if (keycode>=MTK_KEY_MAX) return 0;
 	if (keytab[42] ) switches = switches | KEYMAP_SWITCH_LSHIFT;
 	if (keytab[54] ) switches = switches | KEYMAP_SWITCH_RSHIFT;
@@ -105,7 +105,7 @@ static char get_ascii(long keycode)
 /**
  * Force a new mouse position
  */
-static void set_pos(long mx, long my)
+static void set_pos(int mx, int my)
 {
 	if (mx < 0) mx = 0;
 	if (my < 0) my = 0;
@@ -254,7 +254,7 @@ static void grab(WIDGET *w, void (*tick_callback) (WIDGET *, int, int))
 }
 
 
-static long get(void)
+static int get(void)
 {
 	return curr_state;
 }
@@ -265,7 +265,7 @@ static long get(void)
  */
 static int tick_handle_repeat(void *arg)
 {
-	long keycode = (long)arg;
+	int keycode = (int)arg;
 	EVENT key_repeat_event;
 	if (curr_keystate != USERSTATE_KEY_REPEAT || curr_keycode != keycode)
 		return 0;
@@ -286,7 +286,7 @@ static int tick_handle_repeat(void *arg)
  */
 static int tick_handle_delay(void *arg)
 {
-	long keycode = (long)arg;
+	int keycode = (int)arg;
 	if (curr_keystate != USERSTATE_KEY_PRESS || curr_keycode != keycode)
 		return 0;
 
@@ -541,15 +541,15 @@ static WIDGET *get_curr_selected(void) { return curr_selected; }
 /**
  * Request mouse state
  */
-static long get_mx(void) {return curr_mx;}
-static long get_my(void) {return curr_my;}
-static long get_mb(void) {return curr_mb;}
+static int get_mx(void) {return curr_mx;}
+static int get_my(void) {return curr_my;}
+static int get_mb(void) {return curr_mb;}
 
 
 /**
  * Set max x position of mouse cursor
  */
-static void set_max_mx(long new_max_mx)
+static void set_max_mx(int new_max_mx)
 {
 	if (curr_mx > new_max_mx) curr_mx = new_max_mx;
 	max_mx = new_max_mx;
@@ -559,7 +559,7 @@ static void set_max_mx(long new_max_mx)
 /**
  * Set max y position of mouse cursor
  */
-static void set_max_my(long new_max_my)
+static void set_max_my(int new_max_my)
 {
 	if (curr_my > new_max_my) curr_my = new_max_my;
 	max_my = new_max_my;
@@ -569,7 +569,7 @@ static void set_max_my(long new_max_my)
 /**
  * Get current state of the key with the specified keycode
  */
-static long get_keystate(long keycode)
+static int get_keystate(int keycode)
 {
 	if (keycode>=MTK_KEY_MAX) return 0;
 	return keytab[keycode];

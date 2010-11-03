@@ -25,10 +25,10 @@
 
 #define EVENT struct event
 struct event {
-	long type;
-	long code;          /* key/button-code                 */
-	long abs_x, abs_y;  /* current absolute mouse position */
-	long rel_x, rel_y;  /* relative mouse position change  */
+	int type;
+	int code;          /* key/button-code                 */
+	int abs_x, abs_y;  /* current absolute mouse position */
+	int rel_x, rel_y;  /* relative mouse position change  */
 };
 
 

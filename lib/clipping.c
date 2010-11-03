@@ -19,12 +19,12 @@
 
 #define CLIPSTACK_SIZE 64
 
-static long clip_x1, clip_y1, clip_x2, clip_y2;
-static long cstack_x1[CLIPSTACK_SIZE];
-static long cstack_y1[CLIPSTACK_SIZE];
-static long cstack_x2[CLIPSTACK_SIZE];
-static long cstack_y2[CLIPSTACK_SIZE];
-static long csp;
+static int clip_x1, clip_y1, clip_x2, clip_y2;
+static int cstack_x1[CLIPSTACK_SIZE];
+static int cstack_y1[CLIPSTACK_SIZE];
+static int cstack_x2[CLIPSTACK_SIZE];
+static int cstack_y2[CLIPSTACK_SIZE];
+static int csp;
 
 int init_clipping(struct mtk_services *d);
 
@@ -36,16 +36,16 @@ int init_clipping(struct mtk_services *d);
 /**
  * Request functions are often called - the reason for the buffered values
  */
-static long clip_get_x1 (void) {return clip_x1;}
-static long clip_get_y1 (void) {return clip_y1;}
-static long clip_get_x2 (void) {return clip_x2;}
-static long clip_get_y2 (void) {return clip_y2;}
+static int clip_get_x1 (void) {return clip_x1;}
+static int clip_get_y1 (void) {return clip_y1;}
+static int clip_get_x2 (void) {return clip_x2;}
+static int clip_get_y2 (void) {return clip_y2;}
 
 
 /**
  * Set (shrink) global clipping values
  */
-static  void clip_push(long x1, long y1, long x2, long y2)
+static  void clip_push(int x1, int y1, int x2, int y2)
 {
 	if (csp >= CLIPSTACK_SIZE - 1) return;
 	
@@ -88,7 +88,7 @@ static void clip_reset(void)
 /**
  * Set clipping range (screen dimensions)
  */
-static void clip_set_range(long x1, long y1, long x2, long y2)
+static void clip_set_range(int x1, int y1, int x2, int y2)
 {
 	csp = 0;
 	clip_x1 = cstack_x1[0] = x1;

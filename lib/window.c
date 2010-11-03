@@ -69,7 +69,7 @@ static int shadow_left, shadow_right;
 extern int config_dropshadows;
 extern int config_transparency;  /* support transparent windows */
 
-extern unsigned long config_bg_win_color;
+extern unsigned int config_bg_win_color;
 
 extern SCREEN *curr_scr;
 
@@ -195,8 +195,8 @@ static void gen_shadow(u32 *dst, int w, int h, int mx, int my)
 /**
  * Variables for userstate handling
  */
-static long    owx1, owy1, owx2, owy2;   /* original window area                */
-static long    nwx1, nwy1, nwx2, nwy2;   /* new window area                     */
+static int    owx1, owy1, owx2, owy2;   /* original window area                */
+static int    nwx1, nwy1, nwx2, nwy2;   /* new window area                     */
 static WINDOW *curr_window;              /* currently modified window           */
 static SCREEN *curr_screen;              /* screen of currently modified window */
 
@@ -258,12 +258,12 @@ static void win_move_leave_callback(WIDGET *cw, int dx, int dy)
 
 static void win_resize_motion_callback(WIDGET *cw, int dx, int dy)
 {
-	long size_flags = 0;
-	long min_w, max_w, min_h, max_h;
+	int size_flags = 0;
+	int min_w, max_w, min_h, max_h;
 
 	if (!cw || !curr_window || !curr_screen) return;
 
-	size_flags = (long)cw->gen->get_context(cw);
+	size_flags = (int)cw->gen->get_context(cw);
 	min_w = curr_window->gen->get_min_w((WIDGET *)curr_window);
 	max_w = curr_window->gen->get_max_w((WIDGET *)curr_window);
 	min_h = curr_window->gen->get_min_h((WIDGET *)curr_window);
@@ -394,7 +394,7 @@ static void win_set_app_id(WINDOW *w, s32 app_id)
 /**
  * Draw window background
  */
-static int win_draw_bg(WINDOW *cw, struct gfx_ds *ds, long x, long y, long w, long h,
+static int win_draw_bg(WINDOW *cw, struct gfx_ds *ds, int x, int y, int w, int h,
                        WIDGET *origin, int opaque) {
 	int ret = 0;
 
@@ -466,7 +466,7 @@ static void draw_shadow(struct gfx_ds *ds, int x, int y, int w, int h)
 
 extern int transparency_depth;  /* from screen.c */
 
-static int win_draw(WINDOW *w, struct gfx_ds *ds, long x, long y, WIDGET *origin)
+static int win_draw(WINDOW *w, struct gfx_ds *ds, int x, int y, WIDGET *origin)
 {
 	int x1, y1, x2, y2;
 	int cx1 = gfx->get_clip_x(ds);
@@ -609,7 +609,7 @@ static void win_updatepos(WINDOW *w)
 }
 
 
-static WIDGET *win_find(WINDOW *w, long x, long y)
+static WIDGET *win_find(WINDOW *w, int x, int y)
 {
 	WIDGET *result;
 	WIDGET *c;
@@ -1171,14 +1171,14 @@ static void build_script_lang(void)
 	script->reg_widget_attrib(widtype, "boolean background", win_get_background, win_set_background, win_update);
 	script->reg_widget_attrib(widtype, "string title", win_get_title, win_set_title, NULL);
 	script->reg_widget_attrib(widtype, "string bgcolor", NULL, win_set_bgcolor, NULL);
-	script->reg_widget_attrib(widtype, "long x", win_get_x, win_set_x, win_update);
-	script->reg_widget_attrib(widtype, "long y", win_get_y, win_set_y, win_update);
-	script->reg_widget_attrib(widtype, "long w", win_get_w, win_set_w, win_update);
-	script->reg_widget_attrib(widtype, "long h", win_get_h, win_set_h, win_update);
-	script->reg_widget_attrib(widtype, "long workx", win_get_workx, win_set_workx, win_update);
-	script->reg_widget_attrib(widtype, "long worky", win_get_worky, win_set_worky, win_update);
-	script->reg_widget_attrib(widtype, "long workw", win_get_workw, win_set_workw, win_update);
-	script->reg_widget_attrib(widtype, "long workh", win_get_workh, win_set_workh, win_update);
+	script->reg_widget_attrib(widtype, "int x", win_get_x, win_set_x, win_update);
+	script->reg_widget_attrib(widtype, "int y", win_get_y, win_set_y, win_update);
+	script->reg_widget_attrib(widtype, "int w", win_get_w, win_set_w, win_update);
+	script->reg_widget_attrib(widtype, "int h", win_get_h, win_set_h, win_update);
+	script->reg_widget_attrib(widtype, "int workx", win_get_workx, win_set_workx, win_update);
+	script->reg_widget_attrib(widtype, "int worky", win_get_worky, win_set_worky, win_update);
+	script->reg_widget_attrib(widtype, "int workw", win_get_workw, win_set_workw, win_update);
+	script->reg_widget_attrib(widtype, "int workh", win_get_workh, win_set_workh, win_update);
 
 	widman->build_script_lang(widtype, &gen_methods);
 }

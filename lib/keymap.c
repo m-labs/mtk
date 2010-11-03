@@ -51,7 +51,7 @@ int init_keymap(struct mtk_services *d);
  ***********************/
 
 
-static char get_ascii(long keycode,long switches)
+static char get_ascii(int keycode,int switches)
 {
 	char result;
 	if (keycode>=112) return 0;

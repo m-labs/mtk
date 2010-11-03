@@ -45,7 +45,7 @@ int config_redraw_granularity = 350*1000;
 
 static char cmdstr[32768];
 
-long mtk_init_app(const char *appname)
+int mtk_init_app(const char *appname)
 {
 	s32 app_id = appman->reg_app(appname);
 	SCOPE *rootscope = scope->create();
@@ -55,7 +55,7 @@ long mtk_init_app(const char *appname)
 	return app_id;
 }
 
-long mtk_deinit_app(long app_id)
+int mtk_deinit_app(int app_id)
 {
 	INFO(printf("Server(deinit_app): application (id=%lu) deinit requested\n", app_id);)
 	screen->forget_children(app_id);
@@ -63,13 +63,13 @@ long mtk_deinit_app(long app_id)
 	return 0;
 }
 
-int mtk_cmd(long app_id, const char *cmd)
+int mtk_cmd(int app_id, const char *cmd)
 {
 	INFO(printf("app %d requests mtk_cmd \"%s\"\n", (int)app_id, cmd));
 	return script->exec_command(app_id, (char *)cmd, NULL, 0);
 }
 
-int mtk_cmdf(long app_id, const char *format, ...)
+int mtk_cmdf(int app_id, const char *format, ...)
 {
 	int ret;
 	va_list list;
@@ -98,7 +98,7 @@ int mtk_cmd_seq(int app_id, ...)
 	return ret;
 }
 
-int mtk_req(long app_id, char *dst, int dst_size, const char *cmd)
+int mtk_req(int app_id, char *dst, int dst_size, const char *cmd)
 {
 	int ret;
 
@@ -108,7 +108,7 @@ int mtk_req(long app_id, char *dst, int dst_size, const char *cmd)
 	return ret;
 }
 
-int mtk_reqf(long app_id, char *dst, int dst_size, const char *format, ...)
+int mtk_reqf(int app_id, char *dst, int dst_size, const char *format, ...)
 {
 	va_list list;
 
@@ -118,13 +118,13 @@ int mtk_reqf(long app_id, char *dst, int dst_size, const char *format, ...)
 	return mtk_req(app_id, dst, dst_size, cmdstr);
 }
 
-void mtk_bind(long app_id,const char *var, const char *event_type,
+void mtk_bind(int app_id,const char *var, const char *event_type,
                void (*callback)(mtk_event *,void *),void *arg) {
 	mtk_cmdf(app_id, "%s.bind(%s, \"%08lx, %08lx\")",
-	          var, event_type, (long)callback, (long)arg);
+	          var, event_type, (int)callback, (int)arg);
 }
 
-void mtk_bindf(long id, const char *varfmt, const char *event_type,
+void mtk_bindf(int id, const char *varfmt, const char *event_type,
                 void (*callback)(mtk_event *,void *), void *arg,...) {
 	static char varstr[1024];
 	va_list list;
@@ -133,12 +133,12 @@ void mtk_bindf(long id, const char *varfmt, const char *event_type,
 	vsnprintf(varstr, 1024, varfmt, list);
 	va_end(list);
 
-	snprintf(cmdstr, 256,"%s.bind(\"%s\", \"%08lx, %08lx\")",
-	         varstr, event_type, (long)callback, (long)arg);
+	snprintf(cmdstr, 256,"%s.bind(\"%s\", \"%08x, %08x\")",
+	         varstr, event_type, (int)callback, (int)arg);
 	mtk_cmd(id, cmdstr);
 }
 
-static long convert_type(long t)
+static int convert_type(int t)
 {
 	if(t >= EVENT_TYPE_USER_BASE)
 		return EVENT_USER;
@@ -183,12 +183,12 @@ void mtk_input(mtk_event *e, int count)
 	redraw->process_pixels(config_redraw_granularity);
 }
 
-long mtk_get_keystate(long app_id, long keycode)
+int mtk_get_keystate(int app_id, int keycode)
 {
 	return userstate->get_keystate(keycode);
 }
 
-char mtk_get_ascii(long app_id, long keycode)
+char mtk_get_ascii(int app_id, int keycode)
 {
 	return userstate->get_ascii(keycode);
 }

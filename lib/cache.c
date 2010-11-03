@@ -61,7 +61,7 @@ static CACHE *create(s32 max_entries,s32 max_size)
 	/* set values in cache struct */
 	c->max_entries = max_entries;
 	c->max_size    = max_size;
-	c->elem = (struct cache_elem *)((long)c + sizeof(struct cache));
+	c->elem = (struct cache_elem *)((int)c + sizeof(struct cache));
 
 	return c;
 }
@@ -108,7 +108,7 @@ static void destroy(CACHE *cache)
 }
 
 
-static void reduce_cachesize(CACHE *cache,long needed_size)
+static void reduce_cachesize(CACHE *cache,int needed_size)
 {
 	if (!cache) return;
 

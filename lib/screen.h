@@ -30,7 +30,7 @@ struct screen {
 
 struct screen_methods {
 	void (*set_gfx)     (SCREEN *scr, GFX_CONTAINER *ds);
-	void (*place)       (SCREEN *scr, WIDGET *win, long x, long y, long w, long h);
+	void (*place)       (SCREEN *scr, WIDGET *win, int x, int y, int w, int h);
 	void (*remove)      (SCREEN *scr, WIDGET *win);
 	void (*top)         (SCREEN *scr, WIDGET *win);
 	void (*back)        (SCREEN *scr, WIDGET *win);

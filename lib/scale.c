@@ -84,7 +84,7 @@ static float check_value(float from, float to, float value)
 }
 
 
-static WIDGET *new_button(char *txt,void *clic,long context)
+static WIDGET *new_button(char *txt,void *clic,int context)
 {
 	BUTTON *nb = but->create();
 	nb->but->set_click(nb, clic);
@@ -102,9 +102,9 @@ static WIDGET *new_button(char *txt,void *clic,long context)
  ** General widget methods **
  ****************************/
 
-static int scale_draw(SCALE *w, struct gfx_ds *ds, long x, long y, WIDGET *origin)
+static int scale_draw(SCALE *w, struct gfx_ds *ds, int x, int y, WIDGET *origin)
 {
-	long x1, y1, x2, y2;
+	int x1, y1, x2, y2;
 	int ret = 0;
 
 	if (origin == w) return 1;
@@ -235,7 +235,7 @@ static void scale_calc_minmax(SCALE *s)
 }
 
 
-static WIDGET *scale_find(SCALE *w,long x,long y)
+static WIDGET *scale_find(SCALE *w,int x,int y)
 {
 	WIDGET *result;
 

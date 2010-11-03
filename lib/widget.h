@@ -63,20 +63,20 @@ struct widget_methods {
 	char   *(*get_type)     (WIDGETARG *);
 	s32     (*get_app_id)   (WIDGETARG *);
 	void    (*set_app_id)   (WIDGETARG *, s32 app_id);
-	long    (*get_x)        (WIDGETARG *);
-	void    (*set_x)        (WIDGETARG *, long new_x);
-	long    (*get_y)        (WIDGETARG *);
-	void    (*set_y)        (WIDGETARG *, long new_y);
-	long    (*get_w)        (WIDGETARG *);
-	void    (*set_w)        (WIDGETARG *, long new_w);
-	long    (*get_h)        (WIDGETARG *);
-	void    (*set_h)        (WIDGETARG *, long new_h);
-	long    (*get_min_w)    (WIDGETARG *);
-	long    (*get_min_h)    (WIDGETARG *);
-	long    (*get_max_w)    (WIDGETARG *);
-	long    (*get_max_h)    (WIDGETARG *);
-	long    (*get_abs_x)    (WIDGETARG *);
-	long    (*get_abs_y)    (WIDGETARG *);
+	int    (*get_x)        (WIDGETARG *);
+	void    (*set_x)        (WIDGETARG *, int new_x);
+	int    (*get_y)        (WIDGETARG *);
+	void    (*set_y)        (WIDGETARG *, int new_y);
+	int    (*get_w)        (WIDGETARG *);
+	void    (*set_w)        (WIDGETARG *, int new_w);
+	int    (*get_h)        (WIDGETARG *);
+	void    (*set_h)        (WIDGETARG *, int new_h);
+	int    (*get_min_w)    (WIDGETARG *);
+	int    (*get_min_h)    (WIDGETARG *);
+	int    (*get_max_w)    (WIDGETARG *);
+	int    (*get_max_h)    (WIDGETARG *);
+	int    (*get_abs_x)    (WIDGETARG *);
+	int    (*get_abs_y)    (WIDGETARG *);
 	int     (*get_state)    (WIDGETARG *);
 	void    (*set_state)    (WIDGETARG *, int new_state);
 	int     (*get_evforward)(WIDGETARG *);
@@ -110,7 +110,7 @@ struct widget_methods {
 	 * \returns       0 if no drawing operation was performed,
 	 *                1 if a drawing operation was performed
 	 */
-	int (*draw) (WIDGETARG *, struct gfx_ds *dst, long x, long y, WIDGETARG *origin);
+	int (*draw) (WIDGETARG *, struct gfx_ds *dst, int x, int y, WIDGETARG *origin);
 
 
 	/**
@@ -132,7 +132,7 @@ struct widget_methods {
 	 * \returns        1 if drawing operation was performed or if specified
 	 *                 os widget is visible, otherwise 0.
 	 */
-	int (*drawarea) (WIDGETARG *cw, WIDGETARG *ow, long x, long y, long w, long h);
+	int (*drawarea) (WIDGETARG *cw, WIDGETARG *ow, int x, int y, int w, int h);
 
 
 	/**
@@ -154,7 +154,7 @@ struct widget_methods {
 	 *                  0 if no graphics operations were performed.
 	 */
 	int (*drawbehind) (WIDGETARG *cw, WIDGETARG *child,
-	                   long x, long y, long w, long h, WIDGETARG *origin);
+	                   int x, int y, int w, int h, WIDGETARG *origin);
 
 
 	/**
@@ -178,7 +178,7 @@ struct widget_methods {
 	 * \returns       0 if no drawing operation was performed,
 	 *                1 if a drawing operation was performed
 	 */
-	int (*draw_bg) (WIDGETARG *, struct gfx_ds *dst, long x, long y, long w, long h,
+	int (*draw_bg) (WIDGETARG *, struct gfx_ds *dst, int x, int y, int w, int h,
 	                WIDGETARG *origin, int opaque);
 
 
@@ -206,7 +206,7 @@ struct widget_methods {
 	 * the placement routine for child widgets in this function.
 	 */
 	void    (*updatepos)    (WIDGETARG *);
-	WIDGET *(*find)         (WIDGETARG *, long x, long y);
+	WIDGET *(*find)         (WIDGETARG *, int x, int y);
 	void    (*inc_ref)      (WIDGETARG *);
 
 

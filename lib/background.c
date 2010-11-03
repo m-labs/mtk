@@ -29,7 +29,7 @@ static struct script_services *script;
 static struct userstate_services *userstate;
 
 struct background_data {
-	long    style;
+	int    style;
 	void  (*click) (void *);
 	WIDGET *content;
 };
@@ -37,15 +37,15 @@ struct background_data {
 int init_background(struct mtk_services *d);
 
 
-unsigned long config_bg_win_color = 0x8a8a85ff + 0x32322800;
-unsigned long config_bg_desk_color = 0x575c70ff;
+unsigned int config_bg_win_color = 0x8a8a85ff + 0x32322800;
+unsigned int config_bg_desk_color = 0x575c70ff;
 
 
 /****************************
  ** General widget methods **
  ****************************/
 
-static int bg_draw(BACKGROUND *b, struct gfx_ds *ds, long x, long y, WIDGET *origin)
+static int bg_draw(BACKGROUND *b, struct gfx_ds *ds, int x, int y, WIDGET *origin)
 {
 	WIDGET *c;
 	int ret = 0;
@@ -72,7 +72,7 @@ static int bg_draw(BACKGROUND *b, struct gfx_ds *ds, long x, long y, WIDGET *ori
 }
 
 
-static WIDGET *bg_find(BACKGROUND *b, long x, long y)
+static WIDGET *bg_find(BACKGROUND *b, int x, int y)
 {
 	WIDGET *c, *result = b;
 	if (!b) return NULL;
@@ -176,7 +176,7 @@ static void bg_free_data(BACKGROUND *b)
  ** Background specific methods **
  *********************************/
 
-static void bg_set_style(BACKGROUND *b, long new_style)
+static void bg_set_style(BACKGROUND *b, int new_style)
 {
 	b->bd->style = new_style;
 }

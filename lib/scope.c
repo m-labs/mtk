@@ -89,7 +89,7 @@ static char *scope_get_type(SCOPE *v)
  * Redefine a variable or create a new one if needed
  *
  * The type argument is not replicated. The caller must ensure that the
- * type string exists as long as the variable exists!
+ * type string exists as int as the variable exists!
  */
 static int scope_set_var(SCOPE *s, char *type, char *name, int len, WIDGET *value)
 {
@@ -221,7 +221,7 @@ static struct scope_services services = {
 static void build_script_lang(void)
 {
 	void *widtype = script->reg_widget_type("Scope", (void *(*)(void))create);
-	script->reg_widget_method(widtype, "long voodoo(string appname)", &scope_voodoo);
+	script->reg_widget_method(widtype, "int voodoo(string appname)", &scope_voodoo);
 	widman->build_script_lang(widtype, &gen_methods);
 }
 

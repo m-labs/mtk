@@ -42,7 +42,7 @@ int init_container(struct mtk_services *d);
  ** General widget methods **
  ****************************/
 
-static int cont_draw(CONTAINER *c, struct gfx_ds *ds, long x, long y, WIDGET *origin)
+static int cont_draw(CONTAINER *c, struct gfx_ds *ds, int x, int y, WIDGET *origin)
 {
 	WIDGET *cw;
 	int ret = 0;
@@ -65,7 +65,7 @@ static int cont_draw(CONTAINER *c, struct gfx_ds *ds, long x, long y, WIDGET *or
 }
 
 
-static WIDGET *cont_find(CONTAINER *c,long x,long y)
+static WIDGET *cont_find(CONTAINER *c,int x,int y)
 {
 	WIDGET *result;
 	WIDGET *cw;

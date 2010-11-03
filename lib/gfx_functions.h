@@ -160,8 +160,8 @@ static void paint_scaled_img(int x, int y, int w, int h,
 		return;
 	}
 
-	mx = w ? ((long)sw<<16) / w : 0;
-	my = h ? ((long)sh<<16) / h : 0;
+	mx = w ? ((int)sw<<16) / w : 0;
+	my = h ? ((int)sh<<16) / h : 0;
 
 	if (!clip_img(clip_x1, clip_y1, clip_x2, clip_y2,
 	              &x, &y, &w, &h, &sx, &sy, mx, my)) return;
@@ -198,8 +198,8 @@ static void paint_scaled_img_rgba32(int x, int y, int w, int h,
 	/* sanity check */
 	if (!src) return;
 
-	mx = w ? ((long)sw<<16) / w : 0;
-	my = h ? ((long)sh<<16) / h : 0;
+	mx = w ? ((int)sw<<16) / w : 0;
+	my = h ? ((int)sh<<16) / h : 0;
 
 	if (!clip_img(clip_x1, clip_y1, clip_x2, clip_y2,
 	              &x, &y, &w, &h, &sx, &sy, mx, my)) return;

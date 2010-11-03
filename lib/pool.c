@@ -29,13 +29,13 @@ struct pool_entry {
 };
 
 static struct pool_entry pool[MAX_POOL_ENTRIES];
-static long pool_size=0;
+static int pool_size=0;
 
 
 /**
  * Prototypes
  */
-long pool_add(char *name,void *structure);
+int pool_add(char *name,void *structure);
 void pool_remove(char *name);
 void *pool_get(char *name);
 
@@ -43,9 +43,9 @@ void *pool_get(char *name);
 /**
  * Add new pool entry
  */
-long pool_add(char *name,void *structure)
+int pool_add(char *name,void *structure)
 {
-	long i;
+	int i;
 	if (pool_size>=100) return 0;
 	else {
 		for (i=0;pool[i].name!=NULL;i++) {};
@@ -65,7 +65,7 @@ long pool_add(char *name,void *structure)
  */
 void pool_remove(char *name)
 {
-	long i;
+	int i;
 	char *s;
 	for (i=0;i<100;i++) {
 		s=pool[i].name;
@@ -86,7 +86,7 @@ void pool_remove(char *name)
  */
 void *pool_get(char *name)
 {
-	long i;
+	int i;
 	char *s;
 	for (i=0;i<MAX_POOL_ENTRIES;i++) {
 		s=pool[i].name;

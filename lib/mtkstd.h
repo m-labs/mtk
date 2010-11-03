@@ -28,9 +28,9 @@
 #define s8    signed char
 #define u16 unsigned short
 #define s16   signed short
-#define u32 unsigned long
-#define s32   signed long
-#define adr unsigned long
+#define u32 unsigned int
+#define s32   signed int
+#define adr unsigned int
 
 #if !defined(NULL)
 #define NULL (void *)0
@@ -69,7 +69,7 @@ extern int mtk_ftoa(float v, int prec, char *dst, int max_len);
  */
 extern int mtk_streq(const char *s1, const char *s2, int max_len);
 
-void         *zalloc(unsigned long size);
+void         *zalloc(unsigned int size);
 
 /*******************************
  ** Debug macros used in mtk **
@@ -126,7 +126,7 @@ void         *zalloc(unsigned long size);
 
 struct mtk_services {
 	void *(*get_module)      (char *name);
-	long  (*register_module) (char *name,void *services);
+	int  (*register_module) (char *name,void *services);
 };
 
 #endif /* _MTK_MTKSTD_H_ */

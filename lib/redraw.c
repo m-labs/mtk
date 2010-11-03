@@ -99,9 +99,9 @@ static inline void remove_last_action(void)
 /**
  * Merge two rectangles
  */
-static inline void merge(long  ax1, long  ay1, long  ax2, long  ay2,
-                         long  bx1, long  by1, long  bx2, long  by2,
-                         long *cx1, long *cy1, long *cx2, long *cy2) {
+static inline void merge(int  ax1, int  ay1, int  ax2, int  ay2,
+                         int  bx1, int  by1, int  bx2, int  by2,
+                         int *cx1, int *cy1, int *cx2, int *cy2) {
 	*cx1 = MIN(ax1, bx1);
 	*cy1 = MIN(ay1, by1);
 	*cx2 = MAX(ax2, bx2);
@@ -114,8 +114,8 @@ static inline void merge(long  ax1, long  ay1, long  ax2, long  ay2,
  *
  * \return 1 if both rectangles intersect
  */
-static inline int intersect(long ax1, long ay1, long ax2, long ay2,
-                            long bx1, long by1, long bx2, long by2) {
+static inline int intersect(int ax1, int ay1, int ax2, int ay2,
+                            int bx1, int by1, int bx2, int by2) {
 
 	return (MAX(ax1, bx1) <= MIN(ax2, bx2)) && (MAX(ay1, by1) <= MIN(ay2, by2));
 }
@@ -154,9 +154,9 @@ static void add_redraw_action(WIDGET *w, int x1, int y1, int x2, int y2)
 	/* check if the last queue element refers to the same widgets */
 	if (action_queue[last].wid == w) {
 		struct action *a = &action_queue[last];
-		long mx1, my1, mx2, my2;
+		int mx1, my1, mx2, my2;
 
-		long num_pixels = (a->x2 - a->x1 + 1)*(a->y2 - a->y1 + 1);
+		int num_pixels = (a->x2 - a->x1 + 1)*(a->y2 - a->y1 + 1);
 
 		merge(x1, y1, x2, y2, a->x1, a->y1, a->x2, a->y2,
 		      &mx1, &my1, &mx2, &my2);
@@ -331,7 +331,7 @@ static s32 exec_redraw(s32 avail_time)
 
 	start_time = timer->get_time();
 
-	/* process pixels as long as there are due redraw requests and there is time left */
+	/* process pixels as int as there are due redraw requests and there is time left */
 	while (last != first && used_time < avail_time) {
 
 		/* determine number of pixels that can be processed in the available time */

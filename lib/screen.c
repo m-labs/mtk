@@ -72,9 +72,9 @@ extern int config_dropshadows;
  ********************************/
 
 static int draw_rec(GFX_CONTAINER *ds, WIDGET *cw, WIDGET *origin,
-                    long cx1, long cy1, long cx2, long cy2, int do_update) {
-	long   sx1, sy1, sx2, sy2;
-	static long d;
+                    int cx1, int cy1, int cx2, int cy2, int do_update) {
+	int   sx1, sy1, sx2, sy2;
+	static int d;
 	int need_update = 0;
 	WIDGET *next;
 	if (!cw) return 0;
@@ -356,7 +356,7 @@ static inline void redraw_window_area(SCREEN *scr, WIDGET *win)
 /**
  * Find widget at a specified absolute screen position
  */
-static WIDGET *scr_find(SCREEN *scr, long x, long y)
+static WIDGET *scr_find(SCREEN *scr, int x, int y)
 {
 	WIDGET *win = scr->sd->first_win;
 	WIDGET *result;
@@ -373,8 +373,8 @@ static WIDGET *scr_find(SCREEN *scr, long x, long y)
  *
  * This function catches the drawarea requests coming from child widgets.
  */
-static int (*orig_drawarea) (WIDGET *, WIDGET *, long, long, long, long);
-static int scr_drawarea(SCREEN *scr, WIDGET *origin, long x, long y, long w, long h)
+static int (*orig_drawarea) (WIDGET *, WIDGET *, int, int, int, int);
+static int scr_drawarea(SCREEN *scr, WIDGET *origin, int x, int y, int w, int h)
 {
 	GFX_CONTAINER *ds = scr->sd->scr_ds;
 	WIDGET *parent;
@@ -395,7 +395,7 @@ static int scr_drawarea(SCREEN *scr, WIDGET *origin, long x, long y, long w, lon
 int transparency_depth;  /* current depth of transparency */
 
 static int scr_drawbehind(SCREEN *scr, WIDGET *win,
-                          long x, long y, long w, long h, WIDGET *origin) {
+                          int x, int y, int w, int h, WIDGET *origin) {
 	int ret = 0;
 	WIDGET *next;
 
@@ -537,7 +537,7 @@ static void scr_set_act_win(SCREEN *scr, WIDGET *w)
 /**
  * Add window to the window display list
  */
-static void scr_place(SCREEN *scr, WIDGET *ww, long x, long y, long w, long h)
+static void scr_place(SCREEN *scr, WIDGET *ww, int x, int y, int w, int h)
 {
 	int ox1, oy1, ox2, oy2;
 	int nx1, ny1, nx2, ny2;
@@ -724,7 +724,7 @@ static void scr_reorder(SCREEN *scr)
 /**
  * Return width of the screen
  */
-static long scr_get_w(SCREEN *s)
+static int scr_get_w(SCREEN *s)
 {
 	if (!s || !s->sd->scr_ds) return 0;
 	return gfx->get_width(s->sd->scr_ds);
@@ -734,7 +734,7 @@ static long scr_get_w(SCREEN *s)
 /**
  * Return height of the screen
  */
-static long scr_get_h(SCREEN *s)
+static int scr_get_h(SCREEN *s)
 {
 	if (!s || !s->sd->scr_ds) return 0;
 	return gfx->get_height(s->sd->scr_ds);
@@ -829,8 +829,8 @@ static void build_script_lang(void)
 {
 	void *widtype;
 	widtype = script->reg_widget_type("Screen", (void *(*)(void))create);
-	script->reg_widget_attrib(widtype, "long w", scr_get_w, NULL, NULL);
-	script->reg_widget_attrib(widtype, "long h", scr_get_h, NULL, NULL);
+	script->reg_widget_attrib(widtype, "int w", scr_get_w, NULL, NULL);
+	script->reg_widget_attrib(widtype, "int h", scr_get_h, NULL, NULL);
 	script->reg_widget_method(widtype, "void refresh()", scr_refresh);
 	widman->build_script_lang(widtype, &gen_methods);
 }

@@ -14,11 +14,11 @@
 #define _MTK_SCRDRV_H_
 
 struct scrdrv_services {
-	long  (*set_screen)     (void *fb, int width, int height, int depth);
+	int  (*set_screen)     (void *fb, int width, int height, int depth);
 	void  (*restore_screen) (void);
-	long  (*get_scr_width)  (void);
-	long  (*get_scr_height) (void);
-	long  (*get_scr_depth)  (void);
+	int  (*get_scr_width)  (void);
+	int  (*get_scr_height) (void);
+	int  (*get_scr_depth)  (void);
 	void *(*get_scr_adr)    (void);
 	void *(*get_buf_adr)    (void);
 	void  (*update_area)    (int x1, int y1, int x2, int y2);

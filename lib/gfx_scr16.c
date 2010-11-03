@@ -28,7 +28,7 @@ typedef u16 pixel_t;
 /**
  * Convert RGBA color value to physical pixel
  */
-static inline pixel_t rgba_to_pixel(unsigned long rgba) {
+static inline pixel_t rgba_to_pixel(unsigned int rgba) {
 	return rgba_to_rgb565(rgba); }
 
 /**

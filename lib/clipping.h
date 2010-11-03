@@ -14,14 +14,14 @@
 #define _MTK_CLIPPING_H_
 
 struct clipping_services {
-	void     (*push)        (long x1, long y1, long x2, long y2);
+	void     (*push)        (int x1, int y1, int x2, int y2);
 	void     (*pop)         (void);
 	void     (*reset)       (void);
-	void     (*set_range)   (long x1, long y1, long x2, long y2);
-	long     (*get_x1)      (void);
-	long     (*get_y1)      (void);
-	long     (*get_x2)      (void);
-	long     (*get_y2)      (void);
+	void     (*set_range)   (int x1, int y1, int x2, int y2);
+	int     (*get_x1)      (void);
+	int     (*get_y1)      (void);
+	int     (*get_x2)      (void);
+	int     (*get_y2)      (void);
 };
 
 

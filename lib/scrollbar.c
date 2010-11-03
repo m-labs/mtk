@@ -199,7 +199,7 @@ static void scrollstep_leave_callback(WIDGET *cw, int dx, int dy)
  ** General widget methods **
  ****************************/
 
-static int scrollbar_draw(SCROLLBAR *w, struct gfx_ds *ds, long x, long y, WIDGET *origin)
+static int scrollbar_draw(SCROLLBAR *w, struct gfx_ds *ds, int x, int y, WIDGET *origin)
 {
 	int ret = 0, i;
 
@@ -244,7 +244,7 @@ static void scrollbar_updatepos(SCROLLBAR *w)
 }
 
 
-static WIDGET *scrollbar_find(SCROLLBAR *w, long x, long y)
+static WIDGET *scrollbar_find(SCROLLBAR *w, int x, int y)
 {
 	WIDGET *ret;
 	int i;
@@ -417,12 +417,12 @@ static char *scrollbar_get_orient(SCROLLBAR *s)
 /**
  * Get/set autoview attribute
  */
-static void scrollbar_set_autoview(SCROLLBAR *s, long av_flag)
+static void scrollbar_set_autoview(SCROLLBAR *s, int av_flag)
 {
 	s->sd->type = av_flag ? (s->sd->type |  SCROLLBAR_AUTOVIEW)
 	                      : (s->sd->type & ~SCROLLBAR_AUTOVIEW);
 }
-static long scrollbar_get_autoview(SCROLLBAR *s)
+static int scrollbar_get_autoview(SCROLLBAR *s)
 {
 	return !!(s->sd->type & SCROLLBAR_AUTOVIEW);
 }
@@ -453,7 +453,7 @@ static struct scrollbar_methods scroll_methods = {
  ** Service functions **
  ***********************/
 
-static WIDGET *new_button(WIDGET *parent, char *txt, void *clic, long context, int state)
+static WIDGET *new_button(WIDGET *parent, char *txt, void *clic, int context, int state)
 {
 	BUTTON *nb = but->create();
 	nb->but->set_click(nb, clic);
@@ -561,9 +561,9 @@ static void build_script_lang(void)
 	widtype = script->reg_widget_type("Scrollbar", (void *(*)(void))create);
 
 	script->reg_widget_attrib(widtype, "string orient",    scrollbar_get_orient,      scrollbar_set_orient,      gen_methods.update);
-	script->reg_widget_attrib(widtype, "long viewsize",    scrollbar_get_view_size,   scrollbar_set_view_size,   gen_methods.update);
-	script->reg_widget_attrib(widtype, "long realsize",    scrollbar_get_real_size,   scrollbar_set_real_size,   gen_methods.update);
-	script->reg_widget_attrib(widtype, "long offset",      scrollbar_get_view_offset, scrollbar_set_view_offset, gen_methods.update);
+	script->reg_widget_attrib(widtype, "int viewsize",    scrollbar_get_view_size,   scrollbar_set_view_size,   gen_methods.update);
+	script->reg_widget_attrib(widtype, "int realsize",    scrollbar_get_real_size,   scrollbar_set_real_size,   gen_methods.update);
+	script->reg_widget_attrib(widtype, "int offset",      scrollbar_get_view_offset, scrollbar_set_view_offset, gen_methods.update);
 	script->reg_widget_attrib(widtype, "boolean autoview", scrollbar_get_autoview,    scrollbar_set_autoview,    gen_methods.update);
 
 	widman->build_script_lang(widtype, &gen_methods);

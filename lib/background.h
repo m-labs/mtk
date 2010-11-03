@@ -29,7 +29,7 @@ struct background {
 };
 
 struct background_methods {
-	void (*set_style) (BACKGROUND *,long style);
+	void (*set_style) (BACKGROUND *,int style);
 	void (*set_click) (BACKGROUND *,void (*click)(void *));
 };
 

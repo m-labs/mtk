@@ -17,7 +17,7 @@
 struct shared_memory;
 
 struct sharedmem_services {
-	SHAREDMEM *(*alloc)       (long size);
+	SHAREDMEM *(*alloc)       (int size);
 	void       (*destroy)     (SHAREDMEM *sm);
 	void      *(*get_address) (SHAREDMEM *sm);
 	void       (*get_ident)   (SHAREDMEM *sm, char *dst_ident_buf);

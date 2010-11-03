@@ -30,8 +30,8 @@ struct scrollbar {
 struct scrollbar_methods {
 	void  (*set_orient)        (SCROLLBAR *, char *orient);
 	char *(*get_orient)        (SCROLLBAR *);
-	void  (*set_autoview)      (SCROLLBAR *, long av);
-	long  (*get_autoview)      (SCROLLBAR *);
+	void  (*set_autoview)      (SCROLLBAR *, int av);
+	int  (*get_autoview)      (SCROLLBAR *);
 	void  (*set_slider_x)      (SCROLLBAR *, s32 new_sx);
 	u32   (*get_slider_x)      (SCROLLBAR *);
 	void  (*set_slider_y)      (SCROLLBAR *, s32 new_sy);

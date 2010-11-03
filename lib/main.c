@@ -28,7 +28,7 @@ extern SCREEN *curr_scr;
 /**
  * Prototypes from pool.c
  */
-extern long  pool_add(char *name,void *structure);
+extern int  pool_add(char *name,void *structure);
 extern void *pool_get(char *name);
 
 /**

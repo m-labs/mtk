@@ -85,7 +85,7 @@ int mtk_streq(const char *s1, const char *s2, int max_s1)
 /**
  * Allocate memory block and set to zero
  */
-void *zalloc(unsigned long size)
+void *zalloc(unsigned int size)
 {
 	void *ret = malloc(size);
 	if (ret) memset(ret, 0, size);

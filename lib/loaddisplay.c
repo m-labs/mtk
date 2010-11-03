@@ -270,7 +270,7 @@ static color_t get_color_by_name(const char *colname)
  ** General widget methods **
  ****************************/
 
-static int ld_draw(LOADDISPLAY *ld, struct gfx_ds *ds, long x, long y, WIDGET *origin)
+static int ld_draw(LOADDISPLAY *ld, struct gfx_ds *ds, int x, int y, WIDGET *origin)
 {
 	struct loadbar *lb = ld->ldd->bars;
 	int w = ld->wd->w - 2*ld->ldd->padx;

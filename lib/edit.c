@@ -241,13 +241,13 @@ static inline void draw_kfocus_frame(GFX_CONTAINER *d, s32 x, s32 y, s32 w, s32 
  ** General widget methods **
  ****************************/
 
-static int edit_draw(EDIT *e, struct gfx_ds *ds, long x, long y, WIDGET *origin)
+static int edit_draw(EDIT *e, struct gfx_ds *ds, int x, int y, WIDGET *origin)
 {
-	long tx = e->ed->tx, ty = e->ed->ty;
+	int tx = e->ed->tx, ty = e->ed->ty;
 	u32  tc = GFX_RGB(32, 32, 32);
 	u32  cc = BLACK_MIXED;
 	s32  cx, cy;
-	long w  = e->wd->w,  h  = e->wd->h;
+	int w  = e->wd->w,  h  = e->wd->h;
 
 	if (origin == e) return 1;
 	if (origin) return 0;
@@ -305,7 +305,7 @@ static int edit_draw(EDIT *e, struct gfx_ds *ds, long x, long y, WIDGET *origin)
 }
 
 
-static EDIT *edit_find(EDIT *e, long x, long y)
+static EDIT *edit_find(EDIT *e, int x, int y)
 {
 	x -= e->wd->x;
 	y -= e->wd->y;

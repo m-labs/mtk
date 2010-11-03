@@ -102,7 +102,7 @@ void print_grid_info(GRID *g)
 
 	printf("Grid info:\n");
 	if (!g) printf(" grid is zero!\n");
-	
+
 	printf(" xpos   = %d\n", (int)g->wd->x);
 	printf(" ypos   = %d\n", (int)g->wd->y);
 	printf(" width  = %d\n", (int)g->wd->w);
@@ -145,10 +145,10 @@ void print_grid_info(GRID *g)
 			if (cc->col) printf("%u", cc->col->index);
 			else printf("unknown");
 			printf(")\n");
-			printf("   xpos   = %lu\n", cw->gen->get_x(cw));
-			printf("   ypos   = %lu\n", cw->gen->get_y(cw));
-			printf("   width  = %lu\n", cw->gen->get_w(cw));
-			printf("   height = %lu\n", cw->gen->get_h(cw));
+			printf("   xpos   = %u\n", cw->gen->get_x(cw));
+			printf("   ypos   = %u\n", cw->gen->get_y(cw));
+			printf("   width  = %u\n", cw->gen->get_w(cw));
+			printf("   height = %u\n", cw->gen->get_h(cw));
 		}
 		cc = cc->next;
 		printf("aaa\n");
@@ -215,7 +215,7 @@ static void realloc_cellmap(GRID *g)
 
 	/* check if there is enough space in current cellmap */
 	if (map_size > g->gd->cellmapsize) {
-	
+
 		/* allocate new cellmap in a greedy way to prevent instand reallocations */
 		if (g->gd->cellmap) free(g->gd->cellmap);
 		g->gd->cellmapsize = 2 * map_size;
@@ -375,7 +375,7 @@ static void  calc_section_sizes(struct section *seclist,
 		}
 		curr = curr->next;
 	}
-	
+
 	/* define sections with fixed sizes and sum fixed sizes */
 	for (curr=seclist, i=num_secs; (i--) && (curr); ) {
 		if (curr->fixed >= 0) {
@@ -386,7 +386,7 @@ static void  calc_section_sizes(struct section *seclist,
 		}
 		curr = curr->next;
 	}
-	
+
 	/* enforce max constrains to weighted sections */
 	for (curr=seclist, i=num_secs; (i--) && (curr); ) {
 		if (curr->size == -1) {
@@ -404,7 +404,7 @@ static void  calc_section_sizes(struct section *seclist,
 		}
 		curr = curr->next;
 	}
-	
+
 	/* apply min constrains to weighted sections */
 	for (curr=seclist, i=num_secs; (i--) && (curr); ) {
 		if (curr->size == -1) {
@@ -422,7 +422,7 @@ static void  calc_section_sizes(struct section *seclist,
 		}
 		curr = curr->next;
 	}
-	
+
 	/* balance remaining weighted sections */
 	for (curr=seclist, i=num_secs; (i--) && (curr); ) {
 		if (curr->size == -1) {
@@ -518,7 +518,7 @@ static void position_widget(WIDGET *w, int cx, int cy, int cw, int ch, int stick
 		wid_h = (w->wd->max_h < ch) ? w->wd->max_h : ch;
 		sticky &= ~(GRID_STICKY_NORTH | GRID_STICKY_SOUTH);
 	}
-	
+
 	/* default widget position is centered */
 	wid_x = cx + ((cw - wid_w)>>1);
 	wid_y = cy + ((ch - wid_h)>>1);
@@ -528,7 +528,7 @@ static void position_widget(WIDGET *w, int cx, int cy, int cw, int ch, int stick
 	if (sticky & GRID_STICKY_NORTH) wid_y = cy;
 	if (sticky & GRID_STICKY_EAST)  wid_x = cx + cw - wid_w;
 	if (sticky & GRID_STICKY_SOUTH) wid_y = cy + ch - wid_h;
-	
+
 	/* update widget position attributes */
 	w->gen->set_x(w, wid_x);
 	w->gen->set_y(w, wid_y);
@@ -622,7 +622,7 @@ static void erase_overlapping_cells(GRID *g, struct cell *new)
  ****************************/
 
 
-static int grid_draw(GRID *g, struct gfx_ds *ds, long x, long y, WIDGET *origin)
+static int grid_draw(GRID *g, struct gfx_ds *ds, int x, int y, WIDGET *origin)
 {
 	s32  cx1 = gfx->get_clip_x(ds);
 	s32  cy1 = gfx->get_clip_y(ds);
@@ -735,7 +735,7 @@ static int grid_draw(GRID *g, struct gfx_ds *ds, long x, long y, WIDGET *origin)
 }
 
 
-static WIDGET *grid_find(GRID *g, long x, long y)
+static WIDGET *grid_find(GRID *g, int x, int y)
 {
 	struct cell *cc;
 	WIDGET *cw;
@@ -793,7 +793,7 @@ static void grid_updatepos(GRID *g)
 	/* calculate offsets of rows/columns */
 	calc_section_offsets(g->gd->cols);
 	calc_section_offsets(g->gd->rows);
-	
+
 	/* set child widget positions */
 	place_widgets(g);
 	orig_updatepos(g);
@@ -830,7 +830,7 @@ static void grid_calc_minmax(GRID *g)
 		}
 		s = s->next;
 	}
-	
+
 	s = g->gd->cols;
 	while (s) {
 		if (s->fixed < 0) {
@@ -840,7 +840,7 @@ static void grid_calc_minmax(GRID *g)
 		}
 		s = s->next;
 	}
-	
+
 	/*
 	 * Calculate min/max values for columns/rows by finding the highest min
 	 * and lowest max value of the widgets inside a column/row.
@@ -913,7 +913,7 @@ static int grid_do_layout(GRID *g, WIDGET *child)
 	int ox, oy, ow, oh;
 	int force_update = 0;
 
-	/* if child is new, get familar with it */ 
+	/* if child is new, get familar with it */
 	if (child->wd->update & WID_UPDATE_NEWCHILD) {
 		force_update = 1;
 		child->wd->update &= ~WID_UPDATE_NEWCHILD;
@@ -965,7 +965,7 @@ static int grid_do_layout(GRID *g, WIDGET *child)
 	oy = child->wd->y;
 	ow = child->wd->w;
 	oh = child->wd->h;
-	
+
 	/* place child cosy within its cell */
 	cx = col ? col->offset + c->pad_x : 0;
 	cy = row ? row->offset + c->pad_y : 0;
@@ -997,12 +997,12 @@ static void grid_free_data(GRID *g)
 		if (cc->wid) cc->wid->gen->release(cc->wid);
 		cc = nc;
 	}
-	
+
 	/* free cell list and section lists */
 	FREE_CONNECTED_LIST(struct cell,    g->gd->cells, free);
 	FREE_CONNECTED_LIST(struct section, g->gd->rows,  free);
 	FREE_CONNECTED_LIST(struct section, g->gd->cols,  free);
-	
+
 	/* free cell map */
 	free(g->gd->cellmap);
 }
@@ -1163,7 +1163,7 @@ static void grid_remove(GRID *g, WIDGET *element)
 	if (!cell) return;
 	if (!element) return;
 	if (element->gen->get_parent(element) != g) return;
-	
+
 	element->gen->set_parent(element, NULL);
 	element->gen->dec_ref(element);
 	cell->wid = NULL;
@@ -1364,7 +1364,7 @@ static struct grid_services services = {
  ************************/
 
 
-static void script_column_config(GRID *g, long index, float weight, long width)
+static void script_column_config(GRID *g, int index, float weight, int width)
 {
 	/*
 	 * If no arguments are specified and the column does not yet exists,
@@ -1379,7 +1379,7 @@ static void script_column_config(GRID *g, long index, float weight, long width)
 }
 
 
-static void script_row_config(GRID *g, long index, float weight, long width)
+static void script_row_config(GRID *g, int index, float weight, int width)
 {
 	/*
 	 * If no arguments are specified and the row does not yet exists,
@@ -1394,9 +1394,9 @@ static void script_row_config(GRID *g, long index, float weight, long width)
 }
 
 
-static void script_place_widget(GRID *g, WIDGET *w, long col, long row,
-                                long col_span, long row_span,
-                                long pad_x, long pad_y,
+static void script_place_widget(GRID *g, WIDGET *w, int col, int row,
+                                int col_span, int row_span,
+                                int pad_x, int pad_y,
                                 char *align) {
 	if (!w) return;
 
@@ -1442,9 +1442,9 @@ static void build_script_lang(void)
 
 	widtype = script->reg_widget_type("Grid", (void *(*)(void))create);
 
-	script->reg_widget_method(widtype, "void columnconfig(long index,float weight=-1.0,long size=-1)", &script_column_config);
-	script->reg_widget_method(widtype, "void rowconfig(long index,float weight=-1.0,long size=-1)", &script_row_config);
-	script->reg_widget_method(widtype, "void place(Widget child,long column=9999,long row=9999,long columnspan=9999,long rowspan=9999,long padx=9999,long pady=9999,string align=\"\")", script_place_widget);
+	script->reg_widget_method(widtype, "void columnconfig(int index,float weight=-1.0,int size=-1)", &script_column_config);
+	script->reg_widget_method(widtype, "void rowconfig(int index,float weight=-1.0,int size=-1)", &script_row_config);
+	script->reg_widget_method(widtype, "void place(Widget child,int column=9999,int row=9999,int columnspan=9999,int rowspan=9999,int padx=9999,int pady=9999,string align=\"\")", script_place_widget);
 	script->reg_widget_method(widtype, "void add(Widget child)", grid_add);
 	script->reg_widget_method(widtype, "void remove(Widget child)", grid_remove);
 

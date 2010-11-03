@@ -197,7 +197,7 @@ static void font_gen_width_table(struct fntfile_hdr *fnt, s32 *dst_wtab)
 
 	first_ade = get_u16(&fnt->first_ade);
 	last_ade  = get_u16(&fnt->last_ade);
-	offsets = (u16 *)((get_u32((u32 *)(&fnt->off_table))) + (long)fnt);
+	offsets = (u16 *)((get_u32((u32 *)(&fnt->off_table))) + (int)fnt);
 
 	for (i = 0; i < first_ade; i++) *(dst_wtab++) = 0;
 	for (i = first_ade; i < last_ade; i++) {
@@ -232,7 +232,7 @@ static void font_gen_offset_table(struct fntfile_hdr *fnt, s32 *dst_otab)
 
 	first_ade = get_u16(&fnt->first_ade);
 	last_ade  = get_u16(&fnt->last_ade);
-	offsets   = (u16 *)((get_u32((u32 *)(&fnt->off_table))) + (long)fnt);
+	offsets   = (u16 *)((get_u32((u32 *)(&fnt->off_table))) + (int)fnt);
 
 	for (i = 0; i < first_ade; i++) *(dst_otab++) = 0;
 	for (i = first_ade; i < last_ade + 1; i++) {
@@ -327,13 +327,13 @@ static void font_gen_image(struct fntfile_hdr *fnt, u8 *dst)
 	}
 	linelength = get_u16(&fnt->form_width);
 	height     = get_u16(&fnt->form_height);
-	src = (u8 *)((get_u32((u32 *)(&fnt->dat_table))) + (long)fnt);
+	src = (u8 *)((get_u32((u32 *)(&fnt->dat_table))) + (int)fnt);
 
 	for (j = 0; j < height; j++) {
 		for (i = 0; i < linelength; i++) {
 			curr_byte = *(src++);
 			for (k = 0; k < 8; k++) {
-				*(dst++)  = (((long)curr_byte)&0x0080) ? 255 : 0;
+				*(dst++)  = (((int)curr_byte)&0x0080) ? 255 : 0;
 				curr_byte = curr_byte<<1;
 			}
 		}

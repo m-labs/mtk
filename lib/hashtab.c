@@ -86,7 +86,7 @@ static HASHTAB *hashtab_create(u32 tab_size, u32 max_hash_length)
 	new_hashtab->ref_cnt  = 1;
 	new_hashtab->tab_size = tab_size;
 	new_hashtab->max_hash_length = max_hash_length;
-	new_hashtab->tab = (struct hashtab_entry **)((long)new_hashtab + sizeof(struct hashtab));
+	new_hashtab->tab = (struct hashtab_entry **)((int)new_hashtab + sizeof(struct hashtab));
 	return new_hashtab;
 }
 

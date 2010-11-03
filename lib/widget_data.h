@@ -56,17 +56,17 @@ struct new_binding {
 
 
 struct widget_data {
-	long    x, y, w, h;         /* current relative position and size  */
-	long    min_w, min_h;       /* minimal size                        */
-	long    max_w, max_h;       /* maximal size                        */
-	long    flags;              /* state flags                         */
-	long    update;             /* update flags                        */
+	int    x, y, w, h;         /* current relative position and size  */
+	int    min_w, min_h;       /* minimal size                        */
+	int    max_w, max_h;       /* maximal size                        */
+	int    flags;              /* state flags                         */
+	int    update;             /* update flags                        */
 	void    *context;           /* associated data                     */
 	WIDGET  *parent;            /* parent in widget hierarchy          */
 	WIDGET  *next;              /* next widget in a connected list     */
 	WIDGET  *prev;              /* previous widget in a connected list */
 	void    (*click) (void *);  /* event handle routine                */
-	long    ref_cnt;            /* reference counter                   */
+	int    ref_cnt;            /* reference counter                   */
 	s32     app_id;             /* application that owns the widget    */
 	struct binding *bindings;   /* event bindings                      */
 	struct new_binding *new_bindings;

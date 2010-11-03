@@ -23,7 +23,7 @@
 
 
 struct keymap_services {
-	char    (*get_ascii) (long keycode,long switches);
+	char    (*get_ascii) (int keycode,int switches);
 };
 
 #endif /* _MTK_KEYMAP_H_ */

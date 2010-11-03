@@ -136,7 +136,7 @@ static inline void draw_kfocus_frame(GFX_CONTAINER *d, s32 x, s32 y, s32 w, s32 
  ** General widget methods **
  ****************************/
 
-static int but_draw(BUTTON *b, struct gfx_ds *ds, long x, long y, WIDGET *origin)
+static int but_draw(BUTTON *b, struct gfx_ds *ds, int x, int y, WIDGET *origin)
 {
 	int tx = b->bd->tx, ty = b->bd->ty;
 	int w  = b->wd->w,  h  = b->wd->h;
@@ -526,8 +526,8 @@ static void build_script_lang(void)
 
 	widtype = script->reg_widget_type("Button", (void *(*)(void))create);
 	script->reg_widget_attrib(widtype, "string text", but_get_text, but_set_text, gen_methods.update);
-	script->reg_widget_attrib(widtype, "long padx", but_get_pad_x, but_set_pad_x, gen_methods.update);
-	script->reg_widget_attrib(widtype, "long pady", but_get_pad_y, but_set_pad_y, gen_methods.update);
+	script->reg_widget_attrib(widtype, "int padx", but_get_pad_x, but_set_pad_x, gen_methods.update);
+	script->reg_widget_attrib(widtype, "int pady", but_get_pad_y, but_set_pad_y, gen_methods.update);
 	widman->build_script_lang(widtype, &gen_methods);
 }
 
