@@ -80,6 +80,16 @@ int init_entry(struct mtk_services *d);
  ** Functions for internal use **
  ********************************/
 
+static void notify_change(ENTRY *e)
+{
+	int app_id;
+	char *m;
+
+	m = e->gen->get_bind_msg(e, "change");
+	app_id = e->gen->get_app_id(e);
+	if (m) msg->send_action_event(app_id, "change", m);
+}
+
 /**
  * Delete character at specified string position
  *
@@ -92,6 +102,7 @@ static int delete_char(ENTRY *e, int idx)
 	if (idx >= strlen(e->ed->txtbuf)) return 0;
 	while (*src) *(dst++) = *(src++);
 	*dst = 0;
+	notify_change(e);
 	return 1;
 }
 
@@ -126,6 +137,8 @@ static int insert_char(ENTRY *e, int idx, char c)
 
 	/* insert character */
 	*dst = c;
+
+	notify_change(e);
 	return 1;
 }
 
@@ -433,14 +446,12 @@ static void entry_handle_event(ENTRY *e, EVENT *ev, WIDGET *from)
 
 	switch (ev->type) {
 	case EVENT_RELEASE:
-		if(ev->code == MTK_KEY_LEFTCTRL){
+		if(ev->code == MTK_KEY_LEFTCTRL)
 			ctrl_pressed = 0;
-		}
 		break;
 	case EVENT_PRESS:
 	case EVENT_KEY_REPEAT:
-		//e->ed->sel_beg = e->ed->sel_end = e->ed->sel_w = 0;
-		switch (ev->code) {
+		switch(ev->code) {
 			case MTK_BTN_MOUSE:
 				xpos -= e->ed->tx.curr + 2 + 3;
 				e->ed->curpos = get_char_index(e, xpos);

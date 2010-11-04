@@ -74,6 +74,16 @@ int init_edit(struct mtk_services *d);
  ** Functions for internal use **
  ********************************/
 
+static void notify_change(EDIT *e)
+{
+	int app_id;
+	char *m;
+
+	m = e->gen->get_bind_msg(e, "change");
+	app_id = e->gen->get_app_id(e);
+	if (m) msg->send_action_event(app_id, "change", m);
+}
+
 /**
  * Delete character at specified string position
  *
@@ -86,6 +96,7 @@ static int delete_char(EDIT *e, int idx)
 	if (idx >= strlen(e->ed->txtbuf)) return 0;
 	while (*src) *(dst++) = *(src++);
 	*dst = 0;
+	notify_change(e);
 	return 1;
 }
 
@@ -108,7 +119,7 @@ static int insert_char(EDIT *e, int idx, char c)
 		e->ed->txtbuflen = e->ed->txtbuflen * 2;
 		new = (char *)zalloc(e->ed->txtbuflen);
 		if (!new) return 0;
-		for(i=0; i<=len; i++) new[i] = e->ed->txtbuf[i];
+		for(i=0;i<=len;i++) new[i] = e->ed->txtbuf[i];
 		free(e->ed->txtbuf);
 		e->ed->txtbuf = new;
 	}
@@ -120,6 +131,8 @@ static int insert_char(EDIT *e, int idx, char c)
 
 	/* insert character */
 	*dst = c;
+
+	notify_change(e);
 	return 1;
 }
 
@@ -414,7 +427,6 @@ static void clipboard_paste(EDIT *e)
 	e->ed->curpos += clip_length;
 }
 
-
 static void (*orig_handle_event) (EDIT *e, EVENT *ev, WIDGET *from);
 static void edit_handle_event(EDIT *e, EVENT *ev, WIDGET *from)
 {
@@ -479,14 +491,14 @@ static void edit_handle_event(EDIT *e, EVENT *ev, WIDGET *from)
 				}
 
 				case MTK_KEY_DELETE:
-					if (e->ed->curpos < strlen(e->ed->txtbuf))
+					if(e->ed->curpos < strlen(e->ed->txtbuf))
 						delete_char(e, e->ed->curpos);
 					sel_reset(e);
 					ev_done = 2;
 					break;
 
 				case MTK_KEY_BACKSPACE:
-					if (e->ed->curpos > 0) {
+					if(e->ed->curpos > 0) {
 						e->ed->curpos--;
 						delete_char(e, e->ed->curpos);
 					}
@@ -526,7 +538,7 @@ static void edit_handle_event(EDIT *e, EVENT *ev, WIDGET *from)
 					return;
 			}
 
-			if (ev_done) {
+			if(ev_done) {
 				update_text_pos(e);
 				e->gen->force_redraw(e);
 				return;
