@@ -544,9 +544,12 @@ static void edit_handle_event(EDIT *e, EVENT *ev, WIDGET *from)
 				return;
 			}
 
-			/* insert ASCII character */
 			ascii = userstate->get_ascii(ev->code);
-			if (!ascii) return;
+			if (!ascii) {
+				orig_handle_event(e, ev, from);
+				return;
+			}
+			/* insert ASCII character */
 			insert_char(e, e->ed->curpos, ascii);
 			sel_reset(e);
 			e->ed->curpos++;
