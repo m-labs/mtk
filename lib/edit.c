@@ -425,123 +425,121 @@ static void edit_handle_event(EDIT *e, EVENT *ev, WIDGET *from)
 	static char ctrl_pressed = 0;
 
 	switch (ev->type) {
-	case EVENT_RELEASE:
-		if(ev->code == MTK_KEY_LEFTCTRL){
-			ctrl_pressed = 0;
-		}
-		break;
-	case EVENT_PRESS:
-	case EVENT_KEY_REPEAT:
-		//e->ed->sel_beg = e->ed->sel_end = e->ed->sel_w = 0;
-		switch (ev->code) {
-			case MTK_BTN_MOUSE:
-				xpos -= e->ed->tx + 2 + 3;
-				ypos -= e->ed->ty + 2 + 3;
-				e->ed->curpos = get_char_index(e, xpos, ypos);
-				e->ed->sel_beg = e->ed->sel_end = e->ed->curpos;
-				e->ed->sel_w = 0;
-				userstate->drag(e, NULL, sel_tick, sel_release);
-				ev_done = 1;
-				break;
+		case EVENT_RELEASE:
+			if(ev->code == MTK_KEY_LEFTCTRL)
+				ctrl_pressed = 0;
+			break;
+		case EVENT_PRESS:
+		case EVENT_KEY_REPEAT:
+			switch(ev->code) {
+				case MTK_BTN_MOUSE:
+					xpos -= e->ed->tx + 2 + 3;
+					ypos -= e->ed->ty + 2 + 3;
+					e->ed->curpos = get_char_index(e, xpos, ypos);
+					e->ed->sel_beg = e->ed->sel_end = e->ed->curpos;
+					e->ed->sel_w = 0;
+					userstate->drag(e, NULL, sel_tick, sel_release);
+					ev_done = 1;
+					break;
 
-			case MTK_KEY_UP:
-				e->ed->curpos = get_char_index(e, e->ed->cx, e->ed->cy-e->ed->ch);
-				sel_reset(e);
-				ev_done = 2;
-				break;
-			case MTK_KEY_DOWN:
-				e->ed->curpos = get_char_index(e, e->ed->cx, e->ed->cy+e->ed->ch);
-				sel_reset(e);
-				ev_done = 2;
-				break;
+				case MTK_KEY_UP:
+					e->ed->curpos = get_char_index(e, e->ed->cx, e->ed->cy-e->ed->ch);
+					sel_reset(e);
+					ev_done = 2;
+					break;
+				case MTK_KEY_DOWN:
+					e->ed->curpos = get_char_index(e, e->ed->cx, e->ed->cy+e->ed->ch);
+					sel_reset(e);
+					ev_done = 2;
+					break;
 
-			case MTK_KEY_LEFT:
-				if (e->ed->curpos > 0) e->ed->curpos--;
-				sel_reset(e);
-				ev_done = 2;
-				break;
-			case MTK_KEY_RIGHT:
-				if (e->ed->curpos < strlen(e->ed->txtbuf)) e->ed->curpos++;
-				sel_reset(e);
-				ev_done = 2;
-				break;
+				case MTK_KEY_LEFT:
+					if (e->ed->curpos > 0) e->ed->curpos--;
+					sel_reset(e);
+					ev_done = 2;
+					break;
+				case MTK_KEY_RIGHT:
+					if (e->ed->curpos < strlen(e->ed->txtbuf)) e->ed->curpos++;
+					sel_reset(e);
+					ev_done = 2;
+					break;
 
-			case MTK_KEY_HOME:
-				while((e->ed->curpos > 0) && (e->ed->txtbuf[e->ed->curpos-1] != '\n'))
-					e->ed->curpos--;
-				sel_reset(e);
-				ev_done = 2;
-				break;
-			case MTK_KEY_END: {
-				while((e->ed->txtbuf[e->ed->curpos] != 0) && (e->ed->txtbuf[e->ed->curpos] != '\n'))
-					e->ed->curpos++;
-				sel_reset(e);
-				ev_done = 2;
-				break;
+				case MTK_KEY_HOME:
+					while((e->ed->curpos > 0) && (e->ed->txtbuf[e->ed->curpos-1] != '\n'))
+						e->ed->curpos--;
+					sel_reset(e);
+					ev_done = 2;
+					break;
+				case MTK_KEY_END: {
+					while((e->ed->txtbuf[e->ed->curpos] != 0) && (e->ed->txtbuf[e->ed->curpos] != '\n'))
+						e->ed->curpos++;
+					sel_reset(e);
+					ev_done = 2;
+					break;
+				}
+
+				case MTK_KEY_DELETE:
+					if (e->ed->curpos < strlen(e->ed->txtbuf))
+						delete_char(e, e->ed->curpos);
+					sel_reset(e);
+					ev_done = 2;
+					break;
+
+				case MTK_KEY_BACKSPACE:
+					if (e->ed->curpos > 0) {
+						e->ed->curpos--;
+						delete_char(e, e->ed->curpos);
+					}
+					sel_reset(e);
+					ev_done = 2;
+					break;
+
+				case MTK_KEY_LEFTCTRL:
+					ctrl_pressed = 1;
+					break;
+
+				case MTK_KEY_C:
+					if(ctrl_pressed) {
+						sel_copy(e);
+						ev_done = 2;
+					}
+					break;
+
+				case MTK_KEY_X:
+					if(ctrl_pressed) {
+						sel_cut(e);
+						sel_reset(e);
+						ev_done = 2;
+					}
+					break;
+
+				case MTK_KEY_V:
+					if(ctrl_pressed) {
+						clipboard_paste(e);
+						sel_reset(e);
+						ev_done = 2;
+					}
+					break;
+
+				case MTK_KEY_TAB:
+					orig_handle_event(e, ev, from);
+					return;
 			}
 
-			case MTK_KEY_DELETE:
-				if (e->ed->curpos < strlen(e->ed->txtbuf))
-					delete_char(e, e->ed->curpos);
-				sel_reset(e);
-				ev_done = 2;
-				break;
-
-			case MTK_KEY_BACKSPACE:
-				if (e->ed->curpos > 0) {
-					e->ed->curpos--;
-					delete_char(e, e->ed->curpos);
-				}
-				sel_reset(e);
-				ev_done = 2;
-				break;
-
-			case MTK_KEY_LEFTCTRL:
-				ctrl_pressed = 1;
-				break;
-
-			case MTK_KEY_C:
-				if(ctrl_pressed){
-					sel_copy(e);
-					ev_done = 2;
-				}
-				break;
-
-			case MTK_KEY_X:
-				if(ctrl_pressed){
-					sel_cut(e);
-					sel_reset(e);
-					ev_done = 2;
-				}
-				break;
-
-			case MTK_KEY_V:
-				if(ctrl_pressed){
-					clipboard_paste(e);
-					sel_reset(e);
-					ev_done = 2;
-				}
-				break;
-
-			case MTK_KEY_TAB:
-				orig_handle_event(e, ev, from);
+			if (ev_done) {
+				update_text_pos(e);
+				e->gen->force_redraw(e);
 				return;
-		}
+			}
 
-		if (ev_done) {
-			update_text_pos(e);
-			e->gen->force_redraw(e);
-			return;
-		}
-
-		/* insert ASCII character */
-		ascii = userstate->get_ascii(ev->code);
-		if (!ascii) return;
-		insert_char(e, e->ed->curpos, ascii);
-		sel_reset(e);
-		e->ed->curpos++;
-		e->wd->update |= WID_UPDATE_REFRESH;
-		e->gen->update(e);
+			/* insert ASCII character */
+			ascii = userstate->get_ascii(ev->code);
+			if (!ascii) return;
+			insert_char(e, e->ed->curpos, ascii);
+			sel_reset(e);
+			e->ed->curpos++;
+			e->wd->update |= WID_UPDATE_REFRESH;
+			e->gen->update(e);
 	}
 }
 
@@ -579,7 +577,7 @@ static void edit_updatepos(EDIT *e)
  */
 static void edit_free_data(EDIT *e)
 {
-	if (e->ed->txtbuf) free(e->ed->txtbuf);
+	if(e->ed->txtbuf) free(e->ed->txtbuf);
 }
 
 
@@ -646,6 +644,7 @@ static EDIT *create(void)
 	new->wd->flags    |= WID_FLAGS_EDITABLE | WID_FLAGS_TAKEFOCUS;
 
 	update_text_pos(new);
+	edit_calc_minmax(new);
 	return new;
 }
 
