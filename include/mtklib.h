@@ -57,6 +57,10 @@ typedef union mtklib_event_union {
 
 #define MAX_EVENTS 64
 
+/* Configuration */
+extern unsigned int config_wallpaper_w, config_wallpaper_h;
+extern unsigned short *config_wallpaper_bitmap;
+
 /**
  * Initialise mtk library
  */

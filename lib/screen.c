@@ -250,7 +250,8 @@ static void create_menubar(SCREEN *scr)
  * Callback routine that is executed when user clicks on the desktop
  */
 static void dummyclick(void *w)
-{ w=w; }
+{
+}
 
 
 /**
@@ -269,15 +270,16 @@ static void create_desktop(SCREEN *scr)
 	b->bg->set_style(b, BG_STYLE_DESK);
 	b->bg->set_click(b, dummyclick);
 	b->gen->update((WIDGET *)b);
+	desk->win->set_elem_mask(desk, 0);
 	desk->win->set_content(desk, (WIDGET *)b);
 	desk->gen->update((WIDGET *)desk);
 
-	/* place desktop window outside of the screen */
-	scr->scr->place(scr, (WIDGET *)desk, scr_w + 50, -50, scr_w + 100, scr_h + 100);
 	viewman->set_bg(desk->wd->context);
 
 	/* move desktop window to the screen area */
-	scr->scr->place(scr, (WIDGET *)desk, -50, -50, scr_w + 100, scr_h + 100);
+	scr->scr->place(scr, (WIDGET *)desk, -win->shadow_left, -win->shadow_top,
+		scr_w+win->shadow_left+win->shadow_right,
+		scr_h+win->shadow_top+win->shadow_bottom);
 }
 
 
