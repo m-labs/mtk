@@ -14,9 +14,10 @@ struct background;
 #define WIDGET struct background
 
 #include <stdio.h>
+#include <string.h>
 #include "mtkstd.h"
-#include "background.h"
 #include "gfx.h"
+#include "background.h"
 #include "widget_data.h"
 #include "widget_help.h"
 #include "widman.h"
@@ -32,6 +33,7 @@ struct background_data {
 	int    style;
 	void  (*click) (void *);
 	WIDGET *content;
+	GFX_CONTAINER *wallpaper;
 };
 
 int init_background(struct mtk_services *d);
@@ -39,6 +41,8 @@ int init_background(struct mtk_services *d);
 
 unsigned int config_bg_win_color = 0x8a8a85ff + 0x32322800;
 unsigned int config_bg_desk_color = 0x575c70ff;
+unsigned int config_wallpaper_w, config_wallpaper_h;
+u16 *config_wallpaper_bitmap = NULL;
 
 
 /****************************
@@ -63,7 +67,10 @@ static int bg_draw(BACKGROUND *b, struct gfx_ds *ds, int x, int y, WIDGET *origi
 			ret |= 1;
 			break;
 		case BG_STYLE_DESK:
-			gfx->draw_box(ds, x, y, b->wd->w, b->wd->h, config_bg_desk_color);
+			if(b->bd->wallpaper == NULL)
+				gfx->draw_box(ds, x, y, b->wd->w, b->wd->h, config_bg_desk_color);
+			else
+				gfx->draw_img(ds, x, y, b->wd->w, b->wd->h, b->bd->wallpaper, 255);
 			ret |= 1;
 			break;
 	}
@@ -210,6 +217,22 @@ static void bg_set_content(BACKGROUND *b, WIDGET *new_content)
 	b->wd->update |= WID_UPDATE_MINMAX;
 }
 
+static void update_wallpaper(BACKGROUND *b)
+{
+	if(b->bd->wallpaper != NULL) {
+		gfx->dec_ref(b->bd->wallpaper);
+		b->bd->wallpaper = NULL;
+	}
+	if(config_wallpaper_bitmap != NULL) {
+		u16 *dst;
+		
+		b->bd->wallpaper = gfx->alloc_img(config_wallpaper_w, config_wallpaper_h, GFX_IMG_TYPE_RGB16);
+		if(b->bd->wallpaper == NULL) return;
+		dst = gfx->map(b->bd->wallpaper);
+		memcpy(dst, config_wallpaper_bitmap, config_wallpaper_w*config_wallpaper_h*2);
+		gfx->unmap(b->bd->wallpaper);
+	}
+}
 
 static struct widget_methods gen_methods;
 static struct background_methods bg_methods = {
@@ -231,6 +254,9 @@ static BACKGROUND *create(void)
 	new->bd->style  =  BG_STYLE_WIN;
 	new->wd->flags |=  WID_FLAGS_CONCEALING;
 
+	new->bd->wallpaper = NULL;
+	update_wallpaper(new);
+	
 	return new;
 }
 
