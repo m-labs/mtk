@@ -60,10 +60,12 @@ struct entry_data {
 	void (*release)(WIDGET *);
 };
 
-#define ENTRY_FLAGS_BLIND 0x1   /* blind out characters */
+#define ENTRY_FLAGS_BLIND    0x1   /* blind out characters */
+#define ENTRY_FLAGS_READONLY 0x2
 
 static GFX_CONTAINER *normal_img;
 static GFX_CONTAINER *focus_img;
+static GFX_CONTAINER *readonly_img;
 
 int init_entry(struct mtk_services *d);
 
@@ -300,10 +302,14 @@ static int entry_draw(ENTRY *e, struct gfx_ds *ds, int x, int y, WIDGET *origin)
 	if (e->wd->flags & WID_FLAGS_KFOCUS)
 		draw_kfocus_frame(ds, x - 1, y - 1, w + 2, h + 2);
 
-	if (e->wd->flags & WID_FLAGS_MFOCUS)
-		gfx->draw_img(ds, x, y, w, h, focus_img, 255);
-	else
-		gfx->draw_img(ds, x, y, w, h, normal_img, 255);
+	if (e->ed->flags & ENTRY_FLAGS_READONLY)
+		gfx->draw_img(ds, x, y, w, h, readonly_img, 255);
+	else {
+		if (e->wd->flags & WID_FLAGS_MFOCUS)
+			gfx->draw_img(ds, x, y, w, h, focus_img, 255);
+		else
+			gfx->draw_img(ds, x, y, w, h, normal_img, 255);
+	}
 
 	draw_sunken_frame(ds, x, y, w, h);
 
@@ -485,19 +491,23 @@ static void entry_handle_event(ENTRY *e, EVENT *ev, WIDGET *from)
 				break;
 
 			case MTK_KEY_DELETE:
-				if (e->ed->curpos < strlen(e->ed->txtbuf))
-					delete_char(e, e->ed->curpos);
-				sel_reset(e);
-				ev_done = 2;
+				if (!(e->ed->flags & ENTRY_FLAGS_READONLY)) {
+					if (e->ed->curpos < strlen(e->ed->txtbuf))
+						delete_char(e, e->ed->curpos);
+					sel_reset(e);
+					ev_done = 2;
+				}
 				break;
 
 			case MTK_KEY_BACKSPACE:
-				if (e->ed->curpos > 0) {
-					e->ed->curpos--;
-					delete_char(e, e->ed->curpos);
+				if (!(e->ed->flags & ENTRY_FLAGS_READONLY)) {
+					if (e->ed->curpos > 0) {
+						e->ed->curpos--;
+						delete_char(e, e->ed->curpos);
+					}
+					sel_reset(e);
+					ev_done = 2;
 				}
-				sel_reset(e);
-				ev_done = 2;
 				break;
 
 			case MTK_KEY_LEFTCTRL:
@@ -505,14 +515,14 @@ static void entry_handle_event(ENTRY *e, EVENT *ev, WIDGET *from)
 				break;
 
 			case MTK_KEY_C:
-				if(ctrl_pressed){
+				if(ctrl_pressed) {
 					sel_copy(e);
 					ev_done = 2;
 				}
 				break;
 
 			case MTK_KEY_X:
-				if(ctrl_pressed){
+				if(ctrl_pressed && !(e->ed->flags & ENTRY_FLAGS_READONLY)) {
 					sel_cut(e);
 					sel_reset(e);
 					ev_done = 2;
@@ -520,17 +530,15 @@ static void entry_handle_event(ENTRY *e, EVENT *ev, WIDGET *from)
 				break;
 
 			case MTK_KEY_V:
-				if(ctrl_pressed){
+				if(ctrl_pressed && !(e->ed->flags & ENTRY_FLAGS_READONLY)) {
 					clipboard_paste(e);
 					sel_reset(e);
 					ev_done = 2;
 				}
 				break;
 
-			case MTK_KEY_ENTER:
-
-				/* send commit event to client application */
-				{
+			case MTK_KEY_ENTER: {
+					/* send commit event to client application */
 					char *m = e->gen->get_bind_msg(e, "commit");
 					int app_id = e->gen->get_app_id(e);
 					if (m) msg->send_action_event(app_id, "commit", m);
@@ -556,11 +564,13 @@ static void entry_handle_event(ENTRY *e, EVENT *ev, WIDGET *from)
 			return;
 		}
 		/* insert ASCII character */
-		insert_char(e, e->ed->curpos, ascii);
-		sel_reset(e);
-		e->ed->curpos++;
-		e->wd->update |= WID_UPDATE_REFRESH;
-		e->gen->update(e);
+		if(!(e->ed->flags & ENTRY_FLAGS_READONLY)) {
+			insert_char(e, e->ed->curpos, ascii);
+			sel_reset(e);
+			e->ed->curpos++;
+			e->wd->update |= WID_UPDATE_REFRESH;
+			e->gen->update(e);
+		}
 	}
 }
 
@@ -647,7 +657,6 @@ static char *entry_get_text(ENTRY *e)
 	return e->ed->txtbuf;
 }
 
-
 static void entry_set_blind(ENTRY *e, int blind_flag)
 {
 	if (blind_flag)
@@ -658,12 +667,25 @@ static void entry_set_blind(ENTRY *e, int blind_flag)
 	e->wd->update |= WID_UPDATE_REFRESH;
 }
 
-
 static int entry_get_blind(ENTRY *e)
 {
 	return !!(e->ed->flags & ENTRY_FLAGS_BLIND);
 }
 
+static void entry_set_readonly(ENTRY *e, int readonly_flag)
+{
+	if (readonly_flag)
+		e->ed->flags |= ENTRY_FLAGS_READONLY;
+	else
+		e->ed->flags &= ~ENTRY_FLAGS_READONLY;
+
+	e->wd->update |= WID_UPDATE_REFRESH;
+}
+
+static int entry_get_readonly(ENTRY *e)
+{
+	return !!(e->ed->flags & ENTRY_FLAGS_READONLY);
+}
 
 static struct widget_methods gen_methods;
 static struct entry_methods entry_methods = {
@@ -718,6 +740,7 @@ static void build_script_lang(void)
 	widtype = script->reg_widget_type("Entry", (void *(*)(void))create);
 	script->reg_widget_attrib(widtype, "string text", entry_get_text, entry_set_text, gen_methods.update);
 	script->reg_widget_attrib(widtype, "boolean blind", entry_get_blind, entry_set_blind, gen_methods.update);
+	script->reg_widget_attrib(widtype, "boolean readonly", entry_get_readonly, entry_set_readonly, gen_methods.update);
 	widman->build_script_lang(widtype, &gen_methods);
 }
 
@@ -736,6 +759,7 @@ int init_entry(struct mtk_services *d)
 
 	normal_img = gen_range_img(gfx, 85, 85, 85, 148, 148, 148);
 	focus_img  = gen_range_img(gfx, 85, 85, 85, 162, 162, 162);
+	readonly_img  = gen_range_img(gfx, 64, 64, 64, 128, 128, 128);
 
 	/* define general widget functions */
 	widman->default_widget_methods(&gen_methods);
