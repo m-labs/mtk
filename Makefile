@@ -11,6 +11,12 @@ help:
 milkymist:
 	make -C lib/milkymist
 
+install-milkymist: milkymist
+	test -n "$(RTEMS_MAKEFILE_PATH)"
+	cp lib/milkymist/libmtk.a $(RTEMS_MAKEFILE_PATH)/lib
+	mkdir -p $(RTEMS_MAKEFILE_PATH)/lib/include
+	cp include/* $(RTEMS_MAKEFILE_PATH)/lib/include
+
 ALL_MAKEFILES = $(shell find -mindepth 2 -name Makefile)
 
 clean:
@@ -18,3 +24,5 @@ clean:
 
 distclean: clean
 	find -name "*~" | xargs rm -f
+
+.PHONY: milkymist install-milkymist clean distclean
