@@ -32,7 +32,7 @@ SRC_C  += \
 	scrdrv.c      eventmsg.c  \
 	sharedmem.c   gfx_scr16.c   scheduler.c     \
 	vera16_tff.c  edit.c        separator.c \
-	list.c        clipboard.c
+	pixmap.c      list.c        clipboard.c
 
 vpath % $(LIBMTK_DIR)
 

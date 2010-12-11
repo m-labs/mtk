@@ -51,6 +51,7 @@ extern int init_variable         (struct mtk_services *);
 extern int init_label            (struct mtk_services *);
 extern int init_list             (struct mtk_services *);
 extern int init_separator        (struct mtk_services *);
+extern int init_pixmap           (struct mtk_services *);
 extern int init_background       (struct mtk_services *);
 extern int init_container        (struct mtk_services *);
 extern int init_window           (struct mtk_services *);
@@ -202,6 +203,9 @@ int mtk_init(void *fb, int width, int height)
 
 	INFO(printf("%sSeparator\n",dbg));
 	init_separator(&mtk);
+
+	INFO(printf("%sPixmap\n",dbg));
+	init_pixmap(&mtk);
 
 	INFO(printf("%sLoadDisplay\n",dbg));
 	init_loaddisplay(&mtk);
