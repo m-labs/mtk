@@ -30,9 +30,10 @@ SRC_C  += \
 	bigmouse.c    default_fnt.c main.c      \
 	smallmouse.c  mono_fnt.c    title_fnt.c \
 	scrdrv.c      eventmsg.c  \
-	sharedmem.c   gfx_scr16.c   scheduler.c     \
-	vera16_tff.c  edit.c        separator.c \
-	pixmap.c      list.c        clipboard.c
+	sharedmem.c   gfx_scr16.c   scheduler.c \
+	vera16_tff.c  vera20_tff.c  edit.c \
+	separator.c   pixmap.c      list.c \
+	clipboard.c
 
 vpath % $(LIBMTK_DIR)
 
