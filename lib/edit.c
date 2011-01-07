@@ -54,7 +54,6 @@ struct edit_data {
 	char  *txtbuf;                   /* textual content of the edit    */
 	s32    txtbuflen;                /* current size of text buffer    */
 	s32    maxlen;                   /* max string length              */
-	s32    hvislen, vvislen;         /* min visible length             */
 	void (*click)  (WIDGET *);
 	void (*release)(WIDGET *);
 };
@@ -567,10 +566,17 @@ static void edit_handle_event(EDIT *e, EVENT *ev, WIDGET *from)
  */
 static void edit_calc_minmax(EDIT *e)
 {
-	e->wd->min_w = 2*2 + 4 + e->ed->hvislen*font->calc_str_width(e->ed->font_id, "W");
+	int mw, mh;
+	
+	e->wd->min_w = 40;
+	e->wd->min_h = 100;
+	if (e->ed->txtbuf) {
+		mw = font->calc_str_width(e->ed->font_id, e->ed->txtbuf) + 8;
+		mh = font->calc_str_height(e->ed->font_id, e->ed->txtbuf) + 8;
+		if (e->wd->min_w < mw) e->wd->min_w = mw;
+		if (e->wd->min_h < mh) e->wd->min_h = mh;
+	}
 	e->wd->max_w = 99999;
-	e->wd->min_h = e->ed->vvislen*font->calc_str_height(e->ed->font_id, "W")
-	                            + 2*2 + 4;
 	e->wd->max_h = 99999;
 }
 
@@ -650,8 +656,6 @@ static EDIT *create(void)
 
 	/* set edit specific attributes */
 	new->ed->font_id   = 1;
-	new->ed->hvislen   = 80;
-	new->ed->vvislen   = 25;
 	new->ed->sel_beg   = -1;
 	new->ed->sel_end   = -1;
 	new->ed->txtbuflen = 256;
