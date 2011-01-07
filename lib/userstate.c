@@ -77,7 +77,8 @@ int init_userstate(struct mtk_services *d);
  */
 static inline int key_sets_focus(int keycode)
 {
-	return (keycode >= MTK_BTN_LEFT && keycode <= MTK_BTN_MIDDLE);
+	return (keycode >= MTK_BTN_LEFT && keycode <= MTK_BTN_MIDDLE) 
+		|| (keycode == MTK_BTN_GEAR_DOWN) || (keycode == MTK_BTN_GEAR_UP);
 }
 
 

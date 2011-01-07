@@ -14,6 +14,7 @@ struct frame;
 #define WIDGET struct frame
 
 #include <stdio.h>
+#include "keycodes.h"
 #include "mtkstd.h"
 #include "frame.h"
 #include "script.h"
@@ -237,12 +238,27 @@ static void frame_updatepos(FRAME *f)
 
 	/* send resize event */
 	{
-		char *m = f->gen->get_bind_msg(f,"resize");
+		char *m = f->gen->get_bind_msg(f, "resize");
 		s32 id = f->gen->get_app_id(f);
-		if (m) msg->send_action_event(id,"resized", m);
+		if (m) msg->send_action_event(id, "resized", m);
 	}
 }
 
+static void frame_expose(FRAME *f, s32 x, s32 y);
+
+static void (*orig_handle_event) (FRAME *f, EVENT *ev, WIDGET *from);
+static void frame_handle_event(FRAME *f, EVENT *ev, WIDGET *from)
+{
+	if ((ev->type == EVENT_PRESS) && ((ev->code == MTK_BTN_GEAR_UP) || (ev->code == MTK_BTN_GEAR_DOWN))) {
+		s32 vw = get_view_w(f)/2;
+		s32 vh = get_view_h(f)/2;
+		if(ev->code == MTK_BTN_GEAR_UP)
+			frame_expose(f, f->fd->scroll_x.dst+vw, f->fd->scroll_y.dst+vh-55);
+		else
+			frame_expose(f, f->fd->scroll_x.dst+vw, f->fd->scroll_y.dst+vh+55);
+	} else
+		orig_handle_event(f, ev, from);
+}
 
 /**
  * Free frame widget data
@@ -447,6 +463,8 @@ static void frame_set_xview(FRAME *f, s32 new_scroll_x)
 	WIDGET *cw;
 	if ((cw = f->fd->content)) cw->gen->set_x(cw, cw->gen->get_x(cw)
 	                                        - new_scroll_x + f->fd->scroll_x.curr);
+	if (f->fd->sb_x)
+		f->fd->sb_x->scroll->set_slider_x(f->fd->sb_x, new_scroll_x);
 	f->fd->scroll_x.curr = new_scroll_x;
 }
 
@@ -462,6 +480,8 @@ static void frame_set_yview(FRAME *f, s32 new_scroll_y)
 	WIDGET *cw;
 	if ((cw = f->fd->content)) cw->gen->set_y(cw, cw->gen->get_y(cw)
 	                                        - new_scroll_y + f->fd->scroll_y.curr);
+	if (f->fd->sb_y)
+		f->fd->sb_y->scroll->set_slider_y(f->fd->sb_y, new_scroll_y);
 	f->fd->scroll_y.curr = new_scroll_y;
 }
 
@@ -634,11 +654,13 @@ int init_frame(struct mtk_services *d)
 	widman->default_widget_methods(&gen_methods);
 
 	orig_updatepos = gen_methods.updatepos;
+	orig_handle_event = gen_methods.handle_event;
 
 	gen_methods.get_type     = frame_get_type;
 	gen_methods.draw         = frame_draw;
 	gen_methods.find         = frame_find;
 	gen_methods.updatepos    = frame_updatepos;
+	gen_methods.handle_event = frame_handle_event;
 	gen_methods.calc_minmax  = frame_calc_minmax;
 	gen_methods.free_data    = frame_free_data;
 	gen_methods.remove_child = frame_remove_child;

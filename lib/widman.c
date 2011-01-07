@@ -574,6 +574,12 @@ static void wid_handle_event(WIDGET *cw,EVENT *e, WIDGET *from)
 			cw->wd->parent->gen->handle_event(cw->wd->parent, e, cw);
 		return;
 	}
+	
+	/* propagate mouse wheel events */
+	if((e->type == EVENT_PRESS) && ((e->code == MTK_BTN_GEAR_UP) || (e->code == MTK_BTN_GEAR_DOWN))) {
+		if (cw->wd->parent)
+			cw->wd->parent->gen->handle_event(cw->wd->parent, e, cw);
+	}
 
 	/* check bindings */
 	for (cb = cw->wd->bindings; cb; cb = cb->next) {

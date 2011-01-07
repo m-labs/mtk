@@ -136,6 +136,7 @@ static PIXMAP *create(void)
 {
 	PIXMAP *new = ALLOC_WIDGET(struct pixmap);
 	SET_WIDGET_DEFAULTS(new, struct pixmap, &pixmap_methods);
+	new->wd->flags |= WID_FLAGS_TAKEFOCUS;
 	new->pd->xres = 0;
 	new->pd->yres = 0;
 	new->pd->fb = NULL;

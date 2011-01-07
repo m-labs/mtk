@@ -532,6 +532,8 @@ static void edit_handle_event(EDIT *e, EVENT *ev, WIDGET *from)
 					}
 					break;
 
+				case MTK_BTN_GEAR_UP:
+				case MTK_BTN_GEAR_DOWN:
 				case MTK_KEY_TAB:
 					orig_handle_event(e, ev, from);
 					return;

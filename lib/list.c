@@ -199,6 +199,8 @@ static void lst_handle_event(LIST *l, EVENT *ev, WIDGET *from)
 				break;
 			}
 
+			case MTK_BTN_GEAR_UP:
+			case MTK_BTN_GEAR_DOWN:
 			case MTK_KEY_TAB:
 				orig_handle_event(l, ev, from);
 				return;
