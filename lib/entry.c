@@ -28,8 +28,6 @@ struct entry;
 #include "userstate.h"
 #include "messenger.h"
 #include "keycodes.h"
-#include "relax.h"
-#include "tick.h"
 #include "clipboard.h"
 
 static struct widman_services    *widman;
@@ -37,16 +35,14 @@ static struct gfx_services       *gfx;
 static struct fontman_services   *font;
 static struct script_services    *script;
 static struct userstate_services *userstate;
-static struct relax_services     *relax;
 static struct messenger_services *msg;
-static struct tick_services      *tick;
 static struct clipboard_services *clipb;
 
 struct entry_data {
 	s16    font_id;                  /* used font                      */
 	s16    flags;                    /* entry properties               */
-	RELAX  tx;                       /* adaptive text position         */
-	s16    ty;                       /* text position inside the entry */
+	s32    tx;                       /* text position         */
+	s32    ty;                       /* text position inside the entry */
 	s32    tw, th;                   /* pixel width and height of text */
 	s32    sel_beg, sel_end;         /* current selection              */
 	s32    sel_x, sel_w;             /* pixel position of selection    */
@@ -144,20 +140,6 @@ static int insert_char(ENTRY *e, int idx, char c)
 	return 1;
 }
 
-
-static int tick_relax_tx(void *arg)
-{
-	ENTRY *e = (ENTRY *)arg;
-
-	if (!relax->do_relax(&e->ed->tx)) {
-		e->gen->dec_ref(e);
-		return 0;   /* stop ticking */
-	}
-	e->gen->force_redraw(e);
-	return 1;   /* keep ticking */
-}
-
-
 /**
  * Calculate x position of the character at the specified index
  */
@@ -196,6 +178,9 @@ static inline int get_char_index(ENTRY *e, s32 pos)
 static void update_text_pos(ENTRY *e)
 {
 	int vw;
+	int ref;
+	int delta;
+
 	if (!e || !e->ed || !e->ed->txtbuf) return;
 
 	e->ed->ty = 0;
@@ -216,36 +201,21 @@ static void update_text_pos(ENTRY *e)
 		e->ed->sel_x = e->ed->sel_w = 0;
 	}
 
-	/* set text position so that the cursor is visible */
-	e->ed->tx.dst = 0;
+	/* set text position so that the cursor or the end of selection (if any) is visible */
+	if(e->ed->sel_w > 0) {
+		if(e->ed->sel_beg < e->ed->sel_end)
+			ref = e->ed->sel_x + e->ed->sel_w - 1;
+		else
+			ref = e->ed->sel_x;
+	} else
+		ref = e->ed->cx;
 	vw = e->wd->w - 2*2 - 6;   /* visible width */
-
-	if ((e->ed->tx.dst > vw - e->ed->tw) && (e->ed->tx.dst > vw + 2 - (vw/3) - e->ed->cx)) {
-		e->ed->tx.dst = vw - (vw/3) - e->ed->cx;
-		if (e->ed->tx.dst < vw - e->ed->tw)
-			e->ed->tx.dst = vw - e->ed->tw;
-	}
-
-	if (e->ed->tx.dst <    - e->ed->cx) e->ed->tx.dst =    - e->ed->cx;
-	if (e->ed->tx.dst > vw - e->ed->cx) e->ed->tx.dst = vw - e->ed->cx;
+	delta = e->ed->tx + ref;
+	if(delta > vw)
+		e->ed->tx = vw - ref;
+	if(delta < 0)
+		e->ed->tx = -ref;
 }
-
-
-/**
- * If text position is not the desired text position - move!
- */
-static void start_relax(ENTRY *e)
-{
-	relax->set_duration(&e->ed->tx, 15);
-	if (e->ed->tx.curr == e->ed->tx.dst || e->ed->tx.speed) return;
-
-	e->gen->inc_ref(e);
-	e->ed->tx.speed = 1;
-
-	if (!tick->add(25, tick_relax_tx, e))
-		e->ed->tx.curr = e->ed->tx.dst;
-}
-
 
 static inline void draw_sunken_frame(GFX_CONTAINER *d, s32 x, s32 y, s32 w, s32 h)
 {
@@ -280,7 +250,7 @@ static inline void draw_kfocus_frame(GFX_CONTAINER *d, s32 x, s32 y, s32 w, s32 
 
 static int entry_draw(ENTRY *e, struct gfx_ds *ds, int x, int y, WIDGET *origin)
 {
-	int tx = e->ed->tx.curr, ty = e->ed->ty;
+	int tx = e->ed->tx, ty = e->ed->ty;
 	u32  tc = GFX_RGB(32, 32, 32);
 	u32  cc = BLACK_MIXED;
 	s32  cx;
@@ -365,22 +335,22 @@ static void sel_tick(ENTRY *e, int dx, int dy)
 {
 	int mx = userstate->get_mx();
 	int lx = e->gen->get_abs_x(e);
-	int xpos = mx - lx - e->ed->tx.curr - 2 - 3;
+	int xpos = mx - lx - e->ed->tx - 2 - 3;
 	int csel;
 	int vw = e->wd->w - 2*2 - 6;
 
 	/* mouse beyond left widget border - scroll text area */
 	if (mx < lx) {
-		e->ed->tx.curr += (lx - mx)/4;
-		if (e->ed->tx.curr > 0) e->ed->tx.curr = 0;
-		xpos = -e->ed->tx.curr;
+		e->ed->tx += (lx - mx)/4;
+		if (e->ed->tx > 0) e->ed->tx = 0;
+		xpos = -e->ed->tx;
 	}
 	/* mouse beyond right widget border - scroll text area */
 	if (mx > lx + e->wd->w) {
-		e->ed->tx.curr += (lx + e->wd->w - mx)/4;
-		if (e->ed->tx.curr + e->ed->tw < vw) e->ed->tx.curr = vw - e->ed->tw;
-		if (e->ed->tx.curr > 0) e->ed->tx.curr = 0;
-		xpos = vw - e->ed->tx.curr;
+		e->ed->tx += (lx + e->wd->w - mx)/4;
+		if (e->ed->tx + e->ed->tw < vw) e->ed->tx = vw - e->ed->tw;
+		if (e->ed->tx > 0) e->ed->tx = 0;
+		xpos = vw - e->ed->tx;
 	}
 
 	csel = get_char_index(e, xpos);
@@ -395,7 +365,6 @@ static void sel_release(ENTRY *e, int dx, int dy)
 {
 	e->ed->curpos = e->ed->sel_end;
 	update_text_pos(e);
-	start_relax(e);
 }
 
 static void sel_reset(ENTRY *e)
@@ -449,6 +418,7 @@ static void entry_handle_event(ENTRY *e, EVENT *ev, WIDGET *from)
 	int ascii;
 	int ev_done = 0;
 	static char ctrl_pressed = 0;
+	s32 old_tx;
 
 	switch (ev->type) {
 	case EVENT_RELEASE:
@@ -459,13 +429,16 @@ static void entry_handle_event(ENTRY *e, EVENT *ev, WIDGET *from)
 	case EVENT_KEY_REPEAT:
 		switch(ev->code) {
 			case MTK_BTN_MOUSE:
-				xpos -= e->ed->tx.curr + 2 + 3;
+				xpos -= e->ed->tx + 2 + 3;
 				e->ed->curpos = get_char_index(e, xpos);
 				e->ed->sel_beg = e->ed->sel_end = e->ed->curpos;
 				e->ed->sel_w = 0;
-				userstate->drag(e, NULL, sel_tick, sel_release);
-				ev_done = 1;
-				break;
+				old_tx = e->ed->tx;
+				update_text_pos(e);
+				if(old_tx == e->ed->tx)
+					userstate->drag(e, NULL, sel_tick, sel_release);
+				e->gen->force_redraw(e);
+				return;
 			case MTK_KEY_LEFT:
 				if (e->ed->curpos > 0) e->ed->curpos--;
 				sel_reset(e);
@@ -553,7 +526,6 @@ static void entry_handle_event(ENTRY *e, EVENT *ev, WIDGET *from)
 
 		if (ev_done) {
 			update_text_pos(e);
-			if (ev_done == 2) start_relax(e);
 			e->gen->force_redraw(e);
 			return;
 		}
@@ -600,17 +572,7 @@ static void entry_updatepos(ENTRY *e)
 {
 	update_text_pos(e);
 	orig_updatepos(e);
-	start_relax(e);
 }
-
-
-static void (*orig_update) (ENTRY *e);
-static void entry_update(ENTRY *e)
-{
-	orig_update(e);
-	start_relax(e);
-}
-
 
 /**
  * Free entry widget data
@@ -753,8 +715,6 @@ int init_entry(struct mtk_services *d)
 	script    = d->get_module("Script 1.0");
 	userstate = d->get_module("UserState 1.0");
 	msg       = d->get_module("Messenger 1.0");
-	tick      = d->get_module("Tick 1.0");
-	relax     = d->get_module("Relax 1.0");
 	clipb     = d->get_module("Clipboard 1.0");
 
 	normal_img = gen_range_img(gfx, 85, 85, 85, 148, 148, 148);
@@ -765,7 +725,6 @@ int init_entry(struct mtk_services *d)
 	widman->default_widget_methods(&gen_methods);
 
 	orig_updatepos    = gen_methods.updatepos;
-	orig_update       = gen_methods.update;
 	orig_handle_event = gen_methods.handle_event;
 
 	gen_methods.get_type     = entry_get_type;
@@ -774,7 +733,6 @@ int init_entry(struct mtk_services *d)
 	gen_methods.handle_event = entry_handle_event;
 	gen_methods.calc_minmax  = entry_calc_minmax;
 	gen_methods.find         = entry_find;
-	gen_methods.update       = entry_update;
 	gen_methods.free_data    = entry_free_data;
 
 	build_script_lang();

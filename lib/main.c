@@ -42,7 +42,6 @@ extern int init_widman           (struct mtk_services *);
 extern int init_screen           (struct mtk_services *);
 extern int init_timer            (struct mtk_services *);
 extern int init_tick             (struct mtk_services *);
-extern int init_relax            (struct mtk_services *);
 extern int init_button           (struct mtk_services *);
 extern int init_entry            (struct mtk_services *);
 extern int init_edit             (struct mtk_services *);
@@ -113,9 +112,6 @@ int mtk_init(void *fb, int width, int height)
 
 	INFO(printf("%sTick\n",dbg));
 	init_tick(&mtk);
-
-	INFO(printf("%sRelax\n",dbg));
-	init_relax(&mtk);
 
 	INFO(printf("%sKeymap\n",dbg));
 	init_keymap(&mtk);

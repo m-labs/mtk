@@ -44,7 +44,7 @@ static struct clipboard_services *clipb;
 struct edit_data {
 	s16    font_id;                  /* used font                      */
 	s16    flags;                    /* edit properties                */
-	s16    tx, ty;                   /* text position inside the edit  */
+	s32    tx, ty;                   /* text position inside the edit  */
 	s32    tw, th;                   /* pixel width and height of text */
 	s32    sel_beg, sel_end;         /* current selection              */
 	s32    sel_x, sel_y;             /* pixel position of selection    */

@@ -21,7 +21,7 @@ SRC_C  += \
 	gfx_img16.c   gfx_img32.c   \
 	widman.c      conv_tff.c    grid.c      \
 	hashtab.c     keymap.c      label.c     \
-	loaddisplay.c relax.c       pool.c      \
+	loaddisplay.c pool.c      \
 	winlayout.c   redraw.c      scale.c     \
 	window.c      screen.c      script.c    \
 	scrollbar.c   tick.c      \

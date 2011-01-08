@@ -25,8 +25,6 @@ struct frame;
 #include "gfx.h"
 #include "widman.h"
 #include "messenger.h"
-#include "tick.h"
-#include "relax.h"
 
 static struct gfx_services        *gfx;
 static struct script_services     *script;
@@ -34,8 +32,6 @@ static struct widman_services     *widman;
 static struct scrollbar_services  *scroll;
 static struct messenger_services  *msg;
 static struct background_services *bg;
-static struct tick_services       *tick;
-static struct relax_services      *relax;
 
 #define FRAME_MODE_SCRX 0x04    /* horizontal scrollbars               */
 #define FRAME_MODE_SCRY 0x08    /* vertical scrollbars                 */
@@ -46,8 +42,8 @@ static struct relax_services      *relax;
 struct frame_data {
 	WIDGET     *content;   /* content of the frame       */
 	u32         mode;      /* frame properties           */
-	RELAX       scroll_x;  /* adaptive scroll x-position */
-	RELAX       scroll_y;  /* adaptive scroll y-position */
+	s32         scroll_x;  /* adaptive scroll x-position */
+	s32         scroll_y;  /* adaptive scroll y-position */
 	SCROLLBAR  *sb_x;      /* horizontal scrollbar       */
 	SCROLLBAR  *sb_y;      /* vertical scrollbar         */
 	BACKGROUND *corner;    /* corner between scrollbars  */
@@ -196,13 +192,13 @@ static void frame_updatepos(FRAME *f)
 		if (cont_h > c->gen->get_max_h(c)) cont_h = c->gen->get_max_h(c);
 		if (cont_h < c->gen->get_min_h(c)) cont_h = c->gen->get_min_h(c);
 
-		if (f->fd->scroll_x.curr > cont_w - vw) f->fd->scroll_x.curr = cont_w - vw;
-		if (f->fd->scroll_y.curr > cont_h - vh) f->fd->scroll_y.curr = cont_h - vh;
-		if (f->fd->scroll_x.curr < 0) f->fd->scroll_x.curr = 0;
-		if (f->fd->scroll_y.curr < 0) f->fd->scroll_y.curr = 0;
+		if (f->fd->scroll_x > cont_w - vw) f->fd->scroll_x = cont_w - vw;
+		if (f->fd->scroll_y > cont_h - vh) f->fd->scroll_y = cont_h - vh;
+		if (f->fd->scroll_x < 0) f->fd->scroll_x = 0;
+		if (f->fd->scroll_y < 0) f->fd->scroll_y = 0;
 
-		c->gen->set_x(c, -f->fd->scroll_x.curr);
-		c->gen->set_y(c, -f->fd->scroll_y.curr);
+		c->gen->set_x(c, -f->fd->scroll_x);
+		c->gen->set_y(c, -f->fd->scroll_y);
 		c->gen->set_w(c, cont_w);
 		c->gen->set_h(c, cont_h);
 		c->gen->updatepos(c);
@@ -210,7 +206,7 @@ static void frame_updatepos(FRAME *f)
 
 	if ((sb = f->fd->sb_x)) {
 		if (c) sb->scroll->set_real_size(sb, c->gen->get_w(c));
-		sb->scroll->set_view_offset(sb, f->fd->scroll_x.curr);
+		sb->scroll->set_view_offset(sb, f->fd->scroll_x);
 		sb->gen->set_x((WIDGET *)sb, 0);
 		sb->gen->set_y((WIDGET *)sb, vh);
 		sb->gen->set_w((WIDGET *)sb, vw);
@@ -220,7 +216,7 @@ static void frame_updatepos(FRAME *f)
 
 	if ((sb = f->fd->sb_y)) {
 		if (c) sb->scroll->set_real_size(sb, c->gen->get_h(c));
-		sb->scroll->set_view_offset(sb, f->fd->scroll_y.curr);
+		sb->scroll->set_view_offset(sb, f->fd->scroll_y);
 		sb->gen->set_x((WIDGET *)sb, vw);
 		sb->gen->set_y((WIDGET *)sb, 0);
 		sb->gen->set_w((WIDGET *)sb, 13);
@@ -253,9 +249,9 @@ static void frame_handle_event(FRAME *f, EVENT *ev, WIDGET *from)
 		s32 vw = get_view_w(f)/2;
 		s32 vh = get_view_h(f)/2;
 		if(ev->code == MTK_BTN_GEAR_UP)
-			frame_expose(f, f->fd->scroll_x.dst+vw, f->fd->scroll_y.dst+vh-55);
+			frame_expose(f, f->fd->scroll_x+vw, f->fd->scroll_y+vh-35);
 		else
-			frame_expose(f, f->fd->scroll_x.dst+vw, f->fd->scroll_y.dst+vh+55);
+			frame_expose(f, f->fd->scroll_x+vw, f->fd->scroll_y+vh+35);
 	} else
 		orig_handle_event(f, ev, from);
 }
@@ -334,8 +330,8 @@ static void frame_set_content(FRAME *f, WIDGET *new_content)
 	new_content->gen->set_h(new_content, new_content->gen->get_min_h(new_content));
 	new_content->gen->updatepos(new_content);
 
-	f->fd->scroll_x.curr  = 0;
-	f->fd->scroll_y.curr  = 0;
+	f->fd->scroll_x = 0;
+	f->fd->scroll_y = 0;
 	f->wd->update |= WID_UPDATE_MINMAX;
 }
 
@@ -364,8 +360,8 @@ static void frame_xscroll_update(FRAME *f)
 	WIDGET *cw;
 	if ((cw = f->fd->content) && f->fd->sb_x) {
 		s32 new_scroll_x = f->fd->sb_x->scroll->get_view_offset(f->fd->sb_x);
-		cw->gen->set_x(cw, cw->gen->get_x(cw) - new_scroll_x + f->fd->scroll_x.curr);
-		f->fd->scroll_x.curr = new_scroll_x;
+		cw->gen->set_x(cw, cw->gen->get_x(cw) - new_scroll_x + f->fd->scroll_x);
+		f->fd->scroll_x = new_scroll_x;
 	}
 	f->gen->force_redraw(f);
 }
@@ -376,8 +372,8 @@ static void frame_yscroll_update(FRAME *f)
 	WIDGET *cw;
 	if ((cw = f->fd->content) && f->fd->sb_y) {
 		s32 new_scroll_y = f->fd->sb_y->scroll->get_view_offset(f->fd->sb_y);
-		cw->gen->set_y(cw, cw->gen->get_y(cw) - new_scroll_y + f->fd->scroll_y.curr);
-		f->fd->scroll_y.curr = new_scroll_y;
+		cw->gen->set_y(cw, cw->gen->get_y(cw) - new_scroll_y + f->fd->scroll_y);
+		f->fd->scroll_y = new_scroll_y;
 	}
 	f->gen->force_redraw(f);
 }
@@ -457,41 +453,6 @@ static int frame_get_scrolly(FRAME *f)
 	else return 0;
 }
 
-
-static void frame_set_xview(FRAME *f, s32 new_scroll_x)
-{
-	WIDGET *cw;
-	if ((cw = f->fd->content)) cw->gen->set_x(cw, cw->gen->get_x(cw)
-	                                        - new_scroll_x + f->fd->scroll_x.curr);
-	if (f->fd->sb_x)
-		f->fd->sb_x->scroll->set_slider_x(f->fd->sb_x, new_scroll_x);
-	f->fd->scroll_x.curr = new_scroll_x;
-}
-
-
-static s32 frame_get_xview(FRAME *f)
-{
-	return f->fd->scroll_x.curr;
-}
-
-
-static void frame_set_yview(FRAME *f, s32 new_scroll_y)
-{
-	WIDGET *cw;
-	if ((cw = f->fd->content)) cw->gen->set_y(cw, cw->gen->get_y(cw)
-	                                        - new_scroll_y + f->fd->scroll_y.curr);
-	if (f->fd->sb_y)
-		f->fd->sb_y->scroll->set_slider_y(f->fd->sb_y, new_scroll_y);
-	f->fd->scroll_y.curr = new_scroll_y;
-}
-
-
-static s32 frame_get_yview(FRAME *f)
-{
-	return f->fd->scroll_y.curr;
-}
-
-
 /**
  * Define position of the content within the frame
  *
@@ -536,25 +497,6 @@ static int frame_get_work_h(FRAME *f)
 	return ret;
 }
 
-
-static int tick_relax_scroll(void *arg)
-{
-	FRAME *f = (FRAME *)arg;
-	int keep_ticking = 0;
-
-	keep_ticking |= relax->do_relax(&f->fd->scroll_x);
-	keep_ticking |= relax->do_relax(&f->fd->scroll_y);
-
-	if (!keep_ticking) {
-		f->gen->dec_ref(f);
-		return 0;   /* stop ticking */
-	}
-	f->gen->updatepos(f);
-	f->gen->force_redraw(f);
-	return 1;   /* keep ticking */
-}
-
-
 /**
  * Expose specified position of frame content
  */
@@ -573,22 +515,11 @@ static void frame_expose(FRAME *f, s32 x, s32 y)
 	if (y < 0) y = 0;
 	if (x > c->gen->get_w(c) - vw) x = c->gen->get_w(c) - vw;
 	if (y > c->gen->get_h(c) - vh) y = c->gen->get_h(c) - vh;
-	f->fd->scroll_x.dst = x;
-	f->fd->scroll_y.dst = y;
-
-	/* do not initiate a new tick when another is already active */
-	if (f->fd->scroll_x.speed || f->fd->scroll_y.speed) return;
-
-	f->gen->inc_ref(f);
-	relax->set_duration(&f->fd->scroll_x, 15);
-	relax->set_duration(&f->fd->scroll_y, 15);
-	f->fd->scroll_x.speed++;
-	f->fd->scroll_y.speed++;
-
-	if (!tick->add(25, tick_relax_scroll, f)) {
-		f->fd->scroll_x.curr = f->fd->scroll_x.dst;
-		f->fd->scroll_y.curr = f->fd->scroll_y.dst;
-	}
+	f->fd->scroll_x = x;
+	f->fd->scroll_y = y;
+	
+	f->gen->updatepos(f);
+	f->gen->force_redraw(f);
 }
 
 
@@ -628,8 +559,6 @@ static void build_script_lang(void)
 	script->reg_widget_attrib(widtype, "boolean background", frame_get_background, frame_set_background, gen_methods.update);
 	script->reg_widget_attrib(widtype, "boolean scrollx", frame_get_scrollx, frame_set_scrollx, gen_methods.update);
 	script->reg_widget_attrib(widtype, "boolean scrolly", frame_get_scrolly, frame_set_scrolly, gen_methods.update);
-	script->reg_widget_attrib(widtype, "int xview", frame_get_xview, frame_set_xview, gen_methods.update);
-	script->reg_widget_attrib(widtype, "int yview", frame_get_yview, frame_set_yview, gen_methods.update);
 	script->reg_widget_attrib(widtype, "int workw", frame_get_work_w, NULL, NULL);
 	script->reg_widget_attrib(widtype, "int workh", frame_get_work_h, NULL, NULL);
 	script->reg_widget_method(widtype, "void place(Widget child,int x=-999999,int y=-999999,int w=-999999,int h=-999999)", frame_place);
@@ -647,8 +576,6 @@ int init_frame(struct mtk_services *d)
 	gfx     = d->get_module("Gfx 1.0");
 	script  = d->get_module("Script 1.0");
 	msg     = d->get_module("Messenger 1.0");
-	tick    = d->get_module("Tick 1.0");
-	relax   = d->get_module("Relax 1.0");
 
 	/* define general widget functions */
 	widman->default_widget_methods(&gen_methods);
