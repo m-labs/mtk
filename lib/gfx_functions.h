@@ -390,8 +390,7 @@ static inline void draw_glyph_line(u8 *src_alpha, u16 color, u16 *dst, int len)
 			if (alpha == 255)
 				dst[i] = color;
 			else
-				dst[i] = blend(dst[i], 255 - alpha)
-				+ blend(rgba_to_pixel(color), alpha);
+				dst[i] = blend(dst[i], 255 - alpha) + blend(color, alpha);
 		}
 	}
 }
