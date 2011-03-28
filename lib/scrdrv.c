@@ -1,7 +1,7 @@
 /*
  * Copyright (C) 2005-2008 Norman Feske <norman.feske@genode-labs.com>
  * Genode Labs, Feske & Helmuth Systementwicklung GbR
- * Copyright (C) 2010 Sebastien Bourdeauducq
+ * Copyright (C) 2010, 2011 Sebastien Bourdeauducq
  *
  * This file is part of the MTK-embedded package, which is distributed
  * under the terms of the GNU General Public License version 2.
@@ -100,8 +100,8 @@ static int set_screen(void *fb, int width, int height, int depth)
 {
 	int i;
 
-	scr_width  = 640;
-	scr_height = 480;
+	scr_width  = width;
+	scr_height = height;
 	scr_depth  = 16;
 	scr = (short int *)fb;
 
