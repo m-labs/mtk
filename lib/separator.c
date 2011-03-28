@@ -39,8 +39,8 @@ int init_separator(struct mtk_services *d);
 
 static const color_t BLACK_SOLID = GFX_RGBA(0, 0, 0, 255);
 static const color_t BLACK_MIXED = GFX_RGBA(0, 0, 0, 127);
-static const color_t WHITE_SOLID = GFX_RGBA(255, 255, 255, 255);
-static const color_t WHITE_MIXED = GFX_RGBA(255, 255, 255, 127);
+static const color_t WHITE_SOLID = GFX_RGBA(0, 65, 124, 255);
+static const color_t WHITE_MIXED = GFX_RGBA(0, 65, 124, 127);
 static const color_t DARK_GREY   = GFX_RGBA(80, 80, 80, 255);
 
 /****************************
@@ -58,8 +58,8 @@ static inline void draw_pressed_frame(GFX_CONTAINER *d, s32 x, s32 y, s32 w, s32
 	/* inner frame */
 	gfx->draw_hline(d, x + 1, y + 1, w - 2, BLACK_SOLID);
 	gfx->draw_vline(d, x + 1, y + 1, h - 2, BLACK_SOLID);
-	gfx->draw_hline(d, x + 1, y + h - 2, w - 2, WHITE_SOLID);
-	gfx->draw_vline(d, x + w - 2, y + 1, h - 2, WHITE_SOLID);
+	gfx->draw_hline(d, x + 1, y + h - 2, w - 2, WHITE_MIXED);
+	gfx->draw_vline(d, x + w - 2, y + 1, h - 2, WHITE_MIXED);
 }
 
 static int sep_draw(SEPARATOR *s, struct gfx_ds *ds, int x, int y, WIDGET *origin)

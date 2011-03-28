@@ -69,9 +69,6 @@ int init_entry(struct mtk_services *d);
 #define BLACK_MIXED GFX_RGBA(0, 0, 0, 127)
 #define WHITE_SOLID GFX_RGBA(255, 255, 255, 255)
 #define WHITE_MIXED GFX_RGBA(255, 255, 255, 127)
-#define DGRAY_MIXED GFX_RGBA(80,  80,   80, 127)
-#define MGRAY_MIXED GFX_RGBA(127, 127, 127, 127)
-#define LGRAY_MIXED GFX_RGBA(148, 148, 148, 127)
 
 
 /********************************
@@ -224,14 +221,6 @@ static inline void draw_sunken_frame(GFX_CONTAINER *d, s32 x, s32 y, s32 w, s32 
 	gfx->draw_vline(d, x,         y,         h,     BLACK_MIXED);
 	gfx->draw_hline(d, x + 1,     y + h - 1, w - 2, BLACK_MIXED);
 	gfx->draw_vline(d, x + w - 1, y,         h,     BLACK_MIXED);
-
-	/* inner frame */
-	gfx->draw_hline(d, x + 1, y + 1, w - 2, DGRAY_MIXED);
-	gfx->draw_vline(d, x + 1, y + 1, h - 2, DGRAY_MIXED);
-	gfx->draw_hline(d, x + 2, y + 2, w - 3, MGRAY_MIXED);
-	gfx->draw_vline(d, x + 2, y + 2, h - 3, MGRAY_MIXED);
-	gfx->draw_hline(d, x + 3, y + 3, w - 4, LGRAY_MIXED);
-	gfx->draw_vline(d, x + 3, y + 3, h - 4, LGRAY_MIXED);
 }
 
 
@@ -251,8 +240,8 @@ static inline void draw_kfocus_frame(GFX_CONTAINER *d, s32 x, s32 y, s32 w, s32 
 static int entry_draw(ENTRY *e, struct gfx_ds *ds, int x, int y, WIDGET *origin)
 {
 	int tx = e->ed->tx, ty = e->ed->ty;
-	u32  tc = GFX_RGB(32, 32, 32);
-	u32  cc = BLACK_MIXED;
+	u32  tc = WHITE_SOLID;
+	u32  cc = WHITE_SOLID;
 	s32  cx;
 	int w  = e->wd->w,  h  = e->wd->h;
 
@@ -283,15 +272,16 @@ static int entry_draw(ENTRY *e, struct gfx_ds *ds, int x, int y, WIDGET *origin)
 
 	draw_sunken_frame(ds, x, y, w, h);
 
-	if (e->wd->flags & WID_FLAGS_MFOCUS) tc = cc = BLACK_SOLID;
-
 	tx += x + 3; ty += y + 2;
 
 	gfx->push_clipping(ds, x+2, y+2, w-3, h-3);
+	
+	if (e->ed->flags & ENTRY_FLAGS_READONLY)
+		tc = GFX_RGB(200, 200, 200);
 
 	/* draw selection */
 	if (e->ed->sel_w)
-		gfx->draw_box(ds, e->ed->sel_x + tx - 1, ty, e->ed->sel_w, e->ed->ch+1, GFX_RGBA(127,127,127,127));
+		gfx->draw_box(ds, e->ed->sel_x + tx - 1, ty, e->ed->sel_w, e->ed->ch+1, GFX_RGB(0,59,112));
 
 	if (e->ed->txtbuf) {
 		if (e->ed->flags & ENTRY_FLAGS_BLIND) {
@@ -717,9 +707,13 @@ int init_entry(struct mtk_services *d)
 	msg       = d->get_module("Messenger 1.0");
 	clipb     = d->get_module("Clipboard 1.0");
 
-	normal_img = gen_range_img(gfx, 85, 85, 85, 148, 148, 148);
-	focus_img  = gen_range_img(gfx, 85, 85, 85, 162, 162, 162);
-	readonly_img  = gen_range_img(gfx, 64, 64, 64, 128, 128, 128);
+	//normal_img = gen_range_img(gfx, 85, 85, 85, 148, 148, 148);
+	//focus_img  = gen_range_img(gfx, 85, 85, 85, 162, 162, 162);
+	//readonly_img  = gen_range_img(gfx, 64, 64, 64, 128, 128, 128);
+	
+	normal_img = gen_range_img(gfx, 30, 30, 30,  0, 27, 51);
+	focus_img = gen_range_img(gfx, 40, 50, 50,  0, 27, 51);
+	readonly_img  = gen_range_img(gfx, 12, 12, 12, 0, 13, 26);
 
 	/* define general widget functions */
 	widman->default_widget_methods(&gen_methods);

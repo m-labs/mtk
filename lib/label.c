@@ -41,6 +41,7 @@ struct label_data {
 int init_label(struct mtk_services *d);
 
 #define BLACK_SOLID GFX_RGBA(0, 0, 0, 255)
+#define WHITE_SOLID GFX_RGBA(255, 255, 255, 255)
 
 
 /********************************
@@ -69,7 +70,7 @@ static int lab_draw(LABEL *l, struct gfx_ds *ds, int x, int y, WIDGET *origin)
 
 	gfx->push_clipping(ds, x + l->wd->x, y + l->wd->y, l->wd->w, l->wd->h);
 	if (l->ld->text) {
-		gfx->draw_string(ds, tx, ty, BLACK_SOLID, 0, l->ld->font_id, l->ld->text);
+		gfx->draw_string(ds, tx, ty, GFX_RGB(200, 200, 200), 0, l->ld->font_id, l->ld->text);
 	}
 	gfx->pop_clipping(ds);
 

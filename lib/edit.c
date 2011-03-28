@@ -64,10 +64,6 @@ int init_edit(struct mtk_services *d);
 #define BLACK_MIXED GFX_RGBA(0, 0, 0, 127)
 #define WHITE_SOLID GFX_RGBA(255, 255, 255, 255)
 #define WHITE_MIXED GFX_RGBA(255, 255, 255, 127)
-#define DGRAY_MIXED GFX_RGBA(80,  80,   80, 127)
-#define MGRAY_MIXED GFX_RGBA(127, 127, 127, 127)
-#define LGRAY_MIXED GFX_RGBA(148, 148, 148, 127)
-
 
 /********************************
  ** Functions for internal use **
@@ -229,14 +225,6 @@ static inline void draw_sunken_frame(GFX_CONTAINER *d, s32 x, s32 y, s32 w, s32 
 	gfx->draw_vline(d, x,         y,         h,     BLACK_MIXED);
 	gfx->draw_hline(d, x + 1,     y + h - 1, w - 2, BLACK_MIXED);
 	gfx->draw_vline(d, x + w - 1, y,         h,     BLACK_MIXED);
-
-	/* inner frame */
-	gfx->draw_hline(d, x + 1, y + 1, w - 2, DGRAY_MIXED);
-	gfx->draw_vline(d, x + 1, y + 1, h - 2, DGRAY_MIXED);
-	gfx->draw_hline(d, x + 2, y + 2, w - 3, MGRAY_MIXED);
-	gfx->draw_vline(d, x + 2, y + 2, h - 3, MGRAY_MIXED);
-	gfx->draw_hline(d, x + 3, y + 3, w - 4, LGRAY_MIXED);
-	gfx->draw_vline(d, x + 3, y + 3, h - 4, LGRAY_MIXED);
 }
 
 
@@ -277,11 +265,11 @@ static int edit_draw(EDIT *e, struct gfx_ds *ds, int x, int y, WIDGET *origin)
 	if (e->wd->flags & WID_FLAGS_KFOCUS)
 		draw_kfocus_frame(ds, x - 1, y - 1, w + 2, h + 2);
 
-	gfx->draw_box(ds, x, y, w, h, GFX_RGB(190, 190, 190));
+	gfx->draw_box(ds, x, y, w, h, GFX_RGB(0, 27, 51));
 
 	draw_sunken_frame(ds, x, y, w, h);
 
-	tc = cc = BLACK_SOLID;
+	tc = cc = WHITE_SOLID;
 
 	tx += x + 3; ty += y + 2;
 
@@ -291,12 +279,12 @@ static int edit_draw(EDIT *e, struct gfx_ds *ds, int x, int y, WIDGET *origin)
 	/* draw selection */
 	if (e->ed->sel_w) {
 		if(e->ed->sel_h > e->ed->ch) {
-			gfx->draw_box(ds, e->ed->sel_x + tx, e->ed->sel_y + ty, w - e->ed->sel_x - e->ed->tx, e->ed->ch, GFX_RGBA(127,127,127,127));
+			gfx->draw_box(ds, e->ed->sel_x + tx, e->ed->sel_y + ty, w - e->ed->sel_x - e->ed->tx, e->ed->ch, GFX_RGB(0,59,112));
 			if(e->ed->sel_h > 2*e->ed->ch)
-				gfx->draw_box(ds, tx, e->ed->sel_y + ty + e->ed->ch, w - e->ed->tx, e->ed->sel_h - 2*e->ed->ch, GFX_RGBA(127,127,127,127));
-			gfx->draw_box(ds, tx, ty + e->ed->sel_y + e->ed->sel_h - e->ed->ch, e->ed->sel_w+e->ed->sel_x, e->ed->ch, GFX_RGBA(127,127,127,127));
+				gfx->draw_box(ds, tx, e->ed->sel_y + ty + e->ed->ch, w - e->ed->tx, e->ed->sel_h - 2*e->ed->ch, GFX_RGB(0,59,112));
+			gfx->draw_box(ds, tx, ty + e->ed->sel_y + e->ed->sel_h - e->ed->ch, e->ed->sel_w+e->ed->sel_x, e->ed->ch, GFX_RGB(0,59,112));
 		} else
-			gfx->draw_box(ds, e->ed->sel_x + tx, e->ed->sel_y + ty, e->ed->sel_w, e->ed->ch, GFX_RGBA(127,127,127,127));
+			gfx->draw_box(ds, e->ed->sel_x + tx, e->ed->sel_y + ty, e->ed->sel_w, e->ed->ch, GFX_RGB(0,59,112));
 	}
 
 	if (e->ed->txtbuf)

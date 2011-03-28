@@ -59,8 +59,8 @@ int init_button(struct mtk_services *d);
 
 static const color_t BLACK_SOLID = GFX_RGBA(0, 0, 0, 255);
 static const color_t BLACK_MIXED = GFX_RGBA(0, 0, 0, 127);
-static const color_t WHITE_SOLID = GFX_RGBA(255, 255, 255, 255);
-static const color_t WHITE_MIXED = GFX_RGBA(255, 255, 255, 127);
+static const color_t WHITE_SOLID = GFX_RGBA(0, 65, 124, 255);
+static const color_t WHITE_MIXED = GFX_RGBA(0, 65, 124, 127);
 static const color_t DARK_GREY   = GFX_RGBA(80, 80, 80, 255);
 
 
@@ -118,8 +118,8 @@ static inline void draw_pressed_frame(GFX_CONTAINER *d, s32 x, s32 y, s32 w, s32
 	/* inner frame */
 	gfx->draw_hline(d, x + 1, y + 1, w - 2, BLACK_SOLID);
 	gfx->draw_vline(d, x + 1, y + 1, h - 2, BLACK_SOLID);
-	gfx->draw_hline(d, x + 1, y + h - 2, w - 2, WHITE_SOLID);
-	gfx->draw_vline(d, x + w - 2, y + 1, h - 2, WHITE_SOLID);
+	gfx->draw_hline(d, x + 1, y + h - 2, w - 2, WHITE_MIXED);
+	gfx->draw_vline(d, x + w - 2, y + 1, h - 2, WHITE_MIXED);
 }
 
 
@@ -193,19 +193,8 @@ static int but_draw(BUTTON *b, struct gfx_ds *ds, int x, int y, WIDGET *origin)
 	}
 	gfx->push_clipping(ds, x + 2, y + 2, w - 4, h - 4);
 
-	if (b->bd->text) {
-		switch (b->bd->style) {
-			case 1:
-				gfx->draw_string(ds, tx, ty, BLACK_SOLID, 0, b->bd->font_id, b->bd->text);
-				break;
-			case 2:
-				gfx->draw_string(ds, tx, ty, DARK_GREY, 0, b->bd->font_id, b->bd->text);
-				break;
-			default:
-				gfx->draw_string(ds, tx, ty, DARK_GREY, 0, b->bd->font_id, b->bd->text);
-				break;
-		}
-	}
+	if (b->bd->text)
+		gfx->draw_string(ds, tx, ty, GFX_RGB(200, 200, 200), 0, b->bd->font_id, b->bd->text);
 
 	gfx->pop_clipping(ds);
 	gfx->pop_clipping(ds);
@@ -540,10 +529,10 @@ int init_button(struct mtk_services *d)
 	script    = d->get_module("Script 1.0");
 	userstate = d->get_module("UserState 1.0");
 	msg       = d->get_module("Messenger 1.0");
-
-	normal_img = gen_range_img(gfx, 128, 128, 128,   90 + 50,  90  + 50, 110 + 50);
-	focus_img  = gen_range_img(gfx, 128, 128, 128,   90 + 40,  90  + 40, 110 + 40);
-	actwin_img = gen_range_img(gfx, 128, 128, 128,  110 + 50,  110 + 50,  90 + 50);
+	
+	normal_img = gen_range_img(gfx, 30, 30, 30,  0, 27, 51);
+	focus_img = gen_range_img(gfx, 40, 40, 45,  0, 27, 51);
+	actwin_img = gen_range_img(gfx, 30, 30, 30,  15, 38, 70);
 
 	/* define general widget functions */
 	widman->default_widget_methods(&gen_methods);

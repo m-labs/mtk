@@ -50,9 +50,6 @@ int init_list(struct mtk_services *d);
 #define BLACK_MIXED GFX_RGBA(0, 0, 0, 127)
 #define WHITE_SOLID GFX_RGBA(255, 255, 255, 255)
 #define WHITE_MIXED GFX_RGBA(255, 255, 255, 127)
-#define DGRAY_MIXED GFX_RGBA(80,  80,   80, 127)
-#define MGRAY_MIXED GFX_RGBA(127, 127, 127, 127)
-#define LGRAY_MIXED GFX_RGBA(148, 148, 148, 127)
 
 /********************************
  ** Functions for internal use **
@@ -87,14 +84,6 @@ static inline void draw_sunken_frame(GFX_CONTAINER *d, s32 x, s32 y, s32 w, s32 
 	gfx->draw_vline(d, x,         y,         h,     BLACK_MIXED);
 	gfx->draw_hline(d, x + 1,     y + h - 1, w - 2, BLACK_MIXED);
 	gfx->draw_vline(d, x + w - 1, y,         h,     BLACK_MIXED);
-
-	/* inner frame */
-	gfx->draw_hline(d, x + 1, y + 1, w - 2, DGRAY_MIXED);
-	gfx->draw_vline(d, x + 1, y + 1, h - 2, DGRAY_MIXED);
-	gfx->draw_hline(d, x + 2, y + 2, w - 3, MGRAY_MIXED);
-	gfx->draw_vline(d, x + 2, y + 2, h - 3, MGRAY_MIXED);
-	gfx->draw_hline(d, x + 3, y + 3, w - 4, LGRAY_MIXED);
-	gfx->draw_vline(d, x + 3, y + 3, h - 4, LGRAY_MIXED);
 }
 
 static inline void draw_kfocus_frame(GFX_CONTAINER *d, s32 x, s32 y, s32 w, s32 h)
@@ -128,7 +117,7 @@ static int lst_draw(LIST *l, struct gfx_ds *ds, int x, int y, WIDGET *origin)
 	if (l->wd->flags & WID_FLAGS_KFOCUS)
 		draw_kfocus_frame(ds, x - 1, y - 1, w + 2, h + 2);
 	
-	gfx->draw_box(ds, x, y, w, h, GFX_RGB(190, 190, 190));
+	gfx->draw_box(ds, x, y, w, h, GFX_RGB(0, 27, 51));
 
 	draw_sunken_frame(ds, x, y, w, h);
 
@@ -139,8 +128,8 @@ static int lst_draw(LIST *l, struct gfx_ds *ds, int x, int y, WIDGET *origin)
 	gfx->push_clipping(ds, x+3, y+2, w, h-3);
 
 	if (l->ld->text) {
-		gfx->draw_box(ds, tx, ty+l->ld->ch*l->ld->sel, w, l->ld->ch, GFX_RGBA(127,127,127,127));
-		gfx->draw_string(ds, tx, ty, BLACK_SOLID, 0, l->ld->font_id, l->ld->text);
+		gfx->draw_box(ds, tx, ty+l->ld->ch*l->ld->sel, w, l->ld->ch, GFX_RGB(0,59,112));
+		gfx->draw_string(ds, tx, ty, GFX_RGB(200, 200, 200), 0, l->ld->font_id, l->ld->text);
 	}
 
 	gfx->pop_clipping(ds);

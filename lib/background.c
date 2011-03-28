@@ -39,8 +39,8 @@ struct background_data {
 int init_background(struct mtk_services *d);
 
 
-unsigned int config_bg_win_color = 0x8a8a85ff + 0x32322800;
-unsigned int config_bg_desk_color = 0x575c70ff;
+unsigned int config_bg_win_color = 0x001222ff;
+unsigned int config_bg_desk_color = 0x000010ff;
 unsigned int config_wallpaper_w, config_wallpaper_h;
 u16 *config_wallpaper_bitmap = NULL;
 
