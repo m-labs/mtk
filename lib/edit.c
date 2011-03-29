@@ -387,17 +387,19 @@ static void sel_copy(EDIT *e)
 	e->ed->curpos = e->ed->sel_beg;
 }
 
-static void sel_cut(EDIT *e)
+static int sel_cut(EDIT *e, int copy)
 {
 	s32 i;
 	s32 start_idx = MIN(e->ed->sel_beg, e->ed->sel_end);
 	s32 end_idx = MAX(e->ed->sel_beg, e->ed->sel_end);
-	if(start_idx == end_idx) return;
-	clipb->set(e->ed->txtbuf + start_idx, end_idx - start_idx);
+	if(start_idx == end_idx) return 0;
+	if(copy)
+		clipb->set(e->ed->txtbuf + start_idx, end_idx - start_idx);
 	for(i = start_idx; i<end_idx; ++i){
 		delete_char(e, start_idx);
 	}
 	e->ed->curpos = start_idx;
+	return 1;
 }
 
 static void clipboard_paste(EDIT *e)
@@ -478,16 +480,20 @@ static void edit_handle_event(EDIT *e, EVENT *ev, WIDGET *from)
 				}
 
 				case MTK_KEY_DELETE:
-					if(e->ed->curpos < strlen(e->ed->txtbuf))
-						delete_char(e, e->ed->curpos);
+					if(!sel_cut(e, 0)) {
+						if(e->ed->curpos < strlen(e->ed->txtbuf))
+							delete_char(e, e->ed->curpos);
+					}
 					sel_reset(e);
 					ev_done = 2;
 					break;
 
 				case MTK_KEY_BACKSPACE:
-					if(e->ed->curpos > 0) {
-						e->ed->curpos--;
-						delete_char(e, e->ed->curpos);
+					if(!sel_cut(e, 0)) {
+						if(e->ed->curpos > 0) {
+							e->ed->curpos--;
+							delete_char(e, e->ed->curpos);
+						}
 					}
 					sel_reset(e);
 					ev_done = 2;
@@ -506,7 +512,7 @@ static void edit_handle_event(EDIT *e, EVENT *ev, WIDGET *from)
 
 				case MTK_KEY_X:
 					if(ctrl_pressed) {
-						sel_cut(e);
+						sel_cut(e, 1);
 						sel_reset(e);
 						ev_done = 2;
 					}
