@@ -13,6 +13,8 @@
 #ifndef __MTK_INCLUDE_MTKLIB_H_
 #define __MTK_INCLUDE_MTKLIB_H_
 
+#define MTK_VERSION "1.0"
+
 #define EVENT_TYPE_UNDEFINED    0
 #define EVENT_TYPE_COMMAND      1
 #define EVENT_TYPE_MOTION       2
