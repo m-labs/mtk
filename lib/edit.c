@@ -423,13 +423,8 @@ static void edit_handle_event(EDIT *e, EVENT *ev, WIDGET *from)
 	int ypos = userstate->get_my() - e->gen->get_abs_y(e);
 	int ascii;
 	int ev_done = 0;
-	static char ctrl_pressed = 0;
 
 	switch (ev->type) {
-		case EVENT_RELEASE:
-			if(ev->code == MTK_KEY_LEFTCTRL)
-				ctrl_pressed = 0;
-			break;
 		case EVENT_PRESS:
 		case EVENT_KEY_REPEAT:
 			switch(ev->code) {
@@ -455,12 +450,12 @@ static void edit_handle_event(EDIT *e, EVENT *ev, WIDGET *from)
 					break;
 
 				case MTK_KEY_LEFT:
-					if (e->ed->curpos > 0) e->ed->curpos--;
+					if(e->ed->curpos > 0) e->ed->curpos--;
 					sel_reset(e);
 					ev_done = 2;
 					break;
 				case MTK_KEY_RIGHT:
-					if (e->ed->curpos < strlen(e->ed->txtbuf)) e->ed->curpos++;
+					if(e->ed->curpos < strlen(e->ed->txtbuf)) e->ed->curpos++;
 					sel_reset(e);
 					ev_done = 2;
 					break;
@@ -499,19 +494,22 @@ static void edit_handle_event(EDIT *e, EVENT *ev, WIDGET *from)
 					ev_done = 2;
 					break;
 
-				case MTK_KEY_LEFTCTRL:
-					ctrl_pressed = 1;
+				case MTK_KEY_A:
+					if(userstate->get_keystate(MTK_KEY_LEFTCTRL)) {
+						e->ed->sel_beg = 0;
+						e->ed->sel_end = strlen(e->ed->txtbuf)-1;
+						ev_done = 2;
+					}
 					break;
-
 				case MTK_KEY_C:
-					if(ctrl_pressed) {
+					if(userstate->get_keystate(MTK_KEY_LEFTCTRL)) {
 						sel_copy(e);
 						ev_done = 2;
 					}
 					break;
 
 				case MTK_KEY_X:
-					if(ctrl_pressed) {
+					if(userstate->get_keystate(MTK_KEY_LEFTCTRL)) {
 						sel_cut(e, 1);
 						sel_reset(e);
 						ev_done = 2;
@@ -519,7 +517,7 @@ static void edit_handle_event(EDIT *e, EVENT *ev, WIDGET *from)
 					break;
 
 				case MTK_KEY_V:
-					if(ctrl_pressed) {
+					if(userstate->get_keystate(MTK_KEY_LEFTCTRL)) {
 						clipboard_paste(e);
 						sel_reset(e);
 						ev_done = 2;

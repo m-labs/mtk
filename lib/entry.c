@@ -409,136 +409,133 @@ static void entry_handle_event(ENTRY *e, EVENT *ev, WIDGET *from)
 	int xpos = userstate->get_mx() - e->gen->get_abs_x(e);
 	int ascii;
 	int ev_done = 0;
-	static char ctrl_pressed = 0;
 	s32 old_tx;
 
 	switch (ev->type) {
-	case EVENT_RELEASE:
-		if(ev->code == MTK_KEY_LEFTCTRL)
-			ctrl_pressed = 0;
-		break;
-	case EVENT_PRESS:
-	case EVENT_KEY_REPEAT:
-		switch(ev->code) {
-			case MTK_BTN_MOUSE:
-				xpos -= e->ed->tx + 2 + 3;
-				e->ed->curpos = get_char_index(e, xpos);
-				e->ed->sel_beg = e->ed->sel_end = e->ed->curpos;
-				e->ed->sel_w = 0;
-				old_tx = e->ed->tx;
+		case EVENT_PRESS:
+		case EVENT_KEY_REPEAT:
+			switch(ev->code) {
+				case MTK_BTN_MOUSE:
+					xpos -= e->ed->tx + 2 + 3;
+					e->ed->curpos = get_char_index(e, xpos);
+					e->ed->sel_beg = e->ed->sel_end = e->ed->curpos;
+					e->ed->sel_w = 0;
+					old_tx = e->ed->tx;
+					update_text_pos(e);
+					if(old_tx == e->ed->tx)
+						userstate->drag(e, NULL, sel_tick, sel_release);
+					e->gen->force_redraw(e);
+					return;
+				case MTK_KEY_LEFT:
+					if (e->ed->curpos > 0) e->ed->curpos--;
+					sel_reset(e);
+					ev_done = 2;
+					break;
+
+				case MTK_KEY_RIGHT:
+					if (e->ed->curpos < strlen(e->ed->txtbuf)) e->ed->curpos++;
+					sel_reset(e);
+					ev_done = 2;
+					break;
+
+				case MTK_KEY_HOME:
+					e->ed->curpos = 0;
+					sel_reset(e);
+					ev_done = 2;
+					break;
+
+				case MTK_KEY_END:
+					e->ed->curpos = strlen(e->ed->txtbuf);
+					sel_reset(e);
+					ev_done = 2;
+					break;
+
+				case MTK_KEY_DELETE:
+					if(!(e->ed->flags & ENTRY_FLAGS_READONLY)) {
+						if(!sel_cut(e, 0)) {
+							if(e->ed->curpos < strlen(e->ed->txtbuf))
+								delete_char(e, e->ed->curpos);
+						}
+						sel_reset(e);
+						ev_done = 2;
+					}
+					break;
+
+				case MTK_KEY_BACKSPACE:
+					if(!(e->ed->flags & ENTRY_FLAGS_READONLY)) {
+						if(!sel_cut(e, 0)) {
+							if(e->ed->curpos > 0) {
+								e->ed->curpos--;
+								delete_char(e, e->ed->curpos);
+							}
+						}
+						sel_reset(e);
+						ev_done = 2;
+					}
+					break;
+
+				case MTK_KEY_A:
+					if(userstate->get_keystate(MTK_KEY_LEFTCTRL)) {
+						e->ed->sel_beg = 0;
+						e->ed->sel_end = strlen(e->ed->txtbuf)-1;
+						ev_done = 2;
+					}
+					break;
+				case MTK_KEY_C:
+					if(userstate->get_keystate(MTK_KEY_LEFTCTRL)) {
+						sel_copy(e);
+						ev_done = 2;
+					}
+					break;
+				case MTK_KEY_X:
+					if(userstate->get_keystate(MTK_KEY_LEFTCTRL) && !(e->ed->flags & ENTRY_FLAGS_READONLY)) {
+						sel_cut(e, 1);
+						sel_reset(e);
+						ev_done = 2;
+					}
+					break;
+				case MTK_KEY_V:
+					if(userstate->get_keystate(MTK_KEY_LEFTCTRL) && !(e->ed->flags & ENTRY_FLAGS_READONLY)) {
+						clipboard_paste(e);
+						sel_reset(e);
+						ev_done = 2;
+					}
+					break;
+
+				case MTK_KEY_ENTER: {
+						/* send commit event to client application */
+						char *m = e->gen->get_bind_msg(e, "commit");
+						int app_id = e->gen->get_app_id(e);
+						if (m) msg->send_action_event(app_id, "commit", m);
+					}
+					ev_done = 1;
+					break;
+
+				case MTK_KEY_TAB:
+					orig_handle_event(e, ev, from);
+					return;
+			}
+
+			if (ev_done) {
 				update_text_pos(e);
-				if(old_tx == e->ed->tx)
-					userstate->drag(e, NULL, sel_tick, sel_release);
 				e->gen->force_redraw(e);
 				return;
-			case MTK_KEY_LEFT:
-				if (e->ed->curpos > 0) e->ed->curpos--;
-				sel_reset(e);
-				ev_done = 2;
-				break;
+			}
 
-			case MTK_KEY_RIGHT:
-				if (e->ed->curpos < strlen(e->ed->txtbuf)) e->ed->curpos++;
-				sel_reset(e);
-				ev_done = 2;
-				break;
-
-			case MTK_KEY_HOME:
-				e->ed->curpos = 0;
-				sel_reset(e);
-				ev_done = 2;
-				break;
-
-			case MTK_KEY_END:
-				e->ed->curpos = strlen(e->ed->txtbuf);
-				sel_reset(e);
-				ev_done = 2;
-				break;
-
-			case MTK_KEY_DELETE:
-				if(!(e->ed->flags & ENTRY_FLAGS_READONLY)) {
-					if(!sel_cut(e, 0)) {
-						if(e->ed->curpos < strlen(e->ed->txtbuf))
-							delete_char(e, e->ed->curpos);
-					}
-					sel_reset(e);
-					ev_done = 2;
-				}
-				break;
-
-			case MTK_KEY_BACKSPACE:
-				if(!(e->ed->flags & ENTRY_FLAGS_READONLY)) {
-					if(!sel_cut(e, 0)) {
-						if(e->ed->curpos > 0) {
-							e->ed->curpos--;
-							delete_char(e, e->ed->curpos);
-						}
-					}
-					sel_reset(e);
-					ev_done = 2;
-				}
-				break;
-
-			case MTK_KEY_LEFTCTRL:
-				ctrl_pressed = 1;
-				break;
-
-			case MTK_KEY_C:
-				if(ctrl_pressed) {
-					sel_copy(e);
-					ev_done = 2;
-				}
-				break;
-
-			case MTK_KEY_X:
-				if(ctrl_pressed && !(e->ed->flags & ENTRY_FLAGS_READONLY)) {
-					sel_cut(e, 1);
-					sel_reset(e);
-					ev_done = 2;
-				}
-				break;
-
-			case MTK_KEY_V:
-				if(ctrl_pressed && !(e->ed->flags & ENTRY_FLAGS_READONLY)) {
-					clipboard_paste(e);
-					sel_reset(e);
-					ev_done = 2;
-				}
-				break;
-
-			case MTK_KEY_ENTER: {
-					/* send commit event to client application */
-					char *m = e->gen->get_bind_msg(e, "commit");
-					int app_id = e->gen->get_app_id(e);
-					if (m) msg->send_action_event(app_id, "commit", m);
-				}
-				ev_done = 1;
-				break;
-
-			case MTK_KEY_TAB:
+			ascii = userstate->get_ascii(ev->code);
+			if (!ascii) {
 				orig_handle_event(e, ev, from);
 				return;
-		}
-
-		if (ev_done) {
-			update_text_pos(e);
-			e->gen->force_redraw(e);
-			return;
-		}
-
-		ascii = userstate->get_ascii(ev->code);
-		if (!ascii) {
-			orig_handle_event(e, ev, from);
-			return;
-		}
-		/* insert ASCII character */
-		if(!(e->ed->flags & ENTRY_FLAGS_READONLY)) {
-			insert_char(e, e->ed->curpos, ascii);
-			sel_reset(e);
-			e->ed->curpos++;
-			e->wd->update |= WID_UPDATE_REFRESH;
-			e->gen->update(e);
-		}
+			}
+			/* insert ASCII character */
+			if(!(e->ed->flags & ENTRY_FLAGS_READONLY)) {
+				insert_char(e, e->ed->curpos, ascii);
+				sel_reset(e);
+				e->ed->curpos++;
+				e->wd->update |= WID_UPDATE_REFRESH;
+				e->gen->update(e);
+			}
+			break;
 	}
 }
 
