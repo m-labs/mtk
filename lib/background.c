@@ -33,7 +33,6 @@ struct background_data {
 	int    style;
 	void  (*click) (void *);
 	WIDGET *content;
-	GFX_CONTAINER *wallpaper;
 };
 
 int init_background(struct mtk_services *d);
@@ -41,13 +40,30 @@ int init_background(struct mtk_services *d);
 
 unsigned int config_bg_win_color = 0x001222ff;
 unsigned int config_bg_desk_color = 0x000010ff;
-unsigned int config_wallpaper_w, config_wallpaper_h;
-u16 *config_wallpaper_bitmap = NULL;
 
+static GFX_CONTAINER *wallpaper;
+
+void mtk_config_set_wallpaper(unsigned short *wallpaper_bitmap, unsigned int wallpaper_w, unsigned int wallpaper_h)
+{
+	if(wallpaper != NULL) {
+		gfx->dec_ref(wallpaper);
+		wallpaper = NULL;
+	}
+	if(wallpaper_bitmap != NULL) {
+		u16 *dst;
+		
+		wallpaper = gfx->alloc_img(wallpaper_w, wallpaper_h, GFX_IMG_TYPE_RGB16);
+		if(wallpaper == NULL) return;
+		dst = gfx->map(wallpaper);
+		memcpy(dst, wallpaper_bitmap, wallpaper_w*wallpaper_h*2);
+		gfx->unmap(wallpaper);
+	}
+}
 
 /****************************
  ** General widget methods **
  ****************************/
+
 
 static int bg_draw(BACKGROUND *b, struct gfx_ds *ds, int x, int y, WIDGET *origin)
 {
@@ -60,17 +76,17 @@ static int bg_draw(BACKGROUND *b, struct gfx_ds *ds, int x, int y, WIDGET *origi
 
 	x += b->wd->x;
 	y += b->wd->y;
-
+	
 	if (!origin) switch (b->bd->style) {
 		case BG_STYLE_WIN:
 			gfx->draw_box(ds, x, y, b->wd->w, b->wd->h, config_bg_win_color);
 			ret |= 1;
 			break;
 		case BG_STYLE_DESK:
-			if(b->bd->wallpaper == NULL)
+			if(wallpaper == NULL)
 				gfx->draw_box(ds, x, y, b->wd->w, b->wd->h, config_bg_desk_color);
 			else
-				gfx->draw_img(ds, x, y, b->wd->w, b->wd->h, b->bd->wallpaper, 255);
+				gfx->draw_img(ds, x, y, b->wd->w, b->wd->h, wallpaper, 255);
 			ret |= 1;
 			break;
 	}
@@ -217,23 +233,6 @@ static void bg_set_content(BACKGROUND *b, WIDGET *new_content)
 	b->wd->update |= WID_UPDATE_MINMAX;
 }
 
-static void update_wallpaper(BACKGROUND *b)
-{
-	if(b->bd->wallpaper != NULL) {
-		gfx->dec_ref(b->bd->wallpaper);
-		b->bd->wallpaper = NULL;
-	}
-	if(config_wallpaper_bitmap != NULL) {
-		u16 *dst;
-		
-		b->bd->wallpaper = gfx->alloc_img(config_wallpaper_w, config_wallpaper_h, GFX_IMG_TYPE_RGB16);
-		if(b->bd->wallpaper == NULL) return;
-		dst = gfx->map(b->bd->wallpaper);
-		memcpy(dst, config_wallpaper_bitmap, config_wallpaper_w*config_wallpaper_h*2);
-		gfx->unmap(b->bd->wallpaper);
-	}
-}
-
 static struct widget_methods gen_methods;
 static struct background_methods bg_methods = {
 	bg_set_style,
@@ -253,9 +252,6 @@ static BACKGROUND *create(void)
 	/* set background specific default attributes */
 	new->bd->style  =  BG_STYLE_WIN;
 	new->wd->flags |=  WID_FLAGS_CONCEALING;
-
-	new->bd->wallpaper = NULL;
-	update_wallpaper(new);
 	
 	return new;
 }

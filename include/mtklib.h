@@ -192,5 +192,6 @@ extern int mtk_get_keystate(int app_id, int keycode);
  */
 extern char mtk_get_ascii(int app_id, int keycode);
 
+extern void mtk_config_set_wallpaper(unsigned short *wallpaper_bitmap, unsigned int wallpaper_w, unsigned int wallpaper_h);
 
 #endif /* __MTK_INCLUDE_MTKLIB_H_ */
