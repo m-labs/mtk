@@ -27,7 +27,6 @@ struct screen;
 #include "script.h"
 #include "widman.h"
 #include "appman.h" /* FIXME: temporary !!! */
-#include "viewman.h"
 #include "window.h"
 #include "container.h"
 #include "background.h"
@@ -43,7 +42,6 @@ static struct widman_services     *widman;
 static struct script_services     *script;
 static struct appman_services     *appman;
 static struct redraw_services     *redraw;
-static struct viewman_services    *viewman;
 static struct button_services     *but;
 static struct container_services  *cont;
 static struct window_services     *win;
@@ -273,8 +271,6 @@ static void create_desktop(SCREEN *scr)
 	desk->win->set_elem_mask(desk, 0);
 	desk->win->set_content(desk, (WIDGET *)b);
 	desk->gen->update((WIDGET *)desk);
-
-	viewman->set_bg(desk->wd->context);
 
 	/* move desktop window to the screen area */
 	scr->scr->place(scr, (WIDGET *)desk, -win->shadow_left, -win->shadow_top,
@@ -572,17 +568,6 @@ static void scr_place(SCREEN *scr, WIDGET *ww, int x, int y, int w, int h)
 	ww->gen->set_h(ww, h);
 	ww->gen->updatepos(ww);
 
-	/* create a view if this window is new */
-	if (!ww->wd->context) ww->wd->context = viewman->create();
-	if (ww->wd->context)
-		viewman->set_title(ww->wd->context,
-		                   appman->get_app_name(ww->gen->get_app_id(ww)));
-
-	/* update view */
-	viewman->place(ww->wd->context, x + win->shadow_left, y + win->shadow_top,
-	                                w - win->shadow_left - win->shadow_right,
-	                                h - win->shadow_top - win->shadow_bottom);
-
 	nx1 = ww->gen->get_x(ww);
 	ny1 = ww->gen->get_y(ww);
 	nx2 = ww->gen->get_w(ww) + nx1 - 1;
@@ -616,10 +601,6 @@ static void scr_remove(SCREEN *scr, WIDGET *win)
 	if (scr->sd->active_win == win)
 		scr_set_act_win(scr, NULL);
 
-	/* destroy view of the window at the view manager */
-	viewman->destroy(win->wd->context);
-	win->wd->context = 0;
-
 	/* dissolve the relationship to userstate manager */
 	if ((cw = userstate->get_selected()) && (cw->gen->get_window(cw) == win))
 		userstate->idle();
@@ -649,9 +630,6 @@ static void scr_top(SCREEN *scr, WIDGET *win)
 	unchain_window(scr, win);
 	chain_window(scr, win, get_last_staytop_win(scr));
 
-	/* notify view manager */
-	viewman->top(win->wd->context);
-
 	/* redraw window area */
 	redraw_window_area(scr, win);
 }
@@ -679,10 +657,6 @@ static void scr_back(SCREEN *scr, WIDGET *win)
 	/* insert window at the tail of the window list */
 	chain_window(scr, win, cw);
 
-	/* notify view manager */
-	viewman->back(win->wd->context);
-	viewman->set_bg(win->wd->context);
-
 	/* redraw window area */
 	redraw_window_area(scr, win);
 }
@@ -694,9 +668,6 @@ static void scr_back(SCREEN *scr, WIDGET *win)
 static void scr_set_title(SCREEN *scr, WIDGET *win, char *title)
 {
 	if (!win || (win->wd->parent != scr)) return;
-
-	/* notify view manager */
-	viewman->set_title(win->wd->context, title);
 }
 
 
@@ -841,7 +812,6 @@ static void build_script_lang(void)
 int init_screen(struct mtk_services *d)
 {
 	userstate = d->get_module("UserState 1.0");
-	viewman   = d->get_module("ViewManager 1.0");
 	widman    = d->get_module("WidgetManager 1.0");
 	script    = d->get_module("Script 1.0");
 	appman    = d->get_module("ApplicationManager 1.0");

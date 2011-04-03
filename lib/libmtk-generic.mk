@@ -26,7 +26,7 @@ SRC_C  += \
 	window.c      screen.c      script.c    \
 	scrollbar.c   tick.c      \
 	tokenizer.c   userstate.c   variable.c  \
-	scope.c       viewman.c   \
+	scope.c   \
 	bigmouse.c    default_fnt.c main.c      \
 	smallmouse.c  mono_fnt.c    title_fnt.c \
 	scrdrv.c      eventmsg.c  \
