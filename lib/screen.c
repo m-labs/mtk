@@ -52,7 +52,7 @@ struct screen_data {
 	WIDGET *first_win;       /* first window of window stack               */
 	WIDGET *active_win;      /* window that holds the keyboard focus       */
 	struct gfx_ds *scr_ds;   /* GFX container to use for the screen output */
-	BUTTON *menubutton;      /* Button displaying the name of active win   */
+	WINDOW *desk;            /* Desktop                                    */
 	SCREEN *next;            /* next screen in the screen list             */
 };
 
@@ -61,7 +61,6 @@ int init_screen(struct mtk_services *d);
 SCREEN *first_scr;
 SCREEN *curr_scr;
 
-extern int config_menubar;
 extern int config_dropshadows;
 
 
@@ -82,14 +81,6 @@ static int draw_rec(GFX_CONTAINER *ds, WIDGET *cw, WIDGET *origin,
 	sx2 = MIN(cx2,  d + cw->gen->get_w(cw) - (config_dropshadows ? 0 : win->shadow_left + win->shadow_right) - 1);
 	sy1 = MAX(cy1, (d = cw->gen->get_y(cw) + (config_dropshadows ? 0 : win->shadow_top)));
 	sy2 = MIN(cy2,  d + cw->gen->get_h(cw) - (config_dropshadows ? 0 : win->shadow_top + win->shadow_bottom) - 1);
-
-//	if (!config_dropshadows)
-//	{
-//		sx1 += win->shadow_left;
-//		sy1 += win->shadow_top;
-//		sx2 -= win->shadow_right;
-//		sy2 -= win->shadow_bottom;
-//	}
 
 	/* if there is an intersection - subdivide area */
 	if ((sx1 <= sx2) && (sy1 <= sy2)) {
@@ -160,91 +151,6 @@ static WIDGET *get_last_staytop_win(SCREEN *scr)
 
 
 /**
- * Callback that is called when user clicks at the menubar
- */
-static void menu_click(BUTTON *m)
-{
-	WINDOW *w = (WINDOW *)m->gen->get_window((WIDGET *)m);
-	if (!w) return;
-	w->win->set_x(w, w->gen->get_w((WIDGET *)w) - 2*18 - 2*2 - 15);
-	w->gen->update((WIDGET *)w);
-}
-
-
-/**
- * Callback that is called when user clicks on minimized menubar
- */
-static void smallmenu_click(BUTTON *m)
-{
-	WINDOW *w = (WINDOW *)m->gen->get_window((WIDGET *)m);
-	if (!w) return;
-	w->win->set_x(w, -2 - 18 - 5);
-	w->gen->update((WIDGET *)w);
-}
-
-
-/**
- * Create menu bar
- */
-static void create_menubar(SCREEN *scr)
-{
-	WINDOW    *w;
-	BUTTON    *b;
-	FRAME     *f;
-	CONTAINER *c;
-	int scr_w = gfx->get_width(scr->sd->scr_ds);
-
-	w = win->create();
-	w->win->set_elem_mask(w, 0);
-	w->win->set_staytop(w, 1);
-	w->gen->update((WIDGET *)w);
-
-	f = frame->create();
-	w->win->set_content(w, (WIDGET *)f);
-
-	c = cont->create();
-	c->gen->set_w((WIDGET *)c, scr_w + 4 + 18);
-	c->gen->set_h((WIDGET *)c, 22);
-	c->gen->updatepos((WIDGET *)c);
-
-	scr->sd->menubutton = b = but->create();
-	b->but->set_free_w(b, 1);
-	b->but->set_free_h(b, 1);
-	b->gen->set_x((WIDGET *)b, 18);
-	b->gen->set_y((WIDGET *)b, 0);
-	b->gen->set_w((WIDGET *)b, scr_w + 4);
-	b->gen->set_h((WIDGET *)b, 22);
-	b->gen->set_selectable((WIDGET *)b, 0);
-	b->but->set_pad_x(b, 0);
-	b->but->set_pad_y(b, 0);
-	b->gen->updatepos((WIDGET *)b);
-	b->but->set_click(b, menu_click);
-	b->gen->update((WIDGET *)b);
-	c->cont->add(c, (WIDGET *)b);
-
-	b = but->create();
-	b->but->set_free_w(b, 1);
-	b->but->set_free_h(b, 1);
-	b->gen->set_x((WIDGET *)b, 0);
-	b->gen->set_y((WIDGET *)b, 2);
-	b->gen->set_w((WIDGET *)b, 18);
-	b->gen->set_h((WIDGET *)b, 20);
-	b->but->set_pad_x(b, 0);
-	b->but->set_pad_y(b, 0);
-	b->gen->updatepos((WIDGET *)b);
-	c->cont->add(c, (WIDGET *)b);
-	b->but->set_text(b, "!");
-	b->but->set_click(b, smallmenu_click);
-	b->gen->update((WIDGET *)b);
-
-	w->win->set_content(w, (WIDGET *)c);
-	w->gen->update((WIDGET *)w);
-
-	scr->scr->place(scr, (WIDGET *)w, -2 - 18 - 5, -2 - 1, scr_w + 4 + 18 + 10, 22 + 8);
-}
-
-
-/**
  * Callback routine that is executed when user clicks on the desktop
  */
 static void dummyclick(void *w)
@@ -253,27 +159,28 @@ static void dummyclick(void *w)
 
 
 /**
- * Create desktop (background of the screen) window
+ * Create or resize desktop (background of the screen) window
  */
 static void create_desktop(SCREEN *scr)
 {
-	WINDOW *desk;
 	BACKGROUND *b;
 	int scr_w = gfx->get_width(scr->sd->scr_ds);
 	int scr_h = gfx->get_height(scr->sd->scr_ds);
 
-	desk = win->create();
+	if(scr->sd->desk == NULL) {
+		scr->sd->desk = win->create();
 
-	b = bg->create();
-	b->bg->set_style(b, BG_STYLE_DESK);
-	b->bg->set_click(b, dummyclick);
-	b->gen->update((WIDGET *)b);
-	desk->win->set_elem_mask(desk, 0);
-	desk->win->set_content(desk, (WIDGET *)b);
-	desk->gen->update((WIDGET *)desk);
+		b = bg->create();
+		b->bg->set_style(b, BG_STYLE_DESK);
+		b->bg->set_click(b, dummyclick);
+		b->gen->update((WIDGET *)b);
+		scr->sd->desk->win->set_elem_mask(scr->sd->desk, 0);
+		scr->sd->desk->win->set_content(scr->sd->desk, (WIDGET *)b);
+		scr->sd->desk->gen->update((WIDGET *)scr->sd->desk);
+	}
 
 	/* move desktop window to the screen area */
-	scr->scr->place(scr, (WIDGET *)desk, -win->shadow_left, -win->shadow_top,
+	scr->scr->place(scr, (WIDGET *)scr->sd->desk, -win->shadow_left, -win->shadow_top,
 		scr_w+win->shadow_left+win->shadow_right,
 		scr_h+win->shadow_top+win->shadow_bottom);
 }
@@ -473,6 +380,19 @@ static char *scr_get_type(SCREEN *s)
  ** Screen specific methods **
  *****************************/
 
+void scr_move_windows_inside(SCREEN *scr, int maxx, int maxy)
+{
+	WIDGET *win = scr->sd->first_win;
+	while(win != NULL) {
+		if((win->gen->get_x(win) > maxx) || (win->gen->get_y(win) > maxy)) {
+			win->gen->set_x(win, maxx);
+			win->gen->set_y(win, maxy);
+			win->gen->updatepos(win);
+		}
+		win = win->gen->get_next(win);
+	}
+}
+
 /**
  * Set gfx container to use for screen output
  */
@@ -484,13 +404,11 @@ static void scr_set_gfx(SCREEN *scr, GFX_CONTAINER *ds)
 
 	/*
 	 * Now we know the size of the gfx container,
-	 * we can create a menubar and desktop
+	 * we can create or resize the desktop
 	 */
-
-	if (config_menubar)
-		create_menubar(scr);
-
 	create_desktop(scr);
+	
+	scr_move_windows_inside(scr, scr->wd->w-100, scr->wd->h-100);
 }
 
 
@@ -500,8 +418,6 @@ static void scr_set_gfx(SCREEN *scr, GFX_CONTAINER *ds)
 static void scr_set_act_win(SCREEN *scr, WIDGET *w)
 {
 	WINDOW *new = (WINDOW *)w, *old;
-	BUTTON *b;
-	char *new_txt = "";
 
 	if (new == (WINDOW *)scr->sd->active_win) return;
 
@@ -517,18 +433,6 @@ static void scr_set_act_win(SCREEN *scr, WIDGET *w)
 	}
 
 	scr->sd->active_win = (WIDGET *)new;
-
-	/* use title of new focused application for menu bar */
-	if (new) {
-		int app_id = new->gen->get_app_id((WIDGET *)new);
-		new_txt    = appman->get_app_name(app_id);
-	}
-
-	/* set new text in menu bar */
-	if ((b = scr->sd->menubutton)) {
-		b->but->set_text(b, new_txt);
-		b->gen->update((WIDGET *)b);
-	}
 }
 
 

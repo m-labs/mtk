@@ -68,6 +68,11 @@ extern unsigned short *config_wallpaper_bitmap;
  */
 extern int mtk_init(void *fb, int width, int height);
 
+/**
+ * Change screen resolution on the fly
+ */
+extern void mtk_resize(void *fb, int width, int height);
+
 
 /**
  * Register mtk client application

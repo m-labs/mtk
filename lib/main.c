@@ -17,6 +17,7 @@
 #include "mtkstd.h"
 #include "gfx.h"
 #include "userstate.h"
+#include "widget.h"
 #include "screen.h"
 
 static struct gfx_services       *gfx;
@@ -94,6 +95,8 @@ int config_winborder     = 5;   /* size of window resize border           */
 int config_menubar       = 0;   /* menubar visibility                     */
 int config_dropshadows   = 0;   /* draw dropshadows behind windows        */
 int config_adapt_redraw  = 0;   /* adapt redraw to duration time          */
+
+static GFX_CONTAINER *scr_ds;
 
 int mtk_init(void *fb, int width, int height)
 {
@@ -234,7 +237,6 @@ int mtk_init(void *fb, int width, int height)
 
 	INFO(printf("%screate screen\n",dbg));
 	{
-		static GFX_CONTAINER *scr_ds;
 		gfx       = pool_get("Gfx 1.0");
 		screen    = pool_get("Screen 1.0");
 		userstate = pool_get("UserState 1.0");
@@ -247,4 +249,16 @@ int mtk_init(void *fb, int width, int height)
 	}
 
 	return 1;
+}
+
+void mtk_resize(void *fb, int width, int height)
+{
+	gfx->dec_ref(scr_ds);
+	
+	scr_ds = gfx->alloc_scr(fb, width, height, 16);
+	curr_scr->scr->set_gfx(curr_scr, scr_ds);
+	userstate->set_max_mx(gfx->get_width(scr_ds));
+	userstate->set_max_my(gfx->get_height(scr_ds));
+	
+//	curr_scr->gen->force_redraw((WIDGET *)curr_scr);
 }
