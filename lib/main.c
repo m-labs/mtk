@@ -259,6 +259,4 @@ void mtk_resize(void *fb, int width, int height)
 	curr_scr->scr->set_gfx(curr_scr, scr_ds);
 	userstate->set_max_mx(gfx->get_width(scr_ds));
 	userstate->set_max_my(gfx->get_height(scr_ds));
-	
-//	curr_scr->gen->force_redraw((WIDGET *)curr_scr);
 }
