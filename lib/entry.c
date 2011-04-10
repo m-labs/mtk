@@ -477,7 +477,7 @@ static void entry_handle_event(ENTRY *e, EVENT *ev, WIDGET *from)
 				case MTK_KEY_A:
 					if(userstate->get_keystate(MTK_KEY_LEFTCTRL)) {
 						e->ed->sel_beg = 0;
-						e->ed->sel_end = strlen(e->ed->txtbuf)-1;
+						e->ed->sel_end = strlen(e->ed->txtbuf);
 						ev_done = 2;
 					}
 					break;
