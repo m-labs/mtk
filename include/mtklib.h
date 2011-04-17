@@ -199,4 +199,11 @@ extern char mtk_get_ascii(int app_id, int keycode);
 
 extern void mtk_config_set_wallpaper(unsigned short *wallpaper_bitmap, unsigned int wallpaper_w, unsigned int wallpaper_h);
 
+enum {
+	MTK_KEYBOARD_LAYOUT_US = 0,
+	MTK_KEYBOARD_LAYOUT_FRENCH,
+	MTK_KEYBOARD_LAYOUT_GERMAN
+};
+extern void mtk_config_set_keyboard_layout(int layout);
+
 #endif /* __MTK_INCLUDE_MTKLIB_H_ */
