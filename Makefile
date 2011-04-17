@@ -19,8 +19,8 @@ install-milkymist: milkymist
 
 uninstall-milkymist:
 	test -n "$(RTEMS_MAKEFILE_PATH)"
-	for f in include/*; do rm -rf $(RTEMS_MAKEFILE_PATH)/lib/include/`basename $$f`; done
-	rm -rf $(RTEMS_MAKEFILE_PATH)/lib/libmtk.a
+	for f in include/*; do rm -f $(RTEMS_MAKEFILE_PATH)/lib/include/`basename $$f`; done
+	rm -f $(RTEMS_MAKEFILE_PATH)/lib/libmtk.a
 
 ALL_MAKEFILES = $(shell find -mindepth 2 -name Makefile)
 
