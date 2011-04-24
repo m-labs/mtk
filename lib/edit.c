@@ -244,9 +244,12 @@ static inline void draw_kfocus_frame(GFX_CONTAINER *d, s32 x, s32 y, s32 w, s32 
 static int edit_draw(EDIT *e, struct gfx_ds *ds, int x, int y, WIDGET *origin)
 {
 	int tx = e->ed->tx, ty = e->ed->ty;
-	u32  tc = GFX_RGB(32, 32, 32);
-	u32  cc = BLACK_MIXED;
+	u32  lc;
+	u32  tc;
+	u32  cc;
 	s32  cx, cy;
+	char buf[5];
+	int linenrw, linenrh, linenr, i;
 	int w  = e->wd->w,  h  = e->wd->h;
 
 	if (origin == e) return 1;
@@ -261,6 +264,25 @@ static int edit_draw(EDIT *e, struct gfx_ds *ds, int x, int y, WIDGET *origin)
 	y += 2;
 	w -= 2*2;
 	h -= 2*2;
+	
+	lc = GFX_RGB(64, 64, 64);
+	
+	if(e->ed->txtbuf != NULL) {
+		linenrw = font->calc_str_width(e->ed->font_id, "9999");
+		linenrh = font->calc_str_height(e->ed->font_id, "9999");
+		linenr = 1;
+		i = 0;
+		while(e->ed->txtbuf[i] != 0) {
+			while((e->ed->txtbuf[i] != 0) && (e->ed->txtbuf[i] != '\n'))
+				i++;
+			snprintf(buf, sizeof(buf), "%d", linenr);
+			gfx->draw_string(ds, tx+x, ty+y+2+(linenr-1)*linenrh, lc, 0, e->ed->font_id, buf);
+			if(e->ed->txtbuf[i] != 0)
+				i++;
+			linenr++;
+		}
+		x += linenrw;
+	}
 
 	if (e->wd->flags & WID_FLAGS_KFOCUS)
 		draw_kfocus_frame(ds, x - 1, y - 1, w + 2, h + 2);
