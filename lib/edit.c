@@ -53,6 +53,8 @@ struct edit_data {
 	s32    cx, cy, ch;               /* cursor x/y position and height */
 	char  *txtbuf;                   /* textual content of the edit    */
 	s32    txtbuflen;                /* current size of text buffer    */
+	s32    linenrw;                  /* width of the line numbers      */
+	s32    linenrh;                  /* height of one line number      */
 	s32    maxlen;                   /* max string length              */
 	void (*click)  (WIDGET *);
 	void (*release)(WIDGET *);
@@ -249,7 +251,7 @@ static int edit_draw(EDIT *e, struct gfx_ds *ds, int x, int y, WIDGET *origin)
 	u32  cc;
 	s32  cx, cy;
 	char buf[5];
-	int linenrw, linenrh, linenr, i;
+	int linenr, i;
 	int w  = e->wd->w,  h  = e->wd->h;
 
 	if (origin == e) return 1;
@@ -268,20 +270,18 @@ static int edit_draw(EDIT *e, struct gfx_ds *ds, int x, int y, WIDGET *origin)
 	lc = GFX_RGB(64, 64, 64);
 	
 	if(e->ed->txtbuf != NULL) {
-		linenrw = font->calc_str_width(e->ed->font_id, "9999");
-		linenrh = font->calc_str_height(e->ed->font_id, "9999");
 		linenr = 1;
 		i = 0;
 		while(e->ed->txtbuf[i] != 0) {
 			while((e->ed->txtbuf[i] != 0) && (e->ed->txtbuf[i] != '\n'))
 				i++;
 			snprintf(buf, sizeof(buf), "%d", linenr);
-			gfx->draw_string(ds, tx+x, ty+y+2+(linenr-1)*linenrh, lc, 0, e->ed->font_id, buf);
+			gfx->draw_string(ds, tx+x, ty+y+2+(linenr-1)*e->ed->linenrh, lc, 0, e->ed->font_id, buf);
 			if(e->ed->txtbuf[i] != 0)
 				i++;
 			linenr++;
 		}
-		x += linenrw;
+		x += e->ed->linenrw;
 	}
 
 	if (e->wd->flags & WID_FLAGS_KFOCUS)
@@ -347,7 +347,7 @@ static void sel_tick(EDIT *e, int dx, int dy)
 	int my = userstate->get_my();
 	int lx = e->gen->get_abs_x(e);
 	int ly = e->gen->get_abs_y(e);
-	int xpos = mx - lx - e->ed->tx - 2 - 3;
+	int xpos = mx - lx - e->ed->tx - 2 - 3 - e->ed->linenrw;
 	int ypos = my - ly - e->ed->ty - 2 - 3;
 	int csel;
 	int vw = e->wd->w - 2*2 - 6;
@@ -451,7 +451,7 @@ static void edit_handle_event(EDIT *e, EVENT *ev, WIDGET *from)
 		case EVENT_KEY_REPEAT:
 			switch(ev->code) {
 				case MTK_BTN_MOUSE:
-					xpos -= e->ed->tx + 2 + 3;
+					xpos -= e->ed->tx + 2 + 3 + e->ed->linenrw;
 					ypos -= e->ed->ty + 2 + 3;
 					e->ed->curpos = get_char_index(e, xpos, ypos);
 					e->ed->sel_beg = e->ed->sel_end = e->ed->curpos;
@@ -676,6 +676,8 @@ static EDIT *create(void)
 	new->ed->sel_end   = -1;
 	new->ed->txtbuflen = 256;
 	new->ed->txtbuf    = zalloc(new->ed->txtbuflen);
+	new->ed->linenrw   = font->calc_str_width(new->ed->font_id, "9999");
+	new->ed->linenrh   = font->calc_str_height(new->ed->font_id, "9999");
 	new->wd->flags    |= WID_FLAGS_EDITABLE | WID_FLAGS_TAKEFOCUS;
 
 	update_text_pos(new);
