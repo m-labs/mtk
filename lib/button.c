@@ -227,7 +227,7 @@ static void but_handle_event(BUTTON *b, EVENT *e, WIDGET *from)
 	case EVENT_PRESS:
 
 		/* check for mouse button event */
-		if ((e->code  != MTK_BTN_MOUSE) && (e->code != MTK_KEY_SPACE)) break;
+		if ((e->code  != MTK_BTN_LEFT) && (e->code != MTK_KEY_SPACE)) break;
 
 		if (b->bd->click) b->bd->click(b);
 
@@ -249,7 +249,7 @@ static void but_handle_event(BUTTON *b, EVENT *e, WIDGET *from)
 
 	case EVENT_RELEASE:
 		/* check for mouse button event */
-		if (e->code  == MTK_BTN_MOUSE) {
+		if (e->code  == MTK_BTN_LEFT) {
 			if (b->bd->release) b->bd->release(b);
 		}
 		break;

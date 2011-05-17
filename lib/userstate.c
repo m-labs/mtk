@@ -27,14 +27,12 @@
 #include "tick.h"
 #include "messenger.h"
 #include "widget_data.h"
-#include "keymap.h"
 #include "keycodes.h"
 #include "window.h"
 
 static struct scrdrv_services *scrdrv;
 static struct redraw_services *redraw;
 static struct tick_services   *tick;
-static struct keymap_services *keymap;
 
 static s32     omx,omy,omb;                 /* original mouse postion     */
 static s32     curr_mx, curr_my;            /* current mouse position     */
@@ -91,15 +89,8 @@ static inline int key_sets_focus(int keycode)
  */
 static char get_ascii(int keycode)
 {
-	int switches=0;
-	if (keycode>=MTK_KEY_MAX) return 0;
-	if (keytab[42] ) switches = switches | KEYMAP_SWITCH_LSHIFT;
-	if (keytab[54] ) switches = switches | KEYMAP_SWITCH_RSHIFT;
-	if (keytab[29] ) switches = switches | KEYMAP_SWITCH_LCONTROL;
-	if (keytab[97] ) switches = switches | KEYMAP_SWITCH_RCONTROL;
-	if (keytab[56] ) switches = switches | KEYMAP_SWITCH_ALT;
-	if (keytab[100]) switches = switches | KEYMAP_SWITCH_ALTGR;
-	return keymap->get_ascii(keycode,switches);
+	if (keycode>=MTK_KEY_ASCII_MAX) return 0;
+	return keycode;
 }
 
 
@@ -671,7 +662,6 @@ int init_userstate(struct mtk_services *d)
 	scrdrv  = d->get_module("ScreenDriver 1.0");
 	redraw  = d->get_module("RedrawManager 1.0");
 	tick    = d->get_module("Tick 1.0");
-	keymap  = d->get_module("Keymap 1.0");
 
 	d->register_module("UserState 1.0",&services);
 	return 1;

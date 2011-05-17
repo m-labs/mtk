@@ -35,7 +35,6 @@ extern void *pool_get(char *name);
 /**
  * Prototypes from 'modules'
  */
-extern int init_keymap           (struct mtk_services *);
 extern int init_clipping         (struct mtk_services *);
 extern int init_scrdrv           (struct mtk_services *);
 extern int init_widman           (struct mtk_services *);
@@ -114,9 +113,6 @@ int mtk_init(void *fb, int width, int height)
 
 	INFO(printf("%sTick\n",dbg));
 	init_tick(&mtk);
-
-	INFO(printf("%sKeymap\n",dbg));
-	init_keymap(&mtk);
 
 	INFO(printf("%sCache\n",dbg));
 	init_cache(&mtk);

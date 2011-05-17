@@ -450,7 +450,7 @@ static void edit_handle_event(EDIT *e, EVENT *ev, WIDGET *from)
 		case EVENT_PRESS:
 		case EVENT_KEY_REPEAT:
 			switch(ev->code) {
-				case MTK_BTN_MOUSE:
+				case MTK_BTN_LEFT:
 					xpos -= e->ed->tx + 2 + 3 + e->ed->linenrw;
 					ypos -= e->ed->ty + 2 + 3;
 					e->ed->curpos = get_char_index(e, xpos, ypos);

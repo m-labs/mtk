@@ -150,7 +150,7 @@ static void lst_handle_event(LIST *l, EVENT *ev, WIDGET *from)
 	case EVENT_PRESS:
 	case EVENT_KEY_REPEAT:
 		switch (ev->code) {
-			case MTK_BTN_MOUSE:
+			case MTK_BTN_LEFT:
 				ypos -= 2 + 2;
 				s = ypos/l->ld->ch;
 				if(s < 0) s = 0;
