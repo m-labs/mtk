@@ -323,6 +323,27 @@ static void update_mfocus(void)
 	curr_mfocus = new_mfocus;
 }
 
+static int repeatable_key(int code)
+{
+	switch(code) {
+		case MTK_KEY_LEFTSHIFT:
+		case MTK_KEY_LEFTCTRL:
+		case MTK_KEY_LEFTALT:
+		case MTK_KEY_RIGHTSHIFT:
+		case MTK_KEY_RIGHTCTRL:
+		case MTK_KEY_RIGHTALT:
+		case MTK_KEY_LEFTMETA:
+		case MTK_KEY_RIGHTMETA:
+		case MTK_BTN_LEFT:
+		case MTK_BTN_RIGHT:
+		case MTK_BTN_MIDDLE:
+		case MTK_BTN_GEAR_DOWN:
+		case MTK_BTN_GEAR_UP:
+			return 0;
+		default:
+			return 1;
+	}
+}
 
 static void handle(EVENT *e, int count)
 {
@@ -352,8 +373,7 @@ static void handle(EVENT *e, int count)
 				if (e[i].code == MTK_BTN_LEFT)  curr_mb = curr_mb | 0x01;
 				if (e[i].code == MTK_BTN_RIGHT) curr_mb = curr_mb | 0x02;
 				keytab[e[i].code] = 1;
-				if (get_ascii(e[i].code)
-				 || (e[i].code >= MTK_KEY_UP && e[i].code <= MTK_KEY_DELETE)) {
+				if (repeatable_key(e[i].code)) {
 					curr_keystate = USERSTATE_KEY_PRESS;
 					curr_keycode  = e[i].code;
 					tick->add(key_repeat_delay, tick_handle_delay, (void *)curr_keycode);
