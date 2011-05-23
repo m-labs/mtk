@@ -18,7 +18,7 @@
 #ifndef _MTK_KEYCODES_H_
 #define _MTK_KEYCODES_H_
 
-#include "ascii_keycodes.h"
+#include "mtkasciikeycodes.h"
 
 #define MTK_KEY_F1               (MTK_KEY_ASCII_MAX +  0)
 #define MTK_KEY_F2               (MTK_KEY_ASCII_MAX +  1)

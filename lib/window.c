@@ -29,7 +29,7 @@ struct window;
 #include "appman.h"
 #include "userstate.h"
 #include "messenger.h"
-#include "keycodes.h"
+#include "mtkeycodes.h"
 
 static struct widman_services    *widman;
 static struct gfx_services       *gfx;

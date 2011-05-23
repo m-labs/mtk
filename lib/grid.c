@@ -32,7 +32,7 @@ struct grid;
 #include "grid.h"
 #include "redraw.h"
 #include "list_macros.h"
-#include "keycodes.h"
+#include "mtkeycodes.h"
 
 #define MAX(a, b) ((a)>(b)?(a):(b))
 #define MIN(a, b) ((a)<(b)?(a):(b))

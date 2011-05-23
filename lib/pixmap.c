@@ -19,7 +19,7 @@ struct pixmap;
 #include "script.h"
 #include "widman.h"
 #include "messenger.h"
-#include "keycodes.h"
+#include "mtkeycodes.h"
 #include "window.h"
 
 static struct widman_services      *widman;

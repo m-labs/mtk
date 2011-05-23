@@ -26,7 +26,7 @@ struct list;
 #include "script.h"
 #include "widman.h"
 #include "userstate.h"
-#include "keycodes.h"
+#include "mtkeycodes.h"
 #include "messenger.h"
 
 static struct widman_services  *widman;

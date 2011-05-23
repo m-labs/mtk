@@ -14,7 +14,7 @@ struct frame;
 #define WIDGET struct frame
 
 #include <stdio.h>
-#include "keycodes.h"
+#include "mtkeycodes.h"
 #include "mtkstd.h"
 #include "frame.h"
 #include "script.h"

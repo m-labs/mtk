@@ -27,7 +27,7 @@
 #include "tick.h"
 #include "messenger.h"
 #include "widget_data.h"
-#include "keycodes.h"
+#include "mtkeycodes.h"
 #include "window.h"
 
 static struct scrdrv_services *scrdrv;

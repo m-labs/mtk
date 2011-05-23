@@ -29,7 +29,7 @@
 #include "appman.h"
 #include "list_macros.h"
 #include "window.h"
-#include "keycodes.h"
+#include "mtkeycodes.h"
 #include "userstate.h"
 
 static struct redraw_services    *redraw;

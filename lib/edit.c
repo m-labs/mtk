@@ -28,7 +28,7 @@ struct edit;
 #include "widman.h"
 #include "userstate.h"
 #include "messenger.h"
-#include "keycodes.h"
+#include "mtkeycodes.h"
 #include "tick.h"
 #include "clipboard.h"
 
