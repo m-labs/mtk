@@ -8,6 +8,9 @@
 #ifndef _MTK_ASCII_KEYCODES_H_
 #define _MTK_ASCII_KEYCODES_H_
 
+#define MTK_KEY_ENTER     10
+#define MTK_KEY_SPACE     32
+
 #define MTK_KEY_0   48
 #define MTK_KEY_1   49
 #define MTK_KEY_2   50
@@ -46,34 +49,27 @@
 #define MTK_KEY_Y   121 /* 'y' */
 #define MTK_KEY_Z   122 /* 'z' */
 
-#define MTK_KEY_ENTER     10
-#define MTK_KEY_SPACE     32
-
-#define MTK_KEY_DEG 167 /* '°' */
+/* German keyboard  */
 #define MTK_KEY_PAR  21 /* '§' */
-#define MTK_KEY_ET  225 /* 'ß' */
 #define MTK_KEY_UE  129 /* 'ü' */
-#define MTK_KEY_OE  148 /* 'ö' */
 #define MTK_KEY_AE  132 /* 'ä' */
+#define MTK_KEY_UAE 142 /* 'Ä' */
+#define MTK_KEY_OE  148 /* 'ö' */
 #define MTK_KEY_UUE 154 /* 'Ü' */
 #define MTK_KEY_UOE 153 /* 'Ö' */
-#define MTK_KEY_UAE 142 /* 'Ä' */
+#define MTK_KEY_ET  225 /* 'ß' */
 #define MTK_KEY_MU  230 /* 'µ' */
 #define MTK_KEY_DI  246 /* '÷' */
+#define MTK_KEY_DEG 248 /* '°' */
 #define MTK_KEY_S2  253 /* '²' */
 
+/* French keyboard */
 #define MTK_KEY_EA  130 /* 'é' */
-#define MTK_KEY_UEA 144 /* 'É' */
-#define MTK_KEY_DR  175 /* '»' */
-#define MTK_KEY_DL  174 /* '«' */
-#define MTK_KEY_PM  241 /* '±' */
-#define MTK_KEY_SU   15 /* '☼' */
-#define MTK_KEY_AG6 170 /* '¬' */
-#define MTK_KEY_CT  155 /* '¢' */
+#define MTK_KEY_AG  133 /* 'à' */
+#define MTK_KEY_EG  138 /* 'è' */
+#define MTK_KEY_CC  135 /* 'ç' */
+#define MTK_KEY_UG  151 /* 'ù' */
 #define MTK_KEY_PD  156 /* '£' */
-#define MTK_KEY_HF  171 /* '½' */
-#define MTK_KEY_QT  172 /* '¼' */
-#define MTK_KEY_PS   20 /* '¶' */
 
 
 #define MTK_KEY_ASCII_MAX 256
