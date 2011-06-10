@@ -135,7 +135,7 @@ static WIDGET *create_win_elements(s32 elements, int x, int y, int width, int he
 	}
 
 	if ((elements & WIN_TITLE) | (elements & WIN_CLOSER) | (elements & WIN_FULLER)) {
-		first=new_button(first,dx,dy,dw,tsize,"MTK WINDOW",move_callback,WE_TITLE);
+		first=new_button(first,dx,dy,dw,tsize,"\eMTK WINDOW",move_callback,WE_TITLE);
 		dy+=tsize;dh-=tsize;
 	}
 

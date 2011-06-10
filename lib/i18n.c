@@ -33,6 +33,12 @@ const char *mtk_translate(char *original)
 	
 	if(original == NULL)
 		return NULL;
+	/* Don't translate strings starting with escape */
+	if(*original == '\e')
+		return original+1;
+	/* Don't translate empty strings */
+	if(*original == 0)
+		return original;
 	if(current_table == NULL)
 		return original;
 	i = 0;
