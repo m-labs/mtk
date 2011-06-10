@@ -16,6 +16,7 @@ struct label;
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
+#include <mtki18n.h>
 #include "mtkstd.h"
 #include "gfx.h"
 #include "widget_data.h"
@@ -32,9 +33,10 @@ static struct fontman_services *font;
 static struct script_services  *script;
 
 struct label_data {
-	char     *text;
+	char     *text;           /* translated */
+	char     *text_original;  /* non-translated */
 	s32       font_id;
-	s32       tx, ty;       /* text position inside the label cell */
+	s32       tx, ty;         /* text position inside the label cell */
 	VARIABLE *var;
 };
 
@@ -108,7 +110,7 @@ static void lab_updatepos(LABEL *l)
  */
 static void lab_free_data(LABEL *l)
 {
-	if (l->ld->text) free(l->ld->text);
+	if (l->ld->text_original) free(l->ld->text_original);
 }
 
 
@@ -128,15 +130,16 @@ static char *lab_get_type(LABEL *l)
 static void lab_set_text(LABEL *l, char *new_txt)
 {
 	if ((!l) || (!l->ld)) return;
-	if (l->ld->text) free(l->ld->text);
-	l->ld->text = strdup(new_txt);
+	if (l->ld->text_original) free(l->ld->text_original);
+	l->ld->text_original = strdup(new_txt);
+	l->ld->text = (char *)mtk_translate(l->ld->text_original);
 	l->wd->update |= WID_UPDATE_MINMAX;
 }
 
 
 static char *lab_get_text(LABEL *l)
 {
-	return l->ld->text;
+	return l->ld->text_original;
 }
 
 
@@ -234,7 +237,8 @@ static LABEL *create(void)
 	SET_WIDGET_DEFAULTS(new, struct label, &lab_methods);
 
 	/* set label specific attributes */
-	new->ld->text = strdup("");
+	new->ld->text_original = strdup("");
+	new->ld->text = "";
 	update_text_pos(new);
 	gen_methods.update(new);
 

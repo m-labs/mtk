@@ -23,8 +23,8 @@
 #define EVENT_TYPE_USER_BASE    1000
 
 typedef struct command_event {
-	int  type;                     /* must be EVENT_TYPE_COMMAND */
-	char *cmd;                      /* command string */
+	int type;                      /* must be EVENT_TYPE_COMMAND */
+	char *cmd;                     /* command string */
 } command_event;
 
 typedef struct motion_event {

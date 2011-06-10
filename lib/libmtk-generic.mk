@@ -16,7 +16,7 @@ CFLAGS     += -Wall -O9 -MMD -g
 SRC_C  += \
 	appman.c      background.c  button.c    \
 	cache.c       clipping.c    container.c \
-	conv_fnt.c    mtkstd.c     entry.c     \
+	conv_fnt.c    mtkstd.c      entry.c     \
 	fontman.c     frame.c       gfx.c       \
 	gfx_img16.c   gfx_img32.c   \
 	widman.c      conv_tff.c    grid.c      \
@@ -26,14 +26,13 @@ SRC_C  += \
 	window.c      screen.c      script.c    \
 	scrollbar.c   tick.c      \
 	tokenizer.c   userstate.c   variable.c  \
-	scope.c   \
+	scope.c       i18n.c        clipboard.c \
 	bigmouse.c    default_fnt.c main.c      \
 	smallmouse.c  mono_fnt.c    title_fnt.c \
 	scrdrv.c      eventmsg.c  \
 	sharedmem.c   gfx_scr16.c   scheduler.c \
 	vera16_tff.c  vera20_tff.c  edit.c \
-	separator.c   pixmap.c      list.c \
-	clipboard.c
+	separator.c   pixmap.c      list.c
 
 vpath % $(LIBMTK_DIR)
 

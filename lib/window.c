@@ -384,7 +384,7 @@ static void win_set_app_id(WINDOW *w, s32 app_id)
 		winlayout->set_win_title(w->wind->elem, app_name);
 
 		/* register window title at screen */
-		if (scr) scr->scr->set_title(scr, w, app_name);;
+		if (scr) scr->scr->set_title(scr, w, app_name);
 	}
 
 	if (orig_set_app_id) orig_set_app_id((WIDGET *)w, app_id);

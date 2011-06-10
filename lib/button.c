@@ -16,6 +16,7 @@ struct button;
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
+#include <mtki18n.h>
 #include "mtkstd.h"
 #include "button.h"
 #include "gfx_macros.h"
@@ -36,7 +37,8 @@ static struct userstate_services *userstate;
 static struct messenger_services *msg;
 
 struct button_data {
-	char  *text;
+	char  *text;                      /* translated */
+	char  *text_original;             /* non translated */
 	s16    style;
 	s16    font_id;
 	s16    tx, ty;                    /* text position inside the button */
@@ -319,7 +321,7 @@ static void but_updatepos(BUTTON *b)
  */
 static void but_free_data(BUTTON *b)
 {
-	if (b->bd->text) free(b->bd->text);
+	if (b->bd->text_original) free(b->bd->text_original);
 }
 
 
@@ -349,13 +351,14 @@ static char *but_get_type(BUTTON *b)
 
 static void but_set_text(BUTTON *b, char *new_txt)
 {
-	if (b->bd->text) {
-		free(b->bd->text);
+	if (b->bd->text_original) {
+		free(b->bd->text_original);
 	}
 	if (new_txt != NULL)
-		b->bd->text = strdup(new_txt);
+		b->bd->text_original = strdup(new_txt);
 	else
-		b->bd->text = NULL;
+		b->bd->text_original = NULL;
+	b->bd->text = (char *)mtk_translate(b->bd->text_original);
 
 	/*
 	 * If a button's size is completely free, a change
@@ -373,7 +376,7 @@ static void but_set_text(BUTTON *b, char *new_txt)
 
 static char *but_get_text(BUTTON *b)
 {
-	return b->bd->text;
+	return b->bd->text_original;
 }
 
 
