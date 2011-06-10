@@ -28,7 +28,7 @@ SRC_C  += \
 	tokenizer.c   userstate.c   variable.c  \
 	scope.c       i18n.c        clipboard.c \
 	bigmouse.c    default_fnt.c main.c      \
-	smallmouse.c  mono_fnt.c    title_fnt.c \
+	mono_fnt.c    title_fnt.c \
 	scrdrv.c      eventmsg.c  \
 	sharedmem.c   gfx_scr16.c   scheduler.c \
 	vera16_tff.c  vera20_tff.c  edit.c \
