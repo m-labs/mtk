@@ -36,6 +36,9 @@ struct screen;
 #include "userstate.h"
 #include "gfx.h"
 
+#define MARGIN_X 50
+#define MARGIN_Y 50
+
 static struct userstate_services  *userstate;
 static struct background_services *bg;
 static struct widman_services     *widman;
@@ -408,7 +411,7 @@ static void scr_set_gfx(SCREEN *scr, GFX_CONTAINER *ds)
 	 */
 	create_desktop(scr);
 	
-	scr_move_windows_inside(scr, scr->wd->w-100, scr->wd->h-100);
+	scr_move_windows_inside(scr, scr->wd->w-MARGIN_X, scr->wd->h-MARGIN_Y);
 }
 
 
@@ -454,12 +457,18 @@ static void scr_place(SCREEN *scr, WIDGET *ww, int x, int y, int w, int h)
 	oy1 = ww->gen->get_y(ww);
 	ox2 = ww->gen->get_w(ww) + ox1 - 1;
 	oy2 = ww->gen->get_h(ww) + oy1 - 1;
-
+	
 	/* determine desired new position */
 	if (x == NOARG) x = ww->gen->get_x(ww);
 	if (y == NOARG) y = ww->gen->get_y(ww);
 	if (w == NOARG) w = ww->gen->get_w(ww);
 	if (h == NOARG) h = ww->gen->get_h(ww);
+	
+	/* do not place outside of screen */
+	if(x > (scr->wd->w-MARGIN_X))
+		x = scr->wd->w-MARGIN_X;
+	if(y > (scr->wd->h-MARGIN_Y))
+		y = scr->wd->h-MARGIN_Y;
 
 	if (w < ww->gen->get_min_w(ww)) w = ww->gen->get_min_w(ww);
 	if (w > ww->gen->get_max_w(ww)) w = ww->gen->get_max_w(ww);
