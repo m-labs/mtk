@@ -153,6 +153,16 @@ static SCOPE *scope_get_subscope(SCOPE *s, char *name, int len)
 	return v->value;
 }
 
+void scope_enumerate(SCOPE *s, scope_enum e, void *user)
+{
+	struct variable *v;
+	
+	v = hashtab->get_first(s->sd->vars);
+	while(v != NULL) {
+		e(v->name, v->type, v->value, user);
+		v = hashtab->get_next(s->sd->vars, v);
+	}
+}
 
 /**
  * Import scope of another application
@@ -183,6 +193,7 @@ static struct scope_methods scope_methods = {
 	scope_get_var,
 	scope_get_vartype,
 	scope_get_subscope,
+	scope_enumerate,
 };
 
 

@@ -17,14 +17,50 @@
 
 #include <string.h>
 #include <stdio.h>
+#include <stdlib.h>
+#include "mtkstd.h"
+#include "appman.h"
+#include "scope.h"
+#include "widman.h"
+#include "label.h"
+#include "button.h"
+
 #include <mtki18n.h>
 
+static struct appman_services  *appman;
 static struct mtk_i18n_entry *current_table;
+
+static void ec(char *name, char *type, WIDGET *w, void *user)
+{
+	char *s;
+	
+	if(strcmp(type, "Button") == 0) {
+		BUTTON *b = (BUTTON *)w;
+		
+		s = strdup(b->but->get_text(b));
+		b->but->set_text(b, s);
+		free(s);
+	} else if(strcmp(type, "Label") == 0) {
+		LABEL *l = (LABEL *)w;
+		
+		s = strdup(l->lab->get_text(l));
+		l->lab->set_text(l, s);
+		free(s);
+	}
+}
 
 void mtk_set_language(struct mtk_i18n_entry *table)
 {
+	int i;
+	SCOPE *s;
+	
 	current_table = table;
-	/* TODO: notify widgets */
+	
+	for(i=1;i<64;i++) {
+		s = appman->get_rootscope(i);
+		if(s != NULL)
+			s->scope->enumerate(s, ec, NULL);
+	}
 }
 
 const char *mtk_translate(char *original)
@@ -49,4 +85,11 @@ const char *mtk_translate(char *original)
 	}
 	printf("Warning: no translation found for '%s'\n", original);
 	return original;
+}
+
+int init_i18n(struct mtk_services *d)
+{
+	appman = d->get_module("ApplicationManager 1.0");
+	
+	return 1;
 }

@@ -77,6 +77,7 @@ extern int init_winlayout        (struct mtk_services *);
 extern int init_messenger        (struct mtk_services *);
 extern int init_sharedmem        (struct mtk_services *);
 extern int init_clipboard        (struct mtk_services *);
+extern int init_i18n             (struct mtk_services *);
 
 /**
  * Prototypes from eventloop.c
@@ -173,6 +174,9 @@ int mtk_init(void *fb, int width, int height)
 
 	INFO(printf("%sScope\n",dbg));
 	init_scope(&mtk);
+
+	INFO(printf("%si18n\n",dbg));
+	init_i18n(&mtk);
 
 	INFO(printf("%sButton\n",dbg));
 	init_button(&mtk);

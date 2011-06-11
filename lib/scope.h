@@ -28,11 +28,14 @@ struct scope {
 	struct scope_data     *sd;
 };
 
+typedef void (*scope_enum)(char *, char *, WIDGET *, void *);
+
 struct scope_methods {
 	int     (*set_var)      (SCOPE *s, char *type, char *name, int len, WIDGET *value);
 	WIDGET *(*get_var)      (SCOPE *s, char *name, int len);
 	char   *(*get_vartype)  (SCOPE *s, char *name, int len);
 	SCOPE  *(*get_subscope) (SCOPE *s, char *name, int len);
+	void    (*enumerate)    (SCOPE *s, scope_enum e, void *user);
 };
 
 struct scope_services {
