@@ -22,8 +22,9 @@
 #include "appman.h"
 #include "scope.h"
 #include "widman.h"
-#include "label.h"
 #include "button.h"
+#include "label.h"
+#include "window.h"
 
 #include <mtki18n.h>
 
@@ -39,12 +40,21 @@ static void ec(char *name, char *type, WIDGET *w, void *user)
 		
 		s = strdup(b->but->get_text(b));
 		b->but->set_text(b, s);
+		b->gen->update((WIDGET *)b);
 		free(s);
 	} else if(strcmp(type, "Label") == 0) {
 		LABEL *l = (LABEL *)w;
 		
 		s = strdup(l->lab->get_text(l));
 		l->lab->set_text(l, s);
+		l->gen->update((WIDGET *)l);
+		free(s);
+	} else if(strcmp(type, "Window") == 0) {
+		WINDOW *win = (WINDOW *)w;
+		
+		s = strdup(win->win->get_title(win));
+		win->win->set_title(win, s);
+		win->gen->update((WIDGET *)win);
 		free(s);
 	}
 }
@@ -59,7 +69,7 @@ void mtk_set_language(struct mtk_i18n_entry *table)
 	for(i=1;i<64;i++) {
 		s = appman->get_rootscope(i);
 		if(s != NULL)
-			s->scope->enumerate(s, ec, NULL);
+			s->scope->enumerate(s, ec, (void *)i);
 	}
 }
 
