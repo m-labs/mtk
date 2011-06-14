@@ -20,6 +20,7 @@
 #define EVENT_MOUSE_LEAVE   5
 #define EVENT_KEY_REPEAT    6
 #define EVENT_ABSMOTION     7
+#define EVENT_NULL          8
 #define EVENT_ACTION        99
 #define EVENT_USER          1000
 

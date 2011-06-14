@@ -26,6 +26,7 @@
 
 /* MTK client includes */
 #include "mtklib.h"
+#include "mtkeycodes.h"
 
 
 static struct scope_services     *scope;
@@ -152,8 +153,11 @@ static int convert_type(int t)
 
 void mtk_input(mtk_event *e, int count)
 {
-	EVENT internal_event[MAX_EVENTS];
+	EVENT internal_event[MAX_EVENTS+1];
 	int i;
+	static int meta_l, meta_r;
+	static int up, down, left, right, btn;
+	static int multiplier;
 
 	for(i=0;i<count;i++) {
 		internal_event[i].type = convert_type(e[i].type);
@@ -170,15 +174,86 @@ void mtk_input(mtk_event *e, int count)
 				internal_event[i].rel_y = e[i].motion.rel_y;
 				break;
 			case EVENT_PRESS:
-			case EVENT_RELEASE:
 				internal_event[i].code = e[i].press.code;
 				internal_event[i].abs_x = 0;
 				internal_event[i].abs_y = 0;
 				internal_event[i].rel_x = 0;
 				internal_event[i].rel_y = 0;
+				if(e[i].press.code == MTK_KEY_LEFTMETA)
+					meta_l = 1;
+				if(e[i].press.code == MTK_KEY_RIGHTMETA)
+					meta_r = 1;
+				if(meta_l || meta_r) {
+					switch(e[i].press.code) {
+						case MTK_KEY_UP:
+							up = 1;
+							internal_event[i].type = EVENT_NULL;
+							break;
+						case MTK_KEY_DOWN:
+							down = 1;
+							internal_event[i].type = EVENT_NULL;
+							break;
+						case MTK_KEY_LEFT:
+							left = 1;
+							internal_event[i].type = EVENT_NULL;
+							break;
+						case MTK_KEY_RIGHT:
+							right = 1;
+							internal_event[i].type = EVENT_NULL;
+							break;
+						case MTK_KEY_ENTER:
+							btn = 1;
+							internal_event[i].code = MTK_BTN_LEFT;
+							break;
+					}
+				}
+				break;
+			case EVENT_RELEASE:
+				internal_event[i].code = e[i].release.code;
+				internal_event[i].abs_x = 0;
+				internal_event[i].abs_y = 0;
+				internal_event[i].rel_x = 0;
+				internal_event[i].rel_y = 0;
+				if(e[i].release.code == MTK_KEY_LEFTMETA)
+					meta_l = 0;
+				if(e[i].release.code == MTK_KEY_RIGHTMETA)
+					meta_r = 0;
+				switch(e[i].press.code) {
+					case MTK_KEY_UP:
+						up = 0;
+						break;
+					case MTK_KEY_DOWN:
+						down = 0;
+						break;
+					case MTK_KEY_LEFT:
+						left = 0;
+						break;
+					case MTK_KEY_RIGHT:
+						right = 0;
+						break;
+					case MTK_KEY_ENTER:
+						if(btn) {
+							btn = 0;
+							internal_event[i].code = MTK_BTN_LEFT;
+						}
+						break;
+				}
 				break;
 		}
 	}
+	if(up || down || left || right) {
+		if(multiplier == 0)
+			multiplier = 4;
+		else if(multiplier < 80)
+			multiplier++;
+		internal_event[count].type = EVENT_MOTION;
+		internal_event[count].abs_x = 0;
+		internal_event[count].abs_y = 0;
+		internal_event[count].rel_x = (multiplier >> 2)*(right - left);
+		internal_event[count].rel_y = (multiplier >> 2)*(down - up);
+		count++;
+	} else
+		multiplier = 0;
 	userstate->handle(internal_event, count);
 	redraw->process_pixels(config_redraw_granularity);
 }
