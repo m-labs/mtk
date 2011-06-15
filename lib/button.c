@@ -225,36 +225,33 @@ static void but_handle_event(BUTTON *b, EVENT *e, WIDGET *from)
 {
 	char *click_msg, *clack_msg, *commit_msg = NULL;
 	switch (e->type) {
+		case EVENT_PRESS:
+			/* check for mouse button event */
+			if (e->code == MTK_BTN_LEFT) {
+				if (b->bd->click) b->bd->click(b);
 
-	case EVENT_PRESS:
+				click_msg  = b->gen->get_bind_msg(b, "click");
+				clack_msg  = b->gen->get_bind_msg(b, "clack");
+				commit_msg = b->gen->get_bind_msg(b, "commit");
 
-		/* check for mouse button event */
-		if ((e->code  != MTK_BTN_LEFT) && (e->code != MTK_KEY_SPACE)) break;
+				if (click_msg || clack_msg || commit_msg)
+					userstate->touch(b, NULL, but_untouch_callback);
 
-		if (b->bd->click) b->bd->click(b);
+				if (click_msg)
+					msg->send_action_event(b->gen->get_app_id(b), "click", click_msg);
 
-		click_msg  = b->gen->get_bind_msg(b, "click");
-		clack_msg  = b->gen->get_bind_msg(b, "clack");
-		commit_msg = b->gen->get_bind_msg(b, "commit");
+				if (commit_msg && !config_clackcommit)
+					msg->send_action_event(b->gen->get_app_id(b), "commit", commit_msg);
 
-		if (click_msg || clack_msg || commit_msg)
-			userstate->touch(b, NULL, but_untouch_callback);
-
-		if (click_msg)
-			msg->send_action_event(b->gen->get_app_id(b), "click", click_msg);
-
-		if (commit_msg && !config_clackcommit)
-			msg->send_action_event(b->gen->get_app_id(b), "commit", commit_msg);
-
-		if (click_msg || clack_msg || commit_msg || b->bd->click) return;
-		break;
-
-	case EVENT_RELEASE:
-		/* check for mouse button event */
-		if (e->code  == MTK_BTN_LEFT) {
-			if (b->bd->release) b->bd->release(b);
-		}
-		break;
+				if (click_msg || clack_msg || commit_msg || b->bd->click) return;
+			}
+			break;
+		case EVENT_RELEASE:
+			/* check for mouse button event */
+			if (e->code == MTK_BTN_LEFT) {
+				if (b->bd->release) b->bd->release(b);
+			}
+			break;
 	}
 
 	if (b->bd->click) return;
