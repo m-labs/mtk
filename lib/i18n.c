@@ -64,12 +64,14 @@ void mtk_set_language(struct mtk_i18n_entry *table)
 	int i;
 	SCOPE *s;
 	
-	current_table = table;
+	if(current_table != table) {
+		current_table = table;
 	
-	for(i=1;i<64;i++) {
-		s = appman->get_rootscope(i);
-		if(s != NULL)
-			s->scope->enumerate(s, ec, (void *)i);
+		for(i=1;i<64;i++) {
+			s = appman->get_rootscope(i);
+			if(s != NULL)
+				s->scope->enumerate(s, ec, (void *)i);
+		}
 	}
 }
 
