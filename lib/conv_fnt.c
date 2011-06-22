@@ -130,7 +130,7 @@ static s16 font_probe(struct fntfile_hdr *fnt)
 	u16 (*get_u16) (u16 *);
 	INFO(char *dbg = "ConvertFNT(probe): ");
 
-	if (intel_format(fnt)) {
+	if(intel_format(fnt)) {
 		INFO(printf("%s font is in intel format\n", dbg));
 		get_u16 = i2u16;
 	} else  {
@@ -159,7 +159,7 @@ static s16 font_probe(struct fntfile_hdr *fnt)
 	INFO(printf("%s name:         %s\n",dbg,fnt->name));
 
 	/* strange values -> seems not to be a valid fnt */
-	if (max_char_w > 100 || img_h < 1            || img_h > 100
+	if(max_char_w > 100 || img_h < 1            || img_h > 100
 	 || img_w < 1        || point > 50           || first_ade > 255
 	 || last_ade > 255   || first_ade > last_ade || top > img_h
 	 || bottom > img_h   || top < bottom) {
@@ -170,6 +170,43 @@ static s16 font_probe(struct fntfile_hdr *fnt)
 	return 1;
 }
 
+/* http://www.kostis.net/charsets/atarist.htm */
+static int iso8859_to_atari(int ch)
+{
+	switch(ch) {
+		case 244: return 147;
+		case 246: return 148;
+		case 214: return 153;
+		case 198: return 146;
+		case 230: return 145;
+		case 201: return 144;
+		case 197: return 143;
+		case 196: return 142;
+		case 231: return 135;
+		case 234: return 136;
+		case 235: return 137;
+		case 232: return 138;
+		case 239: return 139;
+		case 238: return 140;
+		case 236: return 141;
+		case 251: return 150;
+		case 249: return 151;
+		case 255: return 152;
+		case 220: return 154;
+		case 223: return 158;
+		case 192: return 182;
+		case 169: return 189;
+		case 174: return 190;
+		case 229: return 134;
+		case 224: return 133;
+		case 228: return 132;
+		case 226: return 131;
+		case 233: return 130;
+		case 252: return 129;
+		case 199: return 128;
+		default: return ch;
+	}
+}
 
 /**
  * Generates width table for the specified font
@@ -178,16 +215,15 @@ static s16 font_probe(struct fntfile_hdr *fnt)
  * adress. It has one 32bit-entry per ASCII value so its size
  * is 256*4 bytes.
  */
-static void font_gen_width_table(struct fntfile_hdr *fnt, s32 *dst_wtab)
+
+static int get_width(struct fntfile_hdr *fnt, int ch)
 {
-	u32   i;
-	u16   first_ade, last_ade;
-	u16  *offsets;
-	s32   width;
+	u16 first_ade, last_ade;
+	u16 *offsets;
 	u16 (*get_u16) (u16 *);
 	u32 (*get_u32) (u32 *);
 
-	if (intel_format(fnt)) {
+	if(intel_format(fnt)) {
 		get_u16 = i2u16;
 		get_u32 = i2u32;
 	} else {
@@ -198,14 +234,19 @@ static void font_gen_width_table(struct fntfile_hdr *fnt, s32 *dst_wtab)
 	first_ade = get_u16(&fnt->first_ade);
 	last_ade  = get_u16(&fnt->last_ade);
 	offsets = (u16 *)((get_u32((u32 *)(&fnt->off_table))) + (int)fnt);
+	
+	if((ch >= first_ade) && (ch < last_ade))
+		return (get_u16(offsets + ch + 1) - get_u16(offsets + ch));
+	else
+		return 0;
+}
 
-	for (i = 0; i < first_ade; i++) *(dst_wtab++) = 0;
-	for (i = first_ade; i < last_ade; i++) {
-		width = get_u16(offsets + 1) - get_u16(offsets);
-		offsets++;
-		*(dst_wtab++) = width;
-	}
-	for (i = last_ade; i < 256; i++) *(dst_wtab++) = 0;
+static void font_gen_width_table(struct fntfile_hdr *fnt, s32 *dst_wtab)
+{
+	int i;
+	
+	for(i=0;i<256;i++) 
+		dst_wtab[i] = get_width(fnt, iso8859_to_atari(i));
 }
 
 
@@ -215,14 +256,15 @@ static void font_gen_width_table(struct fntfile_hdr *fnt, s32 *dst_wtab)
  * The offset table will be generated at the given destination
  * adress. Its size is 256*4 bytes.
  */
-static void font_gen_offset_table(struct fntfile_hdr *fnt, s32 *dst_otab)
+
+static int get_offset(struct fntfile_hdr *fnt, int ch)
 {
-	u16   first_ade, last_ade, i;
+	u16   first_ade, last_ade;
 	u16  *offsets;
 	u16 (*get_u16) (u16 *);
 	u32 (*get_u32) (u32 *);
 
-	if (intel_format(fnt)) {
+	if(intel_format(fnt)) {
 		get_u16 = i2u16;
 		get_u32 = i2u32;
 	} else {
@@ -233,12 +275,19 @@ static void font_gen_offset_table(struct fntfile_hdr *fnt, s32 *dst_otab)
 	first_ade = get_u16(&fnt->first_ade);
 	last_ade  = get_u16(&fnt->last_ade);
 	offsets   = (u16 *)((get_u32((u32 *)(&fnt->off_table))) + (int)fnt);
+	
+	if((ch >= first_ade) && (ch <= last_ade))
+		return get_u16(offsets + ch);
+	else
+		return 0;
+}
 
-	for (i = 0; i < first_ade; i++) *(dst_otab++) = 0;
-	for (i = first_ade; i < last_ade + 1; i++) {
-		*(dst_otab++) = get_u16(offsets++);
-	}
-	for (i = last_ade + 1; i < 256; i++) *(dst_otab++) = 0;
+static void font_gen_offset_table(struct fntfile_hdr *fnt, s32 *dst_otab)
+{
+	int i;
+	
+	for(i=0;i<256;i++)
+		dst_otab[i] = get_offset(fnt, iso8859_to_atari(i));
 }
 
 
@@ -257,7 +306,7 @@ static char *font_get_name(struct fntfile_hdr *fnt)
  */
 static u16 font_get_top(struct fntfile_hdr *fnt)
 {
-	if (intel_format(fnt))
+	if(intel_format(fnt))
 		return i2u16(&fnt->top);
 	else
 		return m2u16(&fnt->top);
@@ -269,7 +318,7 @@ static u16 font_get_top(struct fntfile_hdr *fnt)
  */
 static u16 font_get_bottom(struct fntfile_hdr *fnt)
 {
-	if (intel_format(fnt))
+	if(intel_format(fnt))
 		return i2u16(&fnt->bottom);
 	else
 		return m2u16(&fnt->bottom);
@@ -281,7 +330,7 @@ static u16 font_get_bottom(struct fntfile_hdr *fnt)
  */
 static u32 font_get_image_width(struct fntfile_hdr *fnt)
 {
-	if (intel_format(fnt))
+	if(intel_format(fnt))
 		return 8*i2u16(&fnt->form_width);
 	else
 		return 8*m2u16(&fnt->form_width);
@@ -293,12 +342,11 @@ static u32 font_get_image_width(struct fntfile_hdr *fnt)
  */
 static u32 font_get_image_height(struct fntfile_hdr *fnt)
 {
-	if (intel_format(fnt))
+	if(intel_format(fnt))
 		return i2u16(&fnt->form_height);
 	else
 		return m2u16(&fnt->form_height);
 }
-
 
 /**
  * Generates chunky-organized font image
@@ -309,16 +357,24 @@ static u32 font_get_image_height(struct fntfile_hdr *fnt)
  * allocation. The size of a font image is
  * image_width*image_height.
  */
+
+static int getbit(u8 *array, int offset)
+{
+	return (array[offset / 8] & (0x80 >> (offset % 8))) ? 255 : 0;
+}
+
 static void font_gen_image(struct fntfile_hdr *fnt, u8 *dst)
 {
 	s32  linelength, height;
 	u32  i, j, k;
-	u8   curr_byte;
 	u8  *src;
 	u16 (*get_u16) (u16 *);
 	u32 (*get_u32) (u32 *);
+	int ch;
+	int offset;
+	int width;
 
-	if (intel_format(fnt)) {
+	if(intel_format(fnt)) {
 		get_u16 = i2u16;
 		get_u32 = i2u32;
 	} else {
@@ -328,15 +384,15 @@ static void font_gen_image(struct fntfile_hdr *fnt, u8 *dst)
 	linelength = get_u16(&fnt->form_width);
 	height     = get_u16(&fnt->form_height);
 	src = (u8 *)((get_u32((u32 *)(&fnt->dat_table))) + (int)fnt);
-
-	for (j = 0; j < height; j++) {
-		for (i = 0; i < linelength; i++) {
-			curr_byte = *(src++);
-			for (k = 0; k < 8; k++) {
-				*(dst++)  = (((int)curr_byte)&0x0080) ? 255 : 0;
-				curr_byte = curr_byte<<1;
-			}
-		}
+	
+	for(i=0;i<256;i++) {
+		ch = iso8859_to_atari(i);
+		width = get_width(fnt, ch);
+		offset = get_offset(fnt, ch);
+		for(j=0;j<height;j++)
+			for(k=0;k<width;k++)
+				dst[j*linelength*8+k] = getbit(src, offset+j*linelength*8+k);
+		dst += width;
 	}
 }
 
